@@ -1,0 +1,84 @@
+name: Build and Release
+
+on:
+  push:
+    branches:
+      - master
+
+jobs:
+  build-and-release:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Install dependencies
+        run: |
+          sudo apt update
+          sudo apt install -y build-essential cmake pkg-config \
+            qt6-base-dev qt6-multimedia-dev libvlc-dev vlc-plugin-qt gh
+
+      - name: Configure CMake
+        run: |
+          mkdir build
+          cd build
+          cmake .. \
+            -DCMAKE_INSTALL_PREFIX=$(pwd)/install_root \
+            -DCMAKE_BUILD_TYPE=Release \
+            -DCMAKE_CXX_STANDARD=23 \
+            -DCMAKE_CXX_STANDARD_REQUIRED=ON
+
+      - name: Build project
+        run: |
+          cmake --build build
+
+      - name: Install project
+        run: |
+          cmake --install build
+      - name: "List all files"
+        run: |
+          echo $PWD
+          ls -R
+
+      - name: Get project version
+        id: get_version
+        run: |
+          PROJECT_VERSION=$(grep -oP 'VERSION \K[0-9]+\.[0-9]+\.[0-9]+' CMakeLists.txt | head -n 1)
+          echo "PROJECT_VERSION=$PROJECT_VERSION" >> "$GITHUB_OUTPUT"
+          echo "Detected project version: $PROJECT_VERSION"
+
+
+      - name: Create or Update GitHub Release and Upload Asset
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          TAG_NAME: "v${{ steps.get_version.outputs.PROJECT_VERSION }}"
+          ASSET_PATH: build/install_root/usr/local/bin/mfaomp
+          ASSET_NAME: mfaomp-linux-x86_64-v${{ steps.get_version.outputs.PROJECT_VERSION }}
+        run: |
+          echo "Processing release for tag: $TAG_NAME"
+
+          # Configure Git user for tagging.
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+
+          if ! git rev-parse "$TAG_NAME" >/dev/null 2>&1; then
+            echo "Tag $TAG_NAME does not exist. Creating and pushing."
+            git tag "$TAG_NAME"
+            git push origin "$TAG_NAME"
+          else
+            echo "Tag $TAG_NAME already exists."
+          fi
+
+          if ! gh release view "$TAG_NAME" &>/dev/null; then
+            echo "Release $TAG_NAME does not exist. Creating new release."
+            gh release create "$TAG_NAME" \
+              --title "Release $TAG_NAME" \
+              --notes "Automated release of mfaomp $TAG_NAME" \
+              --draft=false \
+              --prerelease=false \
+              "$ASSET_PATH#$ASSET_NAME"
+          else
+            echo "Release $TAG_NAME already exists. Overwriting old asset."
+            gh release upload "$TAG_NAME" "$ASSET_PATH#$ASSET_NAME" --clobber
+          fi

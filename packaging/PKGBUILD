@@ -1,0 +1,46 @@
+# Maintainer: Neurofibromin <125222560+Neurofibromin@users.noreply.github.com>
+# Contributor: Neurofibromin <125222560+Neurofibromin@users.noreply.github.com>
+pkgname=mfaomp
+pkgver=0.4.0
+pkgrel=1
+pkgdesc="Multiple Files At Once Media Player"
+arch=('x86_64')
+url="https://github.com/Neurofibromin/mfaomp"
+license=('GPL-3.0-or-later')
+depends=(
+  'qt6-base'
+  'qt6-multimedia'
+  'libvlc'
+)
+makedepends=(
+  'cmake'
+  'gcc'
+  'qt6-base-devel'
+  'pkgconf'
+)
+optdepends=()
+source=("${pkgname}-${pkgver}.tar.gz::${url}/archive/refs/tags/${pkgver}.tar.gz")
+validpgpkeys=('9F9BFE94618AD26667BD28214F671AFAD8D4428B')
+b2sums=('SKIP')
+
+prepare() {
+  cd "$pkgname-$pkgver"
+}
+
+build() {
+  cd "$pkgname-$pkgver"
+  # maybe this should be: mkdir build && cmake ..
+  cmake -B build \
+    -DCMAKE_INSTALL_PREFIX=/usr \
+    -DCMAKE_BUILD_TYPE=Release \
+    -DCMAKE_CXX_STANDARD=23 \
+    -DCMAKE_CXX_STANDARD_REQUIRED=ON
+  cmake --build build
+}
+
+package() {
+  cd "$pkgname-$pkgver"
+  cmake --install build --prefix="$pkgdir/usr"
+  # if not handled by CMake install
+  install -Dm644 "${srcdir}/${pkgname}-${pkgver}/LICENSE" "$pkgdir/usr/share/doc/${pkgname}/LICENSE.txt"
+}
