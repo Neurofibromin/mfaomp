@@ -17,22 +17,24 @@
  */
 #include <algorithm>
 #include <iostream>
-#include <QApplication>
+#include <thread>
+#include "AddVideo.h"
+#include "vlc.hpp" // uses libvlcpp from https://github.com/videolan/libvlcpp
 #include <QApplication>
 #include <QAudioOutput>
 #include <QFileDialog>
 #include <QLabel>
 #include <QMainWindow>
 #include <QPushButton>
-#include <QSlider>
-#include <QtGlobal> // For Q_OS_WIN, Q_OS_LINUX, Q_OS_MACOS
-#include <QTimer>
-#include <QUrl>
-#include <QVBoxLayout>
+#include <QGridLayout>
+#include <QHBoxLayout>
 #include <QWidget>
-#include <thread>
-#include "AddVideo.h"
-#include "vlc.hpp" // uses libvlcpp from https://github.com/videolan/libvlcpp
+#include <QLabel>
+#include <QSlider>
+#include <QFrame>
+#include <QTimer>
+#include <QComboBox> // Include QComboBox
+#include <QFont>
 // #include <vlc/vlc.h> // no longer needed as libvlcpp used instead
 
 
@@ -67,6 +69,11 @@ int main(int argc, char *argv[]) {
     seekSlider->setSingleStep(1);
     seekSlider->setPageStep(10);
     seekSlider->setTracking(true);
+
+    QComboBox *backendComboBox = new QComboBox(&centralWidget);
+    backendComboBox->addItem("VLC Backend");
+    backendComboBox->addItem("QMediaPlayer Backend");
+    backendComboBox->setFont(font);
 
 
     addButton->setFont(font);
@@ -106,36 +113,40 @@ int main(int argc, char *argv[]) {
     line->setFrameShadow(QFrame::Sunken);
     mainLayout->addWidget(line);
     mainLayout->addWidget(seekSlider);
-    mainLayout->addWidget(buttonContainer);
+
+    QHBoxLayout *bottomRowLayout = new QHBoxLayout();
+    bottomRowLayout->addWidget(backendComboBox);
+    bottomRowLayout->addStretch();
+    bottomRowLayout->addWidget(buttonContainer);
+
+    mainLayout->addLayout(bottomRowLayout);
     mainLayout->setContentsMargins(10, 10, 10, 10);
     mainLayout->setSpacing(10);
     centralWidget.setLayout(mainLayout);
 
-    QVector<VLCPlayer> vlcPlayers;
+    QVector<MediaPlayerBase*> mediaPlayers;
 
     QObject::connect(addButton, &QPushButton::clicked, [&]() {
-        openAndAddVideoVLC(w, *videoLayout, vlcPlayers);
+        openAndAddVideo(w, *videoLayout, mediaPlayers);
     });
 
     QObject::connect(pauseAllButton, &QPushButton::clicked, [&]() {
-        for (auto &p : vlcPlayers)
-            p.mediaPlayer->pause();
+        for (auto &p : mediaPlayers)
+            p->pause();
     });
 
     QObject::connect(unpauseAllButton, &QPushButton::clicked, [&]() {
-        for (auto &p : vlcPlayers)
-            p.mediaPlayer->play();
+        for (auto &p : mediaPlayers)
+            p->play();
     });
 
     QObject::connect(clearAllButton, &QPushButton::clicked, [&]() {
-        for (auto &p : vlcPlayers) {
-            p.mediaPlayer->stop(); //TODO: check resource deallocation
-            delete p.mediaPlayer;
-            delete p.vlcInstance;
-            p.videoWidget->deleteLater();
+        for (auto &p : mediaPlayers) {
+            p->clear();
         }
-        vlcPlayers.clear();
+        mediaPlayers.clear();
         speedDisplayLabel->setText(QString("Speed: 1.00x"));
+        //TODO: clear slider as well
     });
 
     auto updateSpeedDisplay = [&](float rate) {
@@ -143,53 +154,64 @@ int main(int argc, char *argv[]) {
     };
 
     QObject::connect(increaseSpeedButton, &QPushButton::clicked, [&]() {
-        for (auto &p : vlcPlayers) {
-            float currentRate = p.mediaPlayer->rate();
+        for (auto &p : mediaPlayers) {
+            float currentRate = p->speed();
             float newRate = std::min(currentRate + SPEED_INCREMENT, MAX_PLAYBACK_SPEED);
-            p.mediaPlayer->setRate(newRate);
-            if (&p == &vlcPlayers.first()) {
+            p->speed(newRate);
+            if (&p == &mediaPlayers.first()) {
                 updateSpeedDisplay(newRate);
-                p.mediaPlayer->setVolume(p.mediaPlayer->volume());
             }
         }
     });
 
     QObject::connect(decreaseSpeedButton, &QPushButton::clicked, [&]() {
-        for (auto &p : vlcPlayers) {
-            float currentRate = p.mediaPlayer->rate();
+        for (auto &p : mediaPlayers) {
+            float currentRate = p->speed();
             float newRate = std::max(currentRate - SPEED_INCREMENT, MIN_PLAYBACK_SPEED);
-            p.mediaPlayer->setRate(newRate);
-            if (&p == &vlcPlayers.first()) {
+            p->speed(newRate);
+            if (&p == &mediaPlayers.first()) {
                 updateSpeedDisplay(newRate);
             }
         }
     });
 
     QObject::connect(resetSpeedButton, &QPushButton::clicked, [&]() {
-        for (auto &p : vlcPlayers) {
-            p.mediaPlayer->setRate(1.0f);
+        for (auto &p : mediaPlayers) {
+            p->speed(1.0f);
         }
         updateSpeedDisplay(1.0f);
     });
 
     QObject::connect(seekSlider, &QSlider::sliderReleased, [&]() {
-        if (!vlcPlayers.isEmpty()) {
+        if (!mediaPlayers.isEmpty()) {
             int value = seekSlider->value();
-            for (auto &p : vlcPlayers) {
-                int64_t length = p.mediaPlayer->media()->duration();
+            for (auto &p : mediaPlayers) {
+                int64_t length = p->duration();
                 int64_t seekTo = static_cast<int64_t>((double(value) / 1000.0) * length);
-                p.mediaPlayer->setTime(seekTo);
+                p->set_time(seekTo);
             }
         }
+    });
+
+    QObject::connect(backendComboBox, &QComboBox::currentTextChanged, [&](const QString &text) {
+        std::cout << "Selected backend: " << text.toStdString() << std::endl;
+        //TODO: clear the current backend
+        if (text.contains("vlc", Qt::CaseInsensitive)) {
+            CurrentBackEndStatusSingleton::getInstance().setCurrentBackEnd(VLCPlayerBackEnd);
+        }
+        else if (text.contains("QMediaPlayer", Qt::CaseInsensitive)) {
+            CurrentBackEndStatusSingleton::getInstance().setCurrentBackEnd(QMediaPlayerBackEnd);
+        }
+        //TODO: create the new backend
     });
 
     QTimer *sliderUpdateTimer = new QTimer(&w);
     sliderUpdateTimer->setInterval(500);
     QObject::connect(sliderUpdateTimer, &QTimer::timeout, [&]() {
-        if (!vlcPlayers.isEmpty()) {
-            auto player = vlcPlayers.first();
-            int64_t pos = player.mediaPlayer->time();
-            int64_t length = player.mediaPlayer->media()->duration();
+        if (!mediaPlayers.isEmpty()) {
+            auto player = mediaPlayers.first();
+            int64_t pos = player->time();
+            int64_t length = player->duration();
             if (length > 0) {
                 int value = static_cast<int>((double(pos) / length) * 1000);
                 seekSlider->blockSignals(true);
