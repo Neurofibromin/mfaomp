@@ -23,12 +23,9 @@
 #include <QStandardPaths>
 #include <QUrl>
 #include <QWidget>
-#include <QWindow>
-#include <QLabel>
 #include <QtGlobal> // For Q_OS_WIN, Q_OS_LINUX, Q_OS_MACOS
 #include "vlc.hpp" // uses libvlcpp from https://github.com/videolan/libvlcpp
 #include <iostream>
-#include <thread>
 #include <QtMultimedia>
 #include <QtMultimediaWidgets>
 #include <cmath>

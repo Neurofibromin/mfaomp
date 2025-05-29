@@ -21,19 +21,16 @@
 #include "AddVideo.h"
 #include "vlc.hpp" // uses libvlcpp from https://github.com/videolan/libvlcpp
 #include <QApplication>
-#include <QAudioOutput>
-#include <QFileDialog>
 #include <QLabel>
 #include <QMainWindow>
 #include <QPushButton>
 #include <QGridLayout>
 #include <QHBoxLayout>
 #include <QWidget>
-#include <QLabel>
 #include <QSlider>
 #include <QFrame>
 #include <QTimer>
-#include <QComboBox> // Include QComboBox
+#include <QComboBox>
 #include <QFont>
 // #include <vlc/vlc.h> // no longer needed as libvlcpp used instead
 
@@ -146,7 +143,9 @@ int main(int argc, char *argv[]) {
         }
         mediaPlayers.clear();
         speedDisplayLabel->setText(QString("Speed: 1.00x"));
-        //TODO: clear slider as well
+        seekSlider->blockSignals(true);
+        seekSlider->setValue(0);
+        seekSlider->blockSignals(false);
     });
 
     auto updateSpeedDisplay = [&](float rate) {
@@ -195,14 +194,34 @@ int main(int argc, char *argv[]) {
 
     QObject::connect(backendComboBox, &QComboBox::currentTextChanged, [&](const QString &text) {
         std::cout << "Selected backend: " << text.toStdString() << std::endl;
-        //TODO: clear the current backend
+        QVector<QPair<QUrl, int64_t>> currently_playing;
+        for (auto &p : mediaPlayers) {
+            QPair<QUrl, int64_t> cur = {p->videoUrl, p->time()};
+            currently_playing.append(cur);
+            p->clear();
+        }
+        mediaPlayers.clear();
+        speedDisplayLabel->setText(QString("Speed: 1.00x"));
+        seekSlider->blockSignals(true);
+        seekSlider->setValue(0);
+        seekSlider->blockSignals(false);
         if (text.contains("vlc", Qt::CaseInsensitive)) {
             CurrentBackEndStatusSingleton::getInstance().setCurrentBackEnd(VLCPlayerBackEnd);
         }
         else if (text.contains("QMediaPlayer", Qt::CaseInsensitive)) {
             CurrentBackEndStatusSingleton::getInstance().setCurrentBackEnd(QMediaPlayerBackEnd);
         }
-        //TODO: create the new backend
+        for (auto &p : currently_playing) {
+            addVideoPlayer(*videoLayout, p.first, mediaPlayers);
+        }
+        for (int i = 0; i < currently_playing.length(); ++i) {
+            mediaPlayers.at(i)->pause();
+        }
+        for (int i = 0; i < currently_playing.length(); ++i) {
+            mediaPlayers.at(i)->play();
+            std::cout << "setting time to: " << currently_playing[i].second << std::endl;
+            mediaPlayers.at(i)->set_time(currently_playing[i].second);
+        }
     });
 
     QTimer *sliderUpdateTimer = new QTimer(&w);

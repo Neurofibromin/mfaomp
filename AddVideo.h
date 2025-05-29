@@ -20,41 +20,13 @@
 #define ADDVIDEO_H
 #include <algorithm>
 #include <cmath>
-#include <iostream>
-#include <iostream>
-#include <QApplication>
-#include <QComboBox> // Include QComboBox
-#include <QDebug>
-#include <QFileDialog>
-#include <QFont>
-#include <QFrame>
 #include <QGridLayout>
-#include <QGridLayout>
-#include <QGridLayout>
-#include <QHBoxLayout>
-#include <QLabel>
-#include <QMainWindow>
-#include <QPushButton>
-#include <QSlider>
-#include <QStandardPaths>
-#include <QtGlobal> // For Q_OS_WIN, Q_OS_LINUX, Q_OS_MACOS
-#include <QTimer>
 #include <QtMultimedia>
-#include <QtMultimedia> // For QMediaPlayer, QVideoWidget
-#include <QtMultimediaWidgets> // For QVideoWidget
 #include <QtMultimediaWidgets>
 #include <QUrl>
 #include <QWidget>
-#include <QWidget>
-#include <QWidget>
-#include <QWindow>
-#include <QWindow>
-#include <thread>
 #include <thread>
 #include "AddVideo.h"
-#include "vlc.hpp" // uses libvlcpp from https://github.com/videolan/libvlcpp
-#include "vlc.hpp" // uses libvlcpp from https://github.com/videolan/libvlcpp
-
 #include "vlc.hpp" // uses libvlcpp from https://github.com/videolan/libvlcpp
 
 enum currentBackEnd {
@@ -90,7 +62,7 @@ struct MediaPlayerBase {
     virtual void pause() = 0;
     virtual void clear() = 0;
     virtual float speed(float sp = 0.0) = 0;
-    virtual float time() = 0;
+    virtual int64_t time() = 0;
     virtual void set_time(int64_t time) = 0;
     virtual float duration() = 0;
 };
@@ -117,7 +89,7 @@ struct VLCPlayerStruct : public MediaPlayerBase {
         }
         return mediaPlayer->rate();
     }
-    float time() override {
+    int64_t time() override {
         return mediaPlayer->time();
     }
     void set_time(int64_t time) override {
@@ -152,11 +124,20 @@ struct QMediaPlayerStruct : public MediaPlayerBase {
         }
         return mediaPlayer->playbackRate();
     }
-    float time() override {
+    int64_t time() override {
         return mediaPlayer->position();
     }
     void set_time(int64_t time) override {
-        mediaPlayer->setPosition(time);
+        if (mediaPlayer->mediaStatus() == QMediaPlayer::BufferedMedia ||
+            mediaPlayer->mediaStatus() == QMediaPlayer::LoadedMedia) {
+            mediaPlayer->setPosition(time);
+            } else {
+                QObject::connect(mediaPlayer, &QMediaPlayer::mediaStatusChanged, [this, time](QMediaPlayer::MediaStatus status) {
+                    if (status == QMediaPlayer::BufferedMedia || status == QMediaPlayer::LoadedMedia) {
+                        mediaPlayer->setPosition(time);
+                    }
+                });
+            }
     }
     float duration() override {
         return mediaPlayer->duration();

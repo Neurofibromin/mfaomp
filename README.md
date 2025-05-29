@@ -34,10 +34,10 @@ Linux Installers: <br/>
 
 | package      | x64                                                                                                                                                   | arm64                                                 |
 |--------------|-------------------------------------------------------------------------------------------------------------------------------------------------------|-------------------------------------------------------|
-| Flatpak	    | 		| |
-| RPM	        | 		| |
-| DEB	        | 		| |
-| AppImage	    | 		| |
+| Flatpak	    | | |
+| RPM	        | | |
+| DEB	        | | |
+| AppImage	    | | |
 
 
 ## Limitations <a name="limitations"/>
@@ -69,6 +69,9 @@ Linux Installers: <br/>
 - [ ] Use Strategy Pattern for handling backends (maybe)
 - [ ] testing workflows
 - [ ] testing packaging
+
+Bugs:
+- [ ] 
 
 ### Signatures, hashes and integrity checks <a name="signatures-hashes-and-integrity-checks"/>
 
