@@ -134,7 +134,7 @@ struct VLCPlayerStruct : public MediaPlayerBase {
 struct QMediaPlayerStruct : public MediaPlayerBase {
     QMediaPlayer *mediaPlayer = nullptr;
     QVideoWidget *videoWidget = nullptr;
-
+    QAudioOutput* audioOutput;
     void play() override {
         mediaPlayer->play();
     }

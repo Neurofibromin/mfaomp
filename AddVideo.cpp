@@ -132,10 +132,12 @@ void addQMediaPlayer(QGridLayout& layout, const QUrl& videoUrl, QVector<MediaPla
     QMediaPlayerStruct* player = new QMediaPlayerStruct();
     player->videoUrl = videoUrl;
     // 1. Create QVideoWidget
-    player->videoWidget = new QVideoWidget;
+    player->videoWidget = new QVideoWidget();
     player->videoWidget->setStyleSheet("background-color: black;");
     player->videoWidget->setMinimumSize(64, 64);
-    player->mediaPlayer = new QMediaPlayer;
+    player->mediaPlayer = new QMediaPlayer();
+    player->audioOutput = new QAudioOutput();
+    player->mediaPlayer->setAudioOutput(player->audioOutput);
     player->mediaPlayer->setVideoOutput(player->videoWidget);
     player->mediaPlayer->setSource(videoUrl);
     player->mediaPlayer->play();
