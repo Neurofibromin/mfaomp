@@ -1,5 +1,3 @@
-new:
-
 %global debug_package %{nil}
 Name:           mfaomp
 Version:        0.4.0
@@ -14,12 +12,8 @@ BuildRequires:  cmake
 BuildRequires:  gcc-c++
 BuildRequires:  qt6-qtbase-devel
 BuildRequires:  qt6-qtmultimedia-devel
-BuildRequires:  libvlc-devel
-BuildRequires:  pkgconfig(libvlc)
+BuildRequires:  vlc-devel
 Requires:       vlc
-Requires:       glibc
-Requires:       libstdc++
-Requires:       libgcc
 
 %description
 mfaomp is a media player designed to play multiple video or audio files
@@ -27,7 +21,7 @@ simultaneously, providing a unique viewing experience for comparisons
 or multi-stream playback.
 
 %prep
-%autosetup -p1
+%autosetup -n %{name}-%{version}
 %{gpgverify} --keyring='%{SOURCE2}' --signature='%{SOURCE1}' --data='%{SOURCE0}'
 
 %build
@@ -39,7 +33,8 @@ or multi-stream playback.
 
 %files
 %{_bindir}/mfaomp
-%{_docdir}/%{name}/LICENSE.txt
+%license %{_docdir}/%{name}/LICENSE.txt
+%{_datadir}/applications/mfaomp.desktop
 
 %changelog
 %autochangelog

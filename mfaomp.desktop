@@ -1,0 +1,11 @@
+[Desktop Entry]
+Version=1.0
+Type=Application
+Name=mfaomp
+GenericName=Media Player
+Comment=Play multiple videos at once
+Exec=mfaomp %F
+Categories=AudioVideo;Player;Video;Qt;
+Terminal=false
+MimeType=video/x-matroska;video/mp4;audio/mpeg;audio/x-wav;
+StartupNotify=true

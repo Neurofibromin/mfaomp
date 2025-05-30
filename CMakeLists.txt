@@ -23,7 +23,6 @@ find_package(Qt6 COMPONENTS
         Widgets
         Multimedia
         MultimediaWidgets
-        GuiPrivate
         REQUIRED)
 
 find_package(PkgConfig REQUIRED)
@@ -42,7 +41,6 @@ add_executable(mfaomp main.cpp
 target_include_directories(mfaomp PRIVATE
         ${LIBVLC_INCLUDE_DIRS}
         ${Qt6_PRIVATE_INCLUDE_DIRS}
-        ${Qt6Gui_PRIVATE_INCLUDE_DIRS}
         ${libvlcpp_SOURCE_DIR}/vlcpp
 )
 target_link_libraries(mfaomp
@@ -51,7 +49,6 @@ target_link_libraries(mfaomp
         Qt::Widgets
         Qt::Multimedia
         Qt::MultimediaWidgets
-        Qt::GuiPrivate
         ${LIBVLC_LIBRARIES}
 )
 
@@ -59,10 +56,13 @@ install(TARGETS mfaomp
         RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
         BUNDLE DESTINATION ${CMAKE_INSTALL_BINDIR} # For macOS ?
 )
+
 install(FILES "${PROJECT_LICENSE_FILE}"
-        DESTINATION "${CMAKE_INSTALL_DATADIR}/doc/${PROJECT_NAME}"
+        DESTINATION "${CMAKE_INSTALL_PREFIX}/doc/${PROJECT_NAME}"
         RENAME LICENSE.txt
 )
+
+install(FILES mfaomp.desktop DESTINATION ${CMAKE_INSTALL_DATADIR}/applications)
 
 include(CPack)
 set(CPACK_PACKAGE_VENDOR "${PROJECT_COPYRIGHT_HOLDER}")

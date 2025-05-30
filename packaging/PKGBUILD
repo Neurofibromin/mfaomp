@@ -14,8 +14,7 @@ depends=(
 )
 makedepends=(
   'cmake'
-  'gcc'
-  'qt6-base-devel'
+  'qt6-base'
   'pkgconf'
 )
 optdepends=()
@@ -24,13 +23,11 @@ validpgpkeys=('9F9BFE94618AD26667BD28214F671AFAD8D4428B')
 b2sums=('SKIP')
 
 prepare() {
-  cd "$pkgname-$pkgver"
+  cd "$srcdir/$pkgname-$pkgver"
 }
 
 build() {
-  cd "$pkgname-$pkgver"
-  # maybe this should be: mkdir build && cmake ..
-  cmake -B build \
+  cmake -S "$srcdir/$pkgname-$pkgver" -B build \
     -DCMAKE_INSTALL_PREFIX=/usr \
     -DCMAKE_BUILD_TYPE=Release \
     -DCMAKE_CXX_STANDARD=23 \
@@ -39,8 +36,8 @@ build() {
 }
 
 package() {
-  cd "$pkgname-$pkgver"
-  cmake --install build --prefix="$pkgdir/usr"
-  # if not handled by CMake install
-  install -Dm644 "${srcdir}/${pkgname}-${pkgver}/LICENSE" "$pkgdir/usr/share/doc/${pkgname}/LICENSE.txt"
+  DESTDIR="$pkgdir"
+  cmake --install build
+  # cmake does this: install -Dm644 "$pkgname-$pkgver/LICENSE" "$pkgdir/usr/share/doc/$pkgname/LICENSE.txt"
+  # cmake does this: install -Dm644 mfaomp.desktop "$pkgdir/usr/share/applications/mfaomp.desktop"
 }

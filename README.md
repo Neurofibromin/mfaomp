@@ -42,7 +42,9 @@ Linux Installers: <br/>
 
 ## Limitations <a name="limitations"/>
 
+VLC does not support embedding in wayland windows, so the app always launches as an Xwindow. This will be fixed when VLC adds support: https://code.videolan.org/videolan/vlc/-/issues/16106
 
+Backends have differing feature-sets. QMediaPlayer supports rate change, but will not compensate the frequency shift in audio. 
 
 ## How it works <a name="how-it-works"/>
 
@@ -53,20 +55,24 @@ Linux Installers: <br/>
 [Additional releases](#additional-releases)
 
 ### Aims <a name="aims"/>
-<br>CI/CD<br/>
-- [ ] [OpenSuse Build Service]()
+CI/CD
+- [ ] [OpenSuse Build Service](https://build.opensuse.org/package/show/home:Neurofibromin/mfaomp)
 - [ ] Nix
 - [ ] Flathub
 - [ ] Debian
-- [ ] [Arch/AUR]()
-- [ ] [Fedora Copr]()
+- [ ] [Arch/AUR](https://aur.archlinux.org/packages/mfaomp)
+- [ ] [Fedora Copr](https://copr.fedorainfracloud.org/coprs/neurofibromin/mfaomp/)
 - [ ] innosetup
 - [ ] winget
 - [ ] chocolatey
+
+Features:
 - [ ] SDL2? backend
 - [ ] FFmpeg backend
 - [ ] Chromium Embedded Framework (CEF) or QtWebEngine backend
 - [ ] Use Strategy Pattern for handling backends (maybe)
+
+Testing
 - [ ] testing workflows
 - [ ] testing packaging
 
