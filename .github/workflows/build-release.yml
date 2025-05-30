@@ -72,5 +72,5 @@ jobs:
           else
             echo "Release $TAG_NAME not found."
             echo "Creating prerelease for version: $TAG_NAME"
-            gh release create "$TAG_NAME" --target master --title "Release $TAG_NAME" --generate-notes "$$ASSET_NAME"
+            gh release create "$TAG_NAME" --target master --title "Release $TAG_NAME" --generate-notes "$ASSET_NAME"
           fi
