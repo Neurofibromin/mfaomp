@@ -12,8 +12,10 @@ BuildRequires:  cmake
 BuildRequires:  gcc-c++
 BuildRequires:  qt6-qtbase-devel
 BuildRequires:  qt6-qtmultimedia-devel
+BuildRequires:  qt6-qtwebengine-devel
 BuildRequires:  vlc-devel
 Requires:       vlc
+# check if QT is runtime dependency as well?
 
 %description
 mfaomp is a media player designed to play multiple video or audio files

@@ -23,6 +23,12 @@
 #include <QStandardPaths>
 #include <QUrl>
 #include <QWidget>
+#include <QApplication>
+#include <QMainWindow>
+#include <QWebEngineView>
+#include <QUrl>
+#include <QFile>
+#include <QDebug>
 #include <QtGlobal> // For Q_OS_WIN, Q_OS_LINUX, Q_OS_MACOS
 #include "vlc.hpp" // uses libvlcpp from https://github.com/videolan/libvlcpp
 #include <iostream>
@@ -62,7 +68,10 @@ void rearrangeVideoPlayers(QGridLayout& layout, QVector<MediaPlayerBase*>& media
         int col = i % numCols;
         QMediaPlayerStruct* player;
         VLCPlayerStruct * player2;
+        QWebEngineStruct * player3;
         switch (CurrentBackEndStatusSingleton::getInstance().getCurrentBackEnd()) {
+            // maybe like this:
+            // layout.addWidget(mediaPlayers[i]->videoWidget, row, col);
             case QMediaPlayerBackEnd:
                 player = dynamic_cast<QMediaPlayerStruct *>( mediaPlayers[i]);
                 layout.addWidget(player->videoWidget, row, col);
@@ -70,6 +79,10 @@ void rearrangeVideoPlayers(QGridLayout& layout, QVector<MediaPlayerBase*>& media
             case VLCPlayerBackEnd:
                 player2 = dynamic_cast<VLCPlayerStruct *> (mediaPlayers[i]);
                 layout.addWidget(player2->videoWidget, row, col);
+                break;
+            case QWebEngineBackEnd:
+                player3 = dynamic_cast<QWebEngineStruct *> (mediaPlayers[i]);
+                layout.addWidget(player3->webView, row, col);
                 break;
         }
     }
@@ -83,60 +96,25 @@ void addVideoPlayer(QGridLayout& layout, const QUrl& videoUrl, QVector<MediaPlay
         case QMediaPlayerBackEnd:
             addQMediaPlayer(layout, videoUrl, mediaPlayers);
             break;
+        case QWebEngineBackEnd:
+            addQWebEnginePlayer(layout, videoUrl, mediaPlayers);
+            break;
     }
 }
 
 
 void addVLCVideoPlayer(QGridLayout& layout, const QUrl& videoUrl, QVector<MediaPlayerBase*>& vlcPlayers) {
-    VLCPlayerStruct* player = new VLCPlayerStruct();
-    player->videoUrl = videoUrl;
-    // 1. Create VLC instance
-    player->vlcInstance = new VLC::Instance(0, nullptr);
-    // 2. Create Media
-    QString path = videoUrl.toLocalFile();
-    VLC::Media *media = new VLC::Media(*player->vlcInstance, path.toUtf8().constData(), VLC::Media::FromPath);
-    media->addOption(":audio-time-stretch");
-    // 3. Create MediaPlayer
-    player->mediaPlayer = new VLC::MediaPlayer(*player->vlcInstance);
-    player->mediaPlayer->setMedia(*media);
-    //TODO: Media object maybe released after setting it to the media player
-    delete media;
-    // 4. Create a QWidget to render into
-    player->videoWidget = new QWidget;
-    player->videoWidget->setAttribute(Qt::WA_NativeWindow);
-    player->videoWidget->setStyleSheet("background-color: black;");
-    player->videoWidget->setMinimumSize(64, 64);
-    player->videoWidget->winId();
-    // Set the video widget for rendering
-#ifdef Q_OS_WIN
-    player.mediaPlayer->setHwnd(reinterpret_cast<void*>(player.videoWidget->winId()));
-#elif defined(Q_OS_MACOS)
-    player.mediaPlayer->setNsobject(reinterpret_cast<void*>(player.videoWidget->winId()));
-#else // only works on x11
-    player->mediaPlayer->setXwindow(player->videoWidget->winId());
-#endif
-
+    VLCPlayerStruct* player = new VLCPlayerStruct(videoUrl);
     player->mediaPlayer->play();
     if (!player->mediaPlayer->isPlaying()) {
         qWarning("Failed to start VLC playback.");
     }
     vlcPlayers.append(player);
-    // 5. Re-layout all players
     rearrangeVideoPlayers(layout, vlcPlayers);
 }
 
 void addQMediaPlayer(QGridLayout& layout, const QUrl& videoUrl, QVector<MediaPlayerBase*>& players) {
-    QMediaPlayerStruct* player = new QMediaPlayerStruct();
-    player->videoUrl = videoUrl;
-    // 1. Create QVideoWidget
-    player->videoWidget = new QVideoWidget();
-    player->videoWidget->setStyleSheet("background-color: black;");
-    player->videoWidget->setMinimumSize(64, 64);
-    player->mediaPlayer = new QMediaPlayer();
-    player->audioOutput = new QAudioOutput();
-    player->mediaPlayer->setAudioOutput(player->audioOutput);
-    player->mediaPlayer->setVideoOutput(player->videoWidget);
-    player->mediaPlayer->setSource(videoUrl);
+    QMediaPlayerStruct* player = new QMediaPlayerStruct(videoUrl);
     player->mediaPlayer->play();
 
     // Connect error signals for debugging
@@ -145,6 +123,18 @@ void addQMediaPlayer(QGridLayout& layout, const QUrl& videoUrl, QVector<MediaPla
         qWarning() << "QMediaPlayer Error:" << error << "-" << errorString;
     });
 
+    players.append(player);
+    rearrangeVideoPlayers(layout, players);
+}
+
+void addQWebEnginePlayer(QGridLayout &layout, const QUrl &videoUrl, QVector<MediaPlayerBase *> &players) {
+    // The Mediaplayers can be embedded in a single web page or multiple webrenderer instances.
+    // implementation will be more similar of multiple instances are created because other MediaPlayerDerived implementations
+    // are independent between videos - potentially multiple videos could be playing with different backends at once potentially
+
+    QWebEngineStruct* player = new QWebEngineStruct(videoUrl);
+    player->loadVideo(videoUrl);
+    player->play();
     players.append(player);
     rearrangeVideoPlayers(layout, players);
 }

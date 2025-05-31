@@ -70,6 +70,7 @@ int main(int argc, char *argv[]) {
     QComboBox *backendComboBox = new QComboBox(&centralWidget);
     backendComboBox->addItem("VLC Backend");
     backendComboBox->addItem("QMediaPlayer Backend");
+    backendComboBox->addItem("QWebEngine Backend");
     backendComboBox->setFont(font);
 
 
@@ -210,6 +211,9 @@ int main(int argc, char *argv[]) {
         }
         else if (text.contains("QMediaPlayer", Qt::CaseInsensitive)) {
             CurrentBackEndStatusSingleton::getInstance().setCurrentBackEnd(QMediaPlayerBackEnd);
+        }
+        else if (text.contains("QWebEngine", Qt::CaseInsensitive)) {
+            CurrentBackEndStatusSingleton::getInstance().setCurrentBackEnd(QWebEngineBackEnd);
         }
         for (auto &p : currently_playing) {
             addVideoPlayer(*videoLayout, p.first, mediaPlayers);

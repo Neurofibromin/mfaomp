@@ -23,6 +23,8 @@ find_package(Qt6 COMPONENTS
         Widgets
         Multimedia
         MultimediaWidgets
+#        WebEngine
+        WebEngineWidgets
         REQUIRED)
 
 find_package(PkgConfig REQUIRED)
@@ -37,10 +39,10 @@ FetchContent_Declare(
 FetchContent_MakeAvailable(libvlcpp)
 add_executable(mfaomp main.cpp
         AddVideo.cpp
-        AddVideo.h)
+        AddVideo.h
+        MediaPlayers.h)
 target_include_directories(mfaomp PRIVATE
         ${LIBVLC_INCLUDE_DIRS}
-        ${Qt6_PRIVATE_INCLUDE_DIRS}
         ${libvlcpp_SOURCE_DIR}/vlcpp
 )
 target_link_libraries(mfaomp
@@ -49,6 +51,8 @@ target_link_libraries(mfaomp
         Qt::Widgets
         Qt::Multimedia
         Qt::MultimediaWidgets
+#        Qt::WebEngine
+        Qt::WebEngineWidgets
         ${LIBVLC_LIBRARIES}
 )
 

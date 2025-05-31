@@ -23,11 +23,11 @@ Multiple Files At Once Media Player
 ## Installation & How to get <a name="installation--how-to-get"/>
 
 ### Standalone releases <a name="standalone-releases"/>
-| Windows                                                                                                          | Linux                                                                                                          | OSX (semi-supported)                                                                                     |
-|------------------------------------------------------------------------------------------------------------------|----------------------------------------------------------------------------------------------------------------|----------------------------------------------------------------------------------------------------------|
-| [x64]()     | | |
-| [x32]()     | | |
-| [arm64]()   | | |
+| Windows        | Linux | OSX (semi-supported)        |
+|----------------|-------|---|
+| | | |
+| | | |
+| | | |
 
 ### Additional releases <a name="additional-releases"/>
 Linux Installers: <br/>
@@ -67,9 +67,10 @@ CI/CD
 - [ ] chocolatey
 
 Features:
-- [ ] SDL2? backend
-- [ ] FFmpeg backend
-- [ ] Chromium Embedded Framework (CEF) or QtWebEngine backend
+- [ ] SDL2? backend maybe something like this: https://github.com/fosterseth/sdl2_video_player
+- [ ] FFmpeg backend 
+- [ ] Chromium Embedded Framework (CEF) or 
+- [ ] QtWebEngine backend
 - [ ] Use Strategy Pattern for handling backends (maybe)
 
 Testing
@@ -77,7 +78,7 @@ Testing
 - [ ] testing packaging
 
 Bugs:
-- [ ] 
+- [ ] QTWebEngine not compiled with proprietary codecs => no playing some codecs
 
 ### Signatures, hashes and integrity checks <a name="signatures-hashes-and-integrity-checks"/>
 
