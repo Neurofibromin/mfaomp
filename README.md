@@ -6,6 +6,8 @@ Multiple Files At Once Media Player
 - [Status](#status)
 - [Usage](#usage)
 - [Installation & How to get](#installation--how-to-get)
+    * [Fedora](#fedora)
+    * [Arch](#arch)
     * [Standalone releases](#standalone-releases)
     * [Additional releases](#additional-releases)
 - [Limitations](#limitations)
@@ -22,9 +24,26 @@ Multiple Files At Once Media Player
 
 [![Build and Release](https://github.com/Neurofibromin/mfaomp/actions/workflows/build-release.yml/badge.svg)](https://github.com/Neurofibromin/mfaomp/actions/workflows/build-release.yml)
 
+[![Copr build status](https://copr.fedorainfracloud.org/coprs/neurofibromin/mfaomp/package/mfaomp/status_image/last_build.png)](https://copr.fedorainfracloud.org/coprs/neurofibromin/mfaomp/package/mfaomp/)
+
+[![build result](https://build.opensuse.org/projects/home:Neurofibromin/packages/mfaomp/badge.svg?type=default)](https://build.opensuse.org/package/show/home:Neurofibromin/mfaomp)
+
+[![Packaging status](https://repology.org/badge/vertical-allrepos/mfaomp.svg)](https://repology.org/project/mfaomp/versions)
+
 ## Usage <a name="usage"/>
 
 ## Installation & How to get <a name="installation--how-to-get"/>
+
+### Fedora (COPR) <a name="fedora"/>
+```
+dnf copr enable neurofibromin/mfaomp
+dnf install mfaomp
+```
+
+### Arch (AUR) <a name="arch"/>
+```shell
+yay mfaomp
+```
 
 ### Standalone releases <a name="standalone-releases"/>
 | Windows        | Linux | OSX (semi-supported)        |
@@ -64,8 +83,8 @@ CI/CD
 - [ ] Nix
 - [ ] Flathub
 - [ ] Debian
-- [ ] [Arch/AUR](https://aur.archlinux.org/packages/mfaomp)
-- [ ] [Fedora Copr](https://copr.fedorainfracloud.org/coprs/neurofibromin/mfaomp/)
+- [x] [Arch/AUR](https://aur.archlinux.org/packages/mfaomp)
+- [x] [Fedora Copr](https://copr.fedorainfracloud.org/coprs/neurofibromin/mfaomp/)
 - [ ] innosetup
 - [ ] winget
 - [ ] chocolatey
