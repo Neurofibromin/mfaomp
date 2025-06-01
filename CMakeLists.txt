@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.28)
 project(mfaomp
-        VERSION 0.4.0
+        VERSION 0.4.1
         DESCRIPTION "Multiple Files At Once Media Player"
         HOMEPAGE_URL "https://github.com/Neurofibromin/mfaomp"
 )

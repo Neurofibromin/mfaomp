@@ -1,7 +1,7 @@
 { pkgs ? import <nixpkgs> {} }:
 
 let
-  version = "0.4.0";
+  version = "0.4.1";
 in
 pkgs.stdenv.mkDerivation {
   pname = "mfaomp";

@@ -181,9 +181,10 @@ struct QWebEngineStruct : public MediaPlayerBase {
         QObject::connect(webView, &QWebEngineView::loadFinished,  [this](bool ok) {
             if (ok) {
                 qDebug() << "QWebEngineView load finished.";
-                duration();
-                time();
-                speed();
+                // QWebEngineStruct::duration();
+                // QWebEngineStruct::time();
+                // QWebEngineStruct::speed();
+                waitForVideoMetadataThenFetch();
             } else {
                 qWarning() << "QWebEngineView failed to load page.";
             }
@@ -328,7 +329,7 @@ struct QWebEngineStruct : public MediaPlayerBase {
         webView->page()->runJavaScript("document.getElementById('mediaPlayerVideo').currentTime;",
                                     [&currentTimeMs, &loop](const QVariant& result) {
                 if (result.isValid() && result.typeId() == QMetaType::Double) {
-                    currentTimeMs = static_cast<int64_t>(result.toDouble() * 1000);
+                    currentTimeMs = static_cast<int64_t>(result.toDouble() /** 1000*/);
                     qDebug() << "QWebEngineStruct: Fetched time (ms):" << currentTimeMs;
                 } else {
                     qWarning() << "QWebEngineStruct: Failed to get time or invalid result:" << result;
@@ -345,10 +346,35 @@ struct QWebEngineStruct : public MediaPlayerBase {
 
     void set_time(int64_t time_ms) override {
         qDebug() << "QWebEngineStruct: set_time() called to (ms):" << time_ms;
-        QString script = QString("document.getElementById('mediaPlayerVideo').currentTime = %1;").arg(static_cast<double>(time_ms) / 1000.0);
+        QString script = QString("document.getElementById('mediaPlayerVideo').currentTime = %1;").arg(static_cast<double>(time_ms) /*/ 1000.0*/);
         webView->page()->runJavaScript(script);
         lastKnownTime = time_ms;
     }
+
+    void waitForVideoMetadataThenFetch() {
+        QTimer* pollTimer = new QTimer(webView);
+        pollTimer->setInterval(200);  // 200ms polling interval
+
+        QObject::connect(pollTimer, &QTimer::timeout, webView, [this, pollTimer]() {
+            webView->page()->runJavaScript("document.getElementById('mediaPlayerVideo').duration;",
+                                           [this, pollTimer](const QVariant& result) {
+                if (result.isValid() && result.canConvert<double>()) {
+                    double durationVal = result.toDouble();
+                    if (durationVal > 0 && std::isfinite(durationVal)) {
+                        qDebug() << "QWebEngineStruct: Video duration is now available:" << durationVal;
+                        lastKnownDuration = static_cast<float>(durationVal);
+                        pollTimer->stop();
+                        pollTimer->deleteLater();
+                    } else {
+                        qDebug() << "QWebEngineStruct: Duration still invalid, polling again.";
+                    }
+                }
+            });
+        });
+
+        pollTimer->start();
+    }
+
 
     float duration() override {
         QEventLoop loop;

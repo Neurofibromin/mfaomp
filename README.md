@@ -103,7 +103,8 @@ Testing
 Bugs:
 - [ ] QTWebEngine not compiled with proprietary codecs => no playing some codecs
 - [ ] QTWebEngine not initialized before play() is called, so autoplay fails
-- [ ] QTWebEngine callbacks generally don't work
+- [ ] QTWebEngine -> something else time get doesn't work
+- [ ] something else -> QTWebEngine time set doesn't work
 
 ### Signatures, hashes and integrity checks <a name="signatures-hashes-and-integrity-checks"/>
 
