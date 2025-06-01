@@ -18,6 +18,10 @@ Multiple Files At Once Media Player
 
 ## Status <a name="status"/>
 
+[![Nightly](https://github.com/Neurofibromin/mfaomp/actions/workflows/nightly.yml/badge.svg)](https://github.com/Neurofibromin/mfaomp/actions/workflows/nightly.yml)
+
+[![Build and Release](https://github.com/Neurofibromin/mfaomp/actions/workflows/build-release.yml/badge.svg)](https://github.com/Neurofibromin/mfaomp/actions/workflows/build-release.yml)
+
 ## Usage <a name="usage"/>
 
 ## Installation & How to get <a name="installation--how-to-get"/>
@@ -65,6 +69,7 @@ CI/CD
 - [ ] innosetup
 - [ ] winget
 - [ ] chocolatey
+- [x] separate nighly and release workflow
 
 Features:
 - [ ] SDL2? backend maybe something like this: https://github.com/fosterseth/sdl2_video_player
@@ -74,11 +79,12 @@ Features:
 - [ ] Use Strategy Pattern for handling backends (maybe)
 
 Testing
-- [ ] testing workflows
 - [ ] testing packaging
 
 Bugs:
 - [ ] QTWebEngine not compiled with proprietary codecs => no playing some codecs
+- [ ] QTWebEngine not initialized before play() is called, so autoplay fails
+- [ ] QTWebEngine callbacks generally don't work
 
 ### Signatures, hashes and integrity checks <a name="signatures-hashes-and-integrity-checks"/>
 

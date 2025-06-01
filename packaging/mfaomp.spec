@@ -6,7 +6,8 @@ Summary:        Multiple Files At Once Media Player
 
 License:        GPL-3.0-or-later
 URL:            https://github.com/Neurofibromin/mfaomp
-Source0:        %{url}/archive/refs/tags/%{version}.tar.gz
+Source0:        %{url}/archive/refs/tags/v%{version}.tar.gz
+Source1:        https://github.com/videolan/libvlcpp/archive/refs/heads/master.tar.gz#/libvlcpp-master.tar.gz
 
 BuildRequires:  cmake
 BuildRequires:  gcc-c++
@@ -24,10 +25,13 @@ or multi-stream playback.
 
 %prep
 %autosetup -n %{name}-%{version}
-%{gpgverify} --keyring='%{SOURCE2}' --signature='%{SOURCE1}' --data='%{SOURCE0}'
+mkdir -p third_party
+mkdir -p third_party/libvlcpp
+tar -xf %{SOURCE1} -C third_party/libvlcpp --strip-components=1
 
 %build
-%cmake -DCMAKE_BUILD_TYPE=Release
+%cmake -DCMAKE_BUILD_TYPE=Release \
+       -DUSE_PREDOWNLOADED_LIBVLCPP=ON
 %cmake_build
 
 %install

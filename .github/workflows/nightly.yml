@@ -1,0 +1,100 @@
+name: Nightly
+
+on:
+  push:
+    branches:
+      - master
+
+jobs:
+  build-and-release:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Cache APT packages
+        uses: actions/cache@v3
+        with:
+          path: /var/cache/apt/archives
+          key: ${{ runner.os }}-apt-${{ hashFiles('**/CMakeLists.txt') }}
+          restore-keys: |
+            ${{ runner.os }}-apt-
+
+      - name: Install dependencies
+        run: |
+          sudo apt update
+          sudo apt install -y build-essential cmake pkg-config \
+            qt6-base-dev qt6-multimedia-dev qt6-webengine-dev libvlc-dev vlc-plugin-qt gh
+
+      - name: Configure CMake
+        run: |
+          mkdir build
+          cd build
+          cmake .. \
+            -DCMAKE_INSTALL_PREFIX=$(pwd)/install_root \
+            -DCMAKE_BUILD_TYPE=Release \
+            -DCMAKE_CXX_STANDARD=23 \
+            -DCMAKE_CXX_STANDARD_REQUIRED=ON
+
+      - name: Build project
+        run: |
+          cmake --build build
+      - name: "List all files"
+        run: |
+          echo $PWD
+          ls -R
+
+      - name: Get project version
+        id: get_version
+        run: |
+          PROJECT_VERSION=$(grep -oP 'VERSION \K[0-9]+\.[0-9]+\.[0-9]+' CMakeLists.txt | head -n 1)
+          echo "PROJECT_VERSION=$PROJECT_VERSION" >> "$GITHUB_OUTPUT"
+          echo "Detected project version: $PROJECT_VERSION"
+
+      - name: Get current date and time (for nightly builds)
+        id: get_datetime
+        run: |
+          # Get current UTC date and time in ISO 8601 format (e.g., 19700101T012300Z)
+          echo "DATETIME=$(date -u +"%Y%m%dT%H%M%SZ")" >> "$GITHUB_OUTPUT"
+
+      - name: Set release variables
+        id: set_release_vars
+        run: |
+          RELEASE_TAG="v${{ steps.get_version.outputs.PROJECT_VERSION }}-nightly-${{ steps.get_datetime.outputs.DATETIME }}"
+          RELEASE_ASSET_NAME="mfaomp-linux-x86_64-${RELEASE_TAG}"
+          IS_PRERELEASE="true"
+          RELEASE_TITLE="Nightly Build ${RELEASE_TAG}"
+          RELEASE_NOTES="Nightly build from commit ${{ github.sha }}"
+          echo "RELEASE_TAG=$RELEASE_TAG" >> "$GITHUB_OUTPUT"
+          echo "RELEASE_ASSET_NAME=$RELEASE_ASSET_NAME" >> "$GITHUB_OUTPUT"
+          echo "IS_PRERELEASE=$IS_PRERELEASE" >> "$GITHUB_OUTPUT"
+          echo "RELEASE_TITLE=$RELEASE_TITLE" >> "$GITHUB_OUTPUT"
+          echo "RELEASE_NOTES=$RELEASE_NOTES" >> "$GITHUB_OUTPUT"
+          echo "Set RELEASE_TAG: $RELEASE_TAG"
+          echo "Set RELEASE_ASSET_NAME: $RELEASE_ASSET_NAME"
+
+      - name: Rename artifact
+        run: |
+          # Rename the compiled executable to the determined asset name
+          mv build/mfaomp "${{ steps.set_release_vars.outputs.RELEASE_ASSET_NAME }}"
+          echo "Artifact renamed to: ${{ steps.set_release_vars.outputs.RELEASE_ASSET_NAME }}"
+
+      - name: Create GitHub release and upload
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          RELEASE_TAG="${{ steps.set_release_vars.outputs.RELEASE_TAG }}"
+          ASSET_NAME="${{ steps.set_release_vars.outputs.RELEASE_ASSET_NAME }}"
+          IS_PRERELEASE="${{ steps.set_release_vars.outputs.IS_PRERELEASE }}"
+          RELEASE_TITLE="${{ steps.set_release_vars.outputs.RELEASE_TITLE }}"
+          RELEASE_NOTES="${{ steps.set_release_vars.outputs.RELEASE_NOTES }}"        
+          echo "Creating prerelease: $RELEASE_TAG"
+          gh release create "$RELEASE_TAG" \
+            --target master \
+            --title "$RELEASE_TITLE" \
+            --prerelease \
+            --notes "$RELEASE_NOTES" \
+            "$ASSET_NAME"

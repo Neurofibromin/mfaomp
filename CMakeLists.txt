@@ -30,21 +30,32 @@ find_package(Qt6 COMPONENTS
 find_package(PkgConfig REQUIRED)
 pkg_check_modules(LIBVLC REQUIRED libvlc)
 
-include(FetchContent)
-FetchContent_Declare(
-        libvlcpp #libvlcpp has no cmakelists, but it's header only so only including from the fetched repo
-        GIT_REPOSITORY https://github.com/videolan/libvlcpp.git
-        GIT_TAG        master
-)
-FetchContent_MakeAvailable(libvlcpp)
 add_executable(mfaomp main.cpp
         AddVideo.cpp
         AddVideo.h
         MediaPlayers.h)
-target_include_directories(mfaomp PRIVATE
-        ${LIBVLC_INCLUDE_DIRS}
-        ${libvlcpp_SOURCE_DIR}/vlcpp
-)
+
+option(USE_PREDOWNLOADED_LIBVLCPP "Use predownloaded libvlcpp (disable FetchContent)" OFF)
+if (USE_PREDOWNLOADED_LIBVLCPP)
+    message(STATUS "Using system-provided libvlcpp, FetchContent disabled")
+    target_include_directories(mfaomp PRIVATE
+            ${LIBVLC_INCLUDE_DIRS}
+            ${CMAKE_CURRENT_SOURCE_DIR}/third_party/libvlcpp/vlcpp
+    )
+else()
+    include(FetchContent)
+    FetchContent_Declare(
+            libvlcpp #libvlcpp has no cmakelists, but it's header only so only including from the fetched repo
+            GIT_REPOSITORY https://github.com/videolan/libvlcpp.git
+            GIT_TAG master
+    )
+    FetchContent_MakeAvailable(libvlcpp)
+    target_include_directories(mfaomp PRIVATE
+            ${LIBVLC_INCLUDE_DIRS}
+            ${libvlcpp_SOURCE_DIR}/vlcpp
+    )
+endif()
+
 target_link_libraries(mfaomp
         Qt::Core
         Qt::Gui
@@ -62,7 +73,7 @@ install(TARGETS mfaomp
 )
 
 install(FILES "${PROJECT_LICENSE_FILE}"
-        DESTINATION "${CMAKE_INSTALL_PREFIX}/doc/${PROJECT_NAME}"
+        DESTINATION "${CMAKE_INSTALL_DATADIR}/doc/${PROJECT_NAME}"
         RENAME LICENSE.txt
 )
 
