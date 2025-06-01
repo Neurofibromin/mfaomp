@@ -122,7 +122,6 @@ void addQMediaPlayer(QGridLayout& layout, const QUrl& videoUrl, QVector<MediaPla
                      [](QMediaPlayer::Error error, const QString &errorString){
         qWarning() << "QMediaPlayer Error:" << error << "-" << errorString;
     });
-
     players.append(player);
     rearrangeVideoPlayers(layout, players);
 }
@@ -131,9 +130,7 @@ void addQWebEnginePlayer(QGridLayout &layout, const QUrl &videoUrl, QVector<Medi
     // The Mediaplayers can be embedded in a single web page or multiple webrenderer instances.
     // implementation will be more similar of multiple instances are created because other MediaPlayerDerived implementations
     // are independent between videos - potentially multiple videos could be playing with different backends at once potentially
-
     QWebEngineStruct* player = new QWebEngineStruct(videoUrl);
-    player->loadVideo(videoUrl);
     player->play();
     players.append(player);
     rearrangeVideoPlayers(layout, players);
