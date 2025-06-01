@@ -25,6 +25,8 @@ struct MediaPlayerBase {
     virtual ~MediaPlayerBase() {} // for polymorphism
     virtual void play() = 0;
     virtual void pause() = 0;
+    virtual void mute() = 0;
+    virtual void unmute() = 0;
     virtual void clear() = 0;
     virtual float speed(float sp = 0.0) = 0;
     virtual int64_t time() = 0;
@@ -66,6 +68,12 @@ struct VLCPlayerStruct : public MediaPlayerBase {
     }
     void pause() override {
         mediaPlayer->pause();
+    }
+    void mute() override {
+        mediaPlayer->setMute(true);
+    }
+    void unmute() override {
+        mediaPlayer->setMute(false);
     }
     void clear() override {
         mediaPlayer->stop();
@@ -114,6 +122,12 @@ struct QMediaPlayerStruct : public MediaPlayerBase {
     }
     void pause() override {
         mediaPlayer->pause();
+    }
+    void mute() override {
+        mediaPlayer->audioOutput()->setMuted(true);
+    }
+    void unmute() override {
+        mediaPlayer->audioOutput()->setMuted(false);
     }
     void clear() override {
         mediaPlayer->stop();
@@ -196,7 +210,7 @@ struct QWebEngineStruct : public MediaPlayerBase {
                 </style>
             </head>
             <body>
-                <video id="mediaPlayerVideo" controls autoplay muted loop>
+                <video id="mediaPlayerVideo" controls loop>
                     <source src="%1" type="video/mp4">
                     Your browser does not support the video tag or the video format.
                 </video>
@@ -255,6 +269,13 @@ struct QWebEngineStruct : public MediaPlayerBase {
     void pause() override {
         qDebug() << "QWebEngineStruct: pause() called";
         webView->page()->runJavaScript("document.getElementById('mediaPlayerVideo').pause();");
+    }
+
+    void mute() override {
+        webView->page()->runJavaScript("document.getElementById('mediaPlayerVideo').muted = true;");
+    }
+    void unmute() override {
+        webView->page()->runJavaScript("document.getElementById('mediaPlayerVideo').muted = false;");
     }
 
     void clear() override {

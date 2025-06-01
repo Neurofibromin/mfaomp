@@ -32,6 +32,7 @@
 #include <QTimer>
 #include <QComboBox>
 #include <QFont>
+#include <QWebEngineProfile>
 // #include <vlc/vlc.h> // no longer needed as libvlcpp used instead
 
 
@@ -48,11 +49,17 @@ int main(int argc, char *argv[]) {
     QApplication a(argc, argv);
     QMainWindow w;
     QFont font("Segoe UI", 10);
+    QCoreApplication::setAttribute(Qt::AA_ShareOpenGLContexts);
+    QWebEngineProfile::defaultProfile()->settings()->setAttribute(
+        QWebEngineSettings::PlaybackRequiresUserGesture, false);
+
     QWidget centralWidget = QWidget(&w);
     //QGridLayout gridLayout = QGridLayout();
     QPushButton *addButton = new QPushButton("Add Video", &w);
     QPushButton *pauseAllButton = new QPushButton("Pause All", &w);
     QPushButton *unpauseAllButton = new QPushButton("Unpause All", &w);
+    QPushButton *muteAllButton = new QPushButton("Mute All", &w);
+    QPushButton *unmuteAllButton = new QPushButton("Unmute All", &w);
     QPushButton *clearAllButton = new QPushButton("Clear All", &w);
     QPushButton *increaseSpeedButton = new QPushButton("Speed+", &w);
     QPushButton *decreaseSpeedButton = new QPushButton("Speed-", &w);
@@ -88,6 +95,8 @@ int main(int argc, char *argv[]) {
     buttonLayout->addWidget(addButton);
     buttonLayout->addWidget(pauseAllButton);
     buttonLayout->addWidget(unpauseAllButton);
+    buttonLayout->addWidget(muteAllButton);
+    buttonLayout->addWidget(unmuteAllButton);
     buttonLayout->addWidget(clearAllButton);
     buttonLayout->addWidget(increaseSpeedButton);
     buttonLayout->addWidget(decreaseSpeedButton);
@@ -136,6 +145,16 @@ int main(int argc, char *argv[]) {
     QObject::connect(unpauseAllButton, &QPushButton::clicked, [&]() {
         for (auto &p : mediaPlayers)
             p->play();
+    });
+
+    QObject::connect(muteAllButton, &QPushButton::clicked, [&]() {
+        for (auto &p : mediaPlayers)
+            p->mute();
+    });
+
+    QObject::connect(unmuteAllButton, &QPushButton::clicked, [&]() {
+        for (auto &p : mediaPlayers)
+            p->unmute();
     });
 
     QObject::connect(clearAllButton, &QPushButton::clicked, [&]() {
