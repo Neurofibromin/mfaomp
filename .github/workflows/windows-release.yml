@@ -25,10 +25,9 @@ jobs:
       - name: Install Qt
         uses: jurplel/install-qt-action@v2
         with:
-          version:      ${{ env.QT_VERSION }}
           host:         windows
           target:       desktop
-          modules:      qtmultimedia qtwebengine
+          modules:      qtwebengine
 
       - name: "List all files"
         run: |
