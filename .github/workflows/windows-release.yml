@@ -1,0 +1,85 @@
+name: Windows Release qtinstall
+
+on:
+  push:
+    tags:
+      - 'v*'
+  workflow_dispatch:
+
+defaults:
+  run:
+    shell: cmd
+
+env:
+  QT_VERSION:   6.9.0
+
+jobs:
+  build:
+    runs-on:  windows-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Install Qt
+        uses: jurplel/install-qt-action@v2
+        with:
+          version:      ${{ env.QT_VERSION }}
+          host:         windows
+          target:       desktop
+          modules:      qtmultimedia qtwebengine
+
+      - name: "List all files"
+        run: |
+          echo $PWD
+          ls -R
+
+      - name: Set up Visual Studio shell
+        uses: egor-tensin/vs-shell@v2
+        with:
+          arch: x64
+
+      - name: "List all files"
+        run: |
+          echo $PWD
+          ls -R
+
+      - name: Build
+        run:  |
+          mkdir build
+          cd build
+          cmake .. \
+            -DCMAKE_BUILD_TYPE=Release \
+            -DCMAKE_CXX_STANDARD=23 \
+            -DCMAKE_CXX_STANDARD_REQUIRED=ON
+          cmake --build .
+
+      - name: "List all files"
+        run: |
+          echo $PWD
+          ls -R
+
+      - name: windeployqt
+        run:  |
+          cd build
+          windeployqt --qmldir ${{ env.SOURCE_DIR }} mfaomp.exe --pdb --release --compiler-runtime
+
+      - name: "List all files"
+        run: |
+          echo $PWD
+          ls -R
+
+      - name: Zip build
+        working-directory: ${{ runner.temp }}
+        run:  |
+          7z a mfaomp.zip build\* -r
+
+      - name: upload artifact
+        uses: actions/upload-artifact@master
+        with:
+          name: mfaomp.zip
+          path: build/mfaomp.zip
+
+
+# sources: https://medium.com/@TomRvr/continuous-integration-for-a-qt-project-with-github-b19a33b39980

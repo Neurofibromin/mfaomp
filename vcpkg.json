@@ -1,0 +1,7 @@
+{
+  "dependencies": [
+    "qtbase",
+    "qtmultimedia",
+    "qtwebengine"
+  ]
+}

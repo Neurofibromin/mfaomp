@@ -71,13 +71,7 @@ Backends have differing feature-sets. QMediaPlayer supports rate change, but wil
 
 ## How it works <a name="how-it-works"/>
 
-## Releases <a name="releases"/>
-
-[Standalone releases](#standalone-releases)
-
-[Additional releases](#additional-releases)
-
-### Aims <a name="aims"/>
+## Aims <a name="aims"/>
 CI/CD
 - [ ] [OpenSuse Build Service](https://build.opensuse.org/package/show/home:Neurofibromin/mfaomp)
 - [ ] Nix
@@ -85,20 +79,55 @@ CI/CD
 - [ ] Debian
 - [x] [Arch/AUR](https://aur.archlinux.org/packages/mfaomp)
 - [x] [Fedora Copr](https://copr.fedorainfracloud.org/coprs/neurofibromin/mfaomp/)
-- [ ] innosetup
 - [ ] winget
 - [ ] chocolatey
 - [x] separate nighly and release workflow
+- [ ] Create Icon for the project
+- [ ] make backends optional dependencies, reflect this in the build files
+- [ ] version coherency checking with a script
+- [ ] add gpg signatures and checksums to CICD pipelines
+- [ ] install wizards
+  - [ ] installshield
+  - [ ] innosetup
+  - [ ] nsis (only this works with CPack)
+  - [ ] wix
 
 Features:
-- [ ] SDL2? backend maybe something like this: https://github.com/fosterseth/sdl2_video_player
-- [ ] FFmpeg backend 
-- [ ] Chromium Embedded Framework (CEF) or 
+- [x] QMediaPlayer backend 
+- [x] VLC backend 
 - [ ] QtWebEngine backend
+- [ ] Chromium Embedded Framework (CEF) or
+- [ ] FFmpeg backend
+- [ ] SDL2? backend maybe something like this: https://github.com/fosterseth/sdl2_video_player
 - [ ] Use Strategy Pattern for handling backends (maybe)
+- [ ] Use Visitor Pattern for handling backends (maybe)
+- [ ] Add support for multiple backends at once
+- [ ] Add support for subtitles
+- [ ] Adding videos via drag-and-drop
+- [ ] Per video controls, overload right click menu
+  - [ ] loop 
+  - [ ] skip 
+  - [ ] playback rate 
+
+### Roadmap
+
+- 0.4: qwebengine backend
+- 0.4: add Windows support
+- 0.5: add Nix support
+- 0.5: menu system with settings
+- 0.5: drag-and-drop
+- 0.6: CEF backend
+- 0.6: theming, ui-ux design
+- 0.7: sdl-ffmpeg backend
+- 0.x: multithreaded approach
+- 0.x: other graphics backends (opengl vulcan directx)
+- 0.x: add c++ modules support
+- 1.x: work on performance
+- 1.x: self contained build artifacts
+- 1.x: reproducible build artifacts (SBOM)
 
 Testing
-- [ ] testing packaging
+- [ ] testing packaging, esp. runtime dependencies
 
 Bugs:
 - [ ] QTWebEngine not compiled with proprietary codecs => no playing some codecs
@@ -124,7 +153,7 @@ Public keys are also distributed with the build files.
 
 SHA256 hashes for the binaries are produced in the GitHub workflow and found in checksum.txt under release assets.
 
-### Build instructions <a name="build-instructions"/>
+## Build instructions <a name="build-instructions"/>
 Install dependencies:
 - vlc
 - qmedia?

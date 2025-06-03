@@ -1,0 +1,68 @@
+name: Windows Release vcpkg
+
+on:
+  push:
+    tags:
+      - 'v*'
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: windows-latest
+
+    env:
+      VCPKG_DEFAULT_TRIPLET: x64-windows
+
+    steps:
+      - name: Checkout source
+        uses: actions/checkout@v4
+
+      - name: Install vcpkg
+        uses: lukka/run-vcpkg@v11
+        with:
+          vcpkgDirectory: '${{ github.workspace }}/vcpkg'
+
+      - name: "List all files"
+        run: |
+          echo $PWD
+          ls -R
+
+      - name: Install dependencies with vcpkg
+        run: |
+          vcpkg install qt6-base qt6-multimedia qt6-webengine libvlc:x64-windows
+          vcpkg integrate install
+
+      - name: "List all files"
+        run: |
+          echo $PWD
+          ls -R
+
+      - name: Configure project with CMake
+        run: cmake -S . -B build -DCMAKE_TOOLCHAIN_FILE=${{ github.workspace }}/vcpkg/scripts/buildsystems/vcpkg.cmake -DCMAKE_BUILD_TYPE=Release
+
+      - name: "List all files"
+        run: |
+          echo $PWD
+          ls -R
+
+      - name: Build the project
+        run: cmake --build build --config Release
+
+      - name: "List all files"
+        run: |
+          echo $PWD
+          ls -R
+
+      - name: Package using CPack
+        run: cmake --build build --config Release --target package
+
+      - name: "List all files"
+        run: |
+          echo $PWD
+          ls -R
+
+      - name: Upload installer artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: mfaomp-windows-installer
+          path: build/*.exe
