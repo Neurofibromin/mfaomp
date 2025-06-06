@@ -103,7 +103,7 @@ Features:
 - [ ] Use Visitor Pattern for handling backends (maybe)
 - [ ] Add support for multiple backends at once
 - [ ] Add support for subtitles
-- [ ] Adding videos via drag-and-drop
+- [x] Adding videos via drag-and-drop
 - [ ] Per video controls, overload right click menu
   - [ ] loop 
   - [ ] skip 

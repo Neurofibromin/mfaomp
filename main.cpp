@@ -19,6 +19,7 @@
 #include <iostream>
 #include <thread>
 #include "AddVideo.h"
+#include "DropWidget.h"
 #include "vlc.hpp" // uses libvlcpp from https://github.com/videolan/libvlcpp
 #include <QApplication>
 #include <QLabel>
@@ -52,8 +53,15 @@ int main(int argc, char *argv[]) {
     QCoreApplication::setAttribute(Qt::AA_ShareOpenGLContexts);
     QWebEngineProfile::defaultProfile()->settings()->setAttribute(
         QWebEngineSettings::PlaybackRequiresUserGesture, false);
+    QVector<MediaPlayerBase*> mediaPlayers;
 
-    QWidget centralWidget = QWidget(&w);
+    // QWidget centralWidget = QWidget(&w);
+    QWidget *videoContainer = new QWidget();
+    QGridLayout *videoLayout = new QGridLayout(videoContainer);
+    videoLayout->setContentsMargins(0, 0, 0, 0);
+    videoLayout->setSpacing(10);
+    videoContainer->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
+    DropWidget centralWidget = DropWidget(videoLayout, mediaPlayers, &w);
     //QGridLayout gridLayout = QGridLayout();
     QPushButton *addButton = new QPushButton("Add Video", &w);
     QPushButton *pauseAllButton = new QPushButton("Pause All", &w);
@@ -107,11 +115,7 @@ int main(int argc, char *argv[]) {
     buttonLayout->setSpacing(8);
     buttonContainer->setLayout(buttonLayout);
 
-    QWidget *videoContainer = new QWidget();
-    QGridLayout *videoLayout = new QGridLayout(videoContainer);
-    videoLayout->setContentsMargins(0, 0, 0, 0);
-    videoLayout->setSpacing(10);
-    videoContainer->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
+
 
     QVBoxLayout *mainLayout = new QVBoxLayout();
     mainLayout->addWidget(videoContainer);
@@ -130,8 +134,6 @@ int main(int argc, char *argv[]) {
     mainLayout->setContentsMargins(10, 10, 10, 10);
     mainLayout->setSpacing(10);
     centralWidget.setLayout(mainLayout);
-
-    QVector<MediaPlayerBase*> mediaPlayers;
 
     QObject::connect(addButton, &QPushButton::clicked, [&]() {
         openAndAddVideo(w, *videoLayout, mediaPlayers);

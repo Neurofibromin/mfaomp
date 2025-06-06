@@ -56,7 +56,8 @@ pkg_check_modules(LIBVLC REQUIRED libvlc)
 add_executable(mfaomp main.cpp
         AddVideo.cpp
         AddVideo.h
-        MediaPlayers.h)
+        MediaPlayers.h
+        DropWidget.h)
 
 # needed because Fedora disables build time fetching of dependencies, all sources must be downloaded beforehand
 option(USE_PREDOWNLOADED_LIBVLCPP "Use predownloaded libvlcpp (disable FetchContent)" OFF)
