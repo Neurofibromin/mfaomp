@@ -351,23 +351,42 @@ struct QWebEngineStruct : public MediaPlayerBase {
         return lastKnownTime;
     }
 
+
+
     void set_time(int64_t time_ms) override {
         qDebug() << "QWebEngineStruct: set_time() called to (ms):" << time_ms;
         double time_s = static_cast<double>(time_ms) / 1000.0;
         QString script = QString(R"(
-            const video = document.getElementById('mediaPlayerVideo');
-            if (video && video.readyState >= HTMLMediaElement.HAVE_METADATA) {
-                video.currentTime = %1;
-                console.log('Video time set to:', %1);
-            } else {
-                video.addEventListener('loadedmetadata', function handler() {
-                    video.currentTime = %1;
-                    console.log('Video time set after metadata loaded:', %1);
-                    video.removeEventListener('loadedmetadata', handler);
-                });
-                console.log('Video not ready, deferring time set to:', %1);
-            }
+            (function(){
+                const video = document.getElementById('mediaPlayerVideo');
+                function setVideoTime(seconds) {
+                    if (!video) return;
+                    if (video.readyState >= 1) {
+                        video.currentTime = seconds;
+                        console.log('Set video.currentTime to', seconds);
+                    } else {
+                        video.addEventListener('loadedmetadata', function handler() {
+                            video.currentTime = seconds;
+                            console.log('Set video.currentTime after metadata:', seconds);
+                            video.removeEventListener('loadedmetadata', handler);
+                        });
+                        console.log('Deferring set time to', seconds);
+                    }
+                }
+                setVideoTime(%1);
+            })();
         )").arg(time_s);
+        // maybe not loaded, in which case must wait for the loadFinished signal, but if loaded already, then just execute it as is.
+        QObject::connect(webView, &QWebEngineView::loadFinished,  [this, script, time_ms](bool ok) {
+            if (ok) {
+                qDebug() << "QWebEngineView load finished.";
+                webView->page()->runJavaScript(script);
+                lastKnownTime = time_ms; // Optimistically update, but actual time may be different
+                play();
+            } else {
+                qWarning() << "QWebEngineView failed to load page.";
+            }
+        });
         webView->page()->runJavaScript(script);
         lastKnownTime = time_ms; // Optimistically update, but actual time may be different
     }

@@ -95,7 +95,7 @@ CI/CD
 Features:
 - [x] QMediaPlayer backend 
 - [x] VLC backend 
-- [ ] QtWebEngine backend
+- [x] QtWebEngine backend
 - [ ] Chromium Embedded Framework (CEF) or
 - [ ] FFmpeg backend
 - [ ] SDL2? backend maybe something like this: https://github.com/fosterseth/sdl2_video_player
@@ -133,7 +133,7 @@ Bugs:
 - [ ] QTWebEngine not compiled with proprietary codecs => no playing some codecs
 - [x] QTWebEngine not initialized before play() is called, so autoplay fails
 - [x] QTWebEngine -> something else time get doesn't work
-- [ ] something else -> QTWebEngine time set doesn't work
+- [x] something else -> QTWebEngine time set doesn't work
 
 ### Signatures, hashes and integrity checks <a name="signatures-hashes-and-integrity-checks"/>
 
