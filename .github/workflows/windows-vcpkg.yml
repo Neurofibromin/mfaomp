@@ -17,6 +17,11 @@ jobs:
       - name: Checkout source
         uses: actions/checkout@v4
 
+      - name: Set up Visual Studio shell
+        uses: egor-tensin/vs-shell@v2
+        with:
+          arch: x64
+
       - name: Install vcpkg
         uses: lukka/run-vcpkg@v11
         with:

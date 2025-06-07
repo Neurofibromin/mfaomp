@@ -1,17 +1,7 @@
 name: Windows Release qtinstall
 
 on:
-  push:
-    tags:
-      - 'v*'
   workflow_dispatch:
-
-defaults:
-  run:
-    shell: cmd
-
-env:
-  QT_VERSION:   6.9.0
 
 jobs:
   build:

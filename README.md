@@ -84,7 +84,7 @@ CI/CD
 - [x] separate nighly and release workflow
 - [ ] Create Icon for the project
 - [ ] make backends optional dependencies, reflect this in the build files
-- [ ] version coherency checking with a script
+- [x] version coherency with a script
 - [ ] add gpg signatures and checksums to CICD pipelines
 - [ ] install wizards
   - [ ] installshield
@@ -131,8 +131,8 @@ Testing
 
 Bugs:
 - [ ] QTWebEngine not compiled with proprietary codecs => no playing some codecs
-- [ ] QTWebEngine not initialized before play() is called, so autoplay fails
-- [ ] QTWebEngine -> something else time get doesn't work
+- [x] QTWebEngine not initialized before play() is called, so autoplay fails
+- [x] QTWebEngine -> something else time get doesn't work
 - [ ] something else -> QTWebEngine time set doesn't work
 
 ### Signatures, hashes and integrity checks <a name="signatures-hashes-and-integrity-checks"/>
