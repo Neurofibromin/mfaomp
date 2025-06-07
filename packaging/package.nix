@@ -1,8 +1,8 @@
-{ pkgs ? import <nixpkgs> { } }:
+{ lib, stdenv, fetchFromGitHub, cmake, pkg-config, qt6, libvlc }:
 
 let
   version = "0.4.2";
-  libvlcppSrc = pkgs.fetchFromGitHub {
+  libvlcppSrc = fetchFromGitHub {
     owner = "videolan";
     repo = "libvlcpp";
     rev = "master";
@@ -10,11 +10,11 @@ let
     sha256 = "sha256-nnS4DMz/2VciCrhOBGRb1+kDbxj+ZOnEtQmzs/TJ870=";
   };
   pname = "mfaomp";
-in pkgs.stdenv.mkDerivation {
+in stdenv.mkDerivation {
   inherit version;
   inherit pname;
 
-  src = pkgs.fetchFromGitHub {
+  src = fetchFromGitHub {
     owner = "Neurofibromin";
     repo = "mfaomp";
     rev = "v${version}";
@@ -22,24 +22,13 @@ in pkgs.stdenv.mkDerivation {
     sha256 = "sha256-nh7prQzqPbRQUYzJUZ4cAILdn2ElRdEkiRXyJdrtf9A=";
   };
 
-  nativeBuildInputs = with pkgs; [
-    cmake
-    git
-    pkg-config
-    qt6.qtbase.dev
-    qt6.wrapQtAppsHook
-  ];
+  nativeBuildInputs = [ cmake pkg-config qt6.qtbase.dev qt6.wrapQtAppsHook ];
 
-  buildInputs = with pkgs; [
-    qt6.qtbase
-    qt6.qtmultimedia
-    qt6.qtwebengine
-    qt6.qtsvg
-    libvlc
-  ];
+  buildInputs =
+    [ qt6.qtbase qt6.qtmultimedia qt6.qtwebengine qt6.qtsvg libvlc ];
 
   cmakeFlags = [
-    "-DQT_QMAKE_EXECUTABLE=${pkgs.qt6.qtbase}/bin/qmake"
+    "-DQT_QMAKE_EXECUTABLE=${qt6.qtbase}/bin/qmake"
     "-DUSE_PREDOWNLOADED_LIBVLCPP=ON"
   ];
 
@@ -59,13 +48,13 @@ in pkgs.stdenv.mkDerivation {
   #     install -Dm644 LICENSE $out/share/doc/${pname}/LICENSE.txt #this doesn't work because pname is not a known ...
   #  '';
 
-  meta = with pkgs.lib; {
+  meta = with lib; {
     description = "Multiple Files At Once Media Player";
     homepage = "https://github.com/Neurofibromin/mfaomp";
-    license = pkgs.lib.licenses.gpl3Plus;
-    maintainers = with pkgs.lib.maintainers; [ neurofibromin ];
+    license = lib.licenses.gpl3Plus;
+    maintainers = with lib.maintainers; [ neurofibromin ];
     #      platforms = [ "x86_64-linux" ];
-    platforms = pkgs.lib.platforms.linux;
+    platforms = lib.platforms.linux;
     mainProgram = "mfaomp";
   };
 }
