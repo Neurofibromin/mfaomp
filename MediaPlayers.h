@@ -19,23 +19,14 @@
 #ifndef MEDIAPLAYERS_H
 #define MEDIAPLAYERS_H
 
-#include <algorithm>
-#include <QGridLayout>
+#include <QDebug>
 #include <QtMultimedia>
 #include <QtMultimediaWidgets>
 #include <QUrl>
-#include <QWebEnginePage>
 #include <QWebEngineSettings>
 #include <QWebEngineView>
 #include <QWidget>
-#include <QWebEnginePage>
 #include "vlc.hpp" // uses libvlcpp from https://github.com/videolan/libvlcpp
-#include <QWebEngineView>
-#include <QWebEngineSettings>
-#include <QWebEnginePage>
-#include <QUrl>
-#include <QWidget>
-#include <QDebug>
 
 struct MediaPlayerBase {
     QUrl videoUrl;

@@ -18,9 +18,7 @@
 
 #ifndef ADDVIDEO_H
 #define ADDVIDEO_H
-#include <QTimer>     // For timeout in QEventLoop
 #include <QtMultimedia>
-#include "AddVideo.h"
 #include "MediaPlayers.h"
 
 enum currentBackEnd {
