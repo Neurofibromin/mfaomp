@@ -7,14 +7,14 @@ pkgs.stdenv.mkDerivation {
   pname = "mfaomp";
   inherit version;
 
-  src = pkgs.lib.cleanSource ./.;
+#  src = pkgs.lib.cleanSource ./.;
 
- # src = pkgs.fetchFromGitHub {
- #   owner = "Neurofibromin";
- #   repo = "mfaomp";
- #   rev = "v${version}";
- #   sha256 = "sha256-123=";
- # };
+  src = pkgs.fetchFromGitHub {
+    owner = "Neurofibromin";
+    repo = "mfaomp";
+    rev = "v${version}";
+    sha256 = "sha256-123=";
+  };
 
   nativeBuildInputs = with pkgs; [
     cmake
