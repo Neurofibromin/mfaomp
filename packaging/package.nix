@@ -14,7 +14,7 @@ let
     owner = "videolan";
     repo = "libvlcpp";
     tag = "0.1.0";
-    sha256 = "sha256-nnS4DMz/2VciCrhOBGRb1+kDbxj+ZOnEtQmzs/TJ870=";
+    hash = "sha256-nnS4DMz/2VciCrhOBGRb1+kDbxj+ZOnEtQmzs/TJ870=";
   };
   pname = "mfaomp";
 in
@@ -26,13 +26,12 @@ stdenv.mkDerivation {
     owner = "Neurofibromin";
     repo = "mfaomp";
     tag = "v${version}";
-    hash = "sha256-nh7prQzqPbRQUYzJUZ4cAILdn2ElRdEkiRXyJdrtf9A=";
+    hash = "sha256-fNk7d3DfpVNmpI6t7BV0RO+ic9BPDlKtjAPN5ZP3P4E=";
   };
 
   nativeBuildInputs = [
     cmake
     pkg-config
-#    qt6.qtbase.dev
     qt6.wrapQtAppsHook
   ];
 
@@ -45,8 +44,6 @@ stdenv.mkDerivation {
   ];
 
   cmakeFlags = [
-#    "-DQT_QMAKE_EXECUTABLE=${qt6.qtbase}/bin/qmake"
-#    "-DUSE_PREDOWNLOADED_LIBVLCPP=ON"
     (lib.cmakeBool "USE_PREDOWNLOADED_LIBVLCPP" true)
   ];
 
@@ -54,11 +51,6 @@ stdenv.mkDerivation {
     mkdir -p third_party/libvlcpp
     cp -r ${libvlcppSrc}/* ${libvlcppSrc}/.??* third_party/libvlcpp/ 2>/dev/null || true
   '';
-#  installPhase = ''
-#    runHook preInstall
-#    cmake --install . --prefix=$out
-#    runHook postInstall
-#  '';
 
   meta = {
     description = "Multiple Files At Once Media Player";

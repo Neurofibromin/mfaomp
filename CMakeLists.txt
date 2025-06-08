@@ -88,6 +88,7 @@ if (USE_PREDOWNLOADED_LIBVLCPP)
             ${CMAKE_CURRENT_SOURCE_DIR}/third_party/libvlcpp/vlcpp
     )
 else()
+    message(STATUS "Fetching libvlcpp with FetchContent")
     include(FetchContent)
     FetchContent_Declare(
             libvlcpp #libvlcpp has no cmakelists, but it's header only so only including from the fetched repo
