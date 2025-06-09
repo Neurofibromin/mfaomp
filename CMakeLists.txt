@@ -70,6 +70,7 @@ find_package(Qt6 COMPONENTS
 
 find_package(PkgConfig REQUIRED)
 pkg_check_modules(LIBVLC REQUIRED libvlc)
+pkg_check_modules(LIBVLCPP libvlcpp QUIET) # try to find libvlcpp system package
 
 add_executable(mfaomp main.cpp
         AddVideo.cpp
@@ -82,13 +83,37 @@ add_executable(mfaomp main.cpp
 # needed because Fedora disables build time fetching of dependencies, all sources must be downloaded beforehand
 option(USE_PREDOWNLOADED_LIBVLCPP "Use predownloaded libvlcpp (disable FetchContent)" OFF)
 # libvlcpp is available as a package for NixOS
-option(USE_SYSTEM_PROVIDED_LIBVLCPP "Use libvlcpp system package (disable FetchContent, used on NixOS)" OFF)
+option(USE_SYSTEM_PROVIDED_LIBVLCPP "Use libvlcpp system package (disable FetchContent, used on NixOS)" ${LIBVLCPP_FOUND})
 option(USE_FETCHED_LIBVLCPP "Fetch libvlcpp (enable FetchContent, used by default)" ON)
+
+set(LIBVLCPP_SOURCE_COUNT 0)
 if (USE_PREDOWNLOADED_LIBVLCPP)
-    message(STATUS "Using system-provided libvlcpp, FetchContent disabled")
+    math(EXPR LIBVLCPP_SOURCE_COUNT "${LIBVLCPP_SOURCE_COUNT} + 1")
+endif()
+if (USE_SYSTEM_PROVIDED_LIBVLCPP)
+    math(EXPR LIBVLCPP_SOURCE_COUNT "${LIBVLCPP_SOURCE_COUNT} + 1")
+endif()
+if (USE_FETCHED_LIBVLCPP)
+    math(EXPR LIBVLCPP_SOURCE_COUNT "${LIBVLCPP_SOURCE_COUNT} + 1")
+endif()
+
+if (LIBVLCPP_SOURCE_COUNT GREATER 1)
+    message(SEND_ERROR "Please select only one source for libvlcpp (USE_PREDOWNLOADED_LIBVLCPP, USE_SYSTEM_PROVIDED_LIBVLCPP, or USE_FETCHED_LIBVLCPP).")
+elseif (LIBVLCPP_SOURCE_COUNT EQUAL 0)
+    message(SEND_ERROR "No source for libvlcpp selected. Please enable one of USE_PREDOWNLOADED_LIBVLCPP, USE_SYSTEM_PROVIDED_LIBVLCPP, or USE_FETCHED_LIBVLCPP.")
+endif()
+
+if (USE_PREDOWNLOADED_LIBVLCPP)
+    message(STATUS "Using predownloaded libvlcpp, FetchContent disabled")
     target_include_directories(mfaomp PRIVATE
             ${LIBVLC_INCLUDE_DIRS}
             ${CMAKE_CURRENT_SOURCE_DIR}/third_party/libvlcpp/vlcpp
+    )
+elseif (USE_SYSTEM_PROVIDED_LIBVLCPP)
+    message(STATUS "Using system-provided libvlcpp, FetchContent disabled")
+    target_include_directories(mfaomp PRIVATE
+            ${LIBVLC_INCLUDE_DIRS}
+            ${LIBVLCPP_INCLUDE_DIRS}/vlcpp
     )
 elseif (USE_FETCHED_LIBVLCPP)
     message(STATUS "Fetching libvlcpp with FetchContent")
@@ -103,13 +128,8 @@ elseif (USE_FETCHED_LIBVLCPP)
             ${LIBVLC_INCLUDE_DIRS}
             ${libvlcpp_SOURCE_DIR}/vlcpp
     )
-elseif (USE_SYSTEM_PROVIDED_LIBVLCPP)
-    pkg_check_modules(LIBVLCPP REQUIRED libvlcpp)
-    target_include_directories(mfaomp PRIVATE
-            ${LIBVLCPP_INCLUDE_DIRS}/vlcpp
-    )
 else ()
-    message( SEND_ERROR "No source of libvlcpp provided!" )
+    message(SEND_ERROR "No source of libvlcpp provided!" )
 endif()
 
 target_link_libraries(mfaomp
