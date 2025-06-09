@@ -8,7 +8,8 @@
   libvlc,
 }:
 
-let
+stdenv.mkDerivation (finalAttrs: {
+  pname = "mfaomp";
   version = "0.4.2";
   libvlcppSrc = fetchFromGitHub {
     owner = "videolan";
@@ -16,16 +17,11 @@ let
     tag = "0.1.0";
     hash = "sha256-nnS4DMz/2VciCrhOBGRb1+kDbxj+ZOnEtQmzs/TJ870=";
   };
-  pname = "mfaomp";
-in
-stdenv.mkDerivation {
-  inherit version;
-  inherit pname;
 
   src = fetchFromGitHub {
     owner = "Neurofibromin";
-    repo = "mfaomp";
-    tag = "v${version}";
+    repo = finalAttrs.pname;
+    tag = "v${finalAttrs.version}";
     hash = "sha256-fNk7d3DfpVNmpI6t7BV0RO+ic9BPDlKtjAPN5ZP3P4E=";
   };
 
@@ -49,7 +45,7 @@ stdenv.mkDerivation {
 
   postPatch = ''
     mkdir -p third_party/libvlcpp
-    cp -r ${libvlcppSrc}/* ${libvlcppSrc}/.??* third_party/libvlcpp/ 2>/dev/null || true
+    cp -r ${finalAttrs.libvlcppSrc}/* ${finalAttrs.libvlcppSrc}/.??* third_party/libvlcpp/ 2>/dev/null || true
   '';
 
   meta = {
@@ -60,4 +56,4 @@ stdenv.mkDerivation {
     platforms = lib.platforms.linux;
     mainProgram = "mfaomp";
   };
-}
+})
