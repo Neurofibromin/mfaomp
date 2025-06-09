@@ -11,7 +11,7 @@
 
 stdenv.mkDerivation (finalAttrs: {
   pname = "mfaomp";
-  version = "0.4.2";
+  version = "0.4.3";
 #  libvlcppSrc = fetchFromGitHub {
 #    owner = "videolan";
 #    repo = "libvlcpp";
