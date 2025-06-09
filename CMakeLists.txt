@@ -81,13 +81,16 @@ add_executable(mfaomp main.cpp
 
 # needed because Fedora disables build time fetching of dependencies, all sources must be downloaded beforehand
 option(USE_PREDOWNLOADED_LIBVLCPP "Use predownloaded libvlcpp (disable FetchContent)" OFF)
+# libvlcpp is available as a package for NixOS
+option(USE_SYSTEM_PROVIDED_LIBVLCPP "Use libvlcpp system package (disable FetchContent, used on NixOS)" OFF)
+option(USE_FETCHED_LIBVLCPP "Fetch libvlcpp (enable FetchContent, used by default)" ON)
 if (USE_PREDOWNLOADED_LIBVLCPP)
     message(STATUS "Using system-provided libvlcpp, FetchContent disabled")
     target_include_directories(mfaomp PRIVATE
             ${LIBVLC_INCLUDE_DIRS}
             ${CMAKE_CURRENT_SOURCE_DIR}/third_party/libvlcpp/vlcpp
     )
-else()
+elseif (USE_FETCHED_LIBVLCPP)
     message(STATUS "Fetching libvlcpp with FetchContent")
     include(FetchContent)
     FetchContent_Declare(
@@ -100,6 +103,13 @@ else()
             ${LIBVLC_INCLUDE_DIRS}
             ${libvlcpp_SOURCE_DIR}/vlcpp
     )
+elseif (USE_SYSTEM_PROVIDED_LIBVLCPP)
+    pkg_check_modules(LIBVLCPP REQUIRED libvlcpp)
+    target_include_directories(mfaomp PRIVATE
+            ${LIBVLCPP_INCLUDE_DIRS}/vlcpp
+    )
+else ()
+    message( SEND_ERROR "No source of libvlcpp provided!" )
 endif()
 
 target_link_libraries(mfaomp
