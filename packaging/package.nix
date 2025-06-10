@@ -15,7 +15,7 @@ stdenv.mkDerivation (finalAttrs: {
 
   src = fetchFromGitHub {
     owner = "Neurofibromin";
-    repo = finalAttrs.pname;
+    repo = "mfaomp";
     tag = "v${finalAttrs.version}";
     hash = "sha256-b8eIG5UC1i4yfHSStNwhgIttTS+g511RmFJ5OYxeYvM=";
   };
