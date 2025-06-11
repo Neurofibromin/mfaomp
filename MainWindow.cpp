@@ -10,12 +10,9 @@
 #include <QPushButton>
 #include <QSlider>
 #include <QWebEngineProfile>
+#include <QMessageBox>
+#include <QApplication>
 #include "AddVideo.h"
-
-
-const float SPEED_INCREMENT = 0.25f;
-const float MIN_PLAYBACK_SPEED = 0.25f;
-const float MAX_PLAYBACK_SPEED = 2.0f;
 
 MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), mediaPlayers() {
     createWidgets();
@@ -23,6 +20,7 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), mediaPlayers() {
     makeConnections();
     setCentralWidget(centralWidget);
     resize(800, 600);
+    setupMenuBar();
 }
 
 MainWindow::~MainWindow() = default;
@@ -119,13 +117,14 @@ void MainWindow::makeConnections() {
             p->unmute();
     });
 
-    QObject::connect(clearAllButton, &QPushButton::clicked, [&]() {
-        for (auto &p : mediaPlayers) {
-            p->clear();
-        }
-        mediaPlayers.clear();
-        resetUIOnPlayersCleared();
-    });
+    // QObject::connect(clearAllButton, &QPushButton::clicked, [&]() {
+    //     for (auto &p : mediaPlayers) {
+    //         p->clear();
+    //     }
+    //     mediaPlayers.clear();
+    //     resetUIOnPlayersCleared();
+    // });
+    QObject::connect(clearAllButton, &QPushButton::clicked, this, &MainWindow::clearAllVideos);
 
     QObject::connect(increaseSpeedButton, &QPushButton::clicked, [&]() {
         for (auto &p : mediaPlayers) {
@@ -175,6 +174,31 @@ void MainWindow::makeConnections() {
         }
     });
     sliderUpdateTimer->start();
+}
+
+void MainWindow::setupMenuBar() {
+    menuBar = new QMenuBar(this);
+    setMenuBar(menuBar);
+
+    fileMenu = menuBar->addMenu("&File"); // &File creates shortcut
+    openNewVideoAction = new QAction("&Open New Video...", this);
+    fileMenu->addAction(openNewVideoAction);
+    fileMenu->addSeparator();
+    exitAction = new QAction("&Exit", this);
+    fileMenu->addAction(exitAction);
+
+    editMenu = menuBar->addMenu("&Edit");
+    clearAction = new QAction("&Clear All", this);
+    editMenu->addAction(clearAction);
+
+    optionsMenu = menuBar->addMenu("&Options");
+    settingsAction = new QAction("&Settings...", this);
+    optionsMenu->addAction(settingsAction);
+
+    connect(openNewVideoAction, &QAction::triggered, this, &MainWindow::openNewVideo);
+    connect(clearAction, &QAction::triggered, this, &MainWindow::clearAllVideos);
+    connect(settingsAction, &QAction::triggered, this, &MainWindow::openSettings);
+    connect(exitAction, &QAction::triggered, this, &MainWindow::exitApplication);
 }
 
 void MainWindow::applyStyles() {
@@ -258,5 +282,31 @@ void MainWindow::handleBackendChanged(const QString& text) {
         mediaPlayers.at(i)->play();
         std::cout << "setting time to: " << currently_playing[i].second << std::endl;
         mediaPlayers.at(i)->set_time(currently_playing[i].second);
+    }
+}
+
+
+void MainWindow::openNewVideo() {
+    openAndAddVideo(*this, *videoLayout, mediaPlayers);
+}
+
+void MainWindow::clearAllVideos() {
+    for (auto &p : mediaPlayers) {
+        p->clear();
+    }
+    mediaPlayers.clear();
+    resetUIOnPlayersCleared();
+}
+
+void MainWindow::openSettings() {
+    QMessageBox::information(this, "Settings", "TODO");
+}
+
+void MainWindow::exitApplication() {
+    QMessageBox::StandardButton reply;
+    reply = QMessageBox::question(this, "Exit", "Are you sure you want to exit?",
+                                  QMessageBox::Yes | QMessageBox::No);
+    if (reply == QMessageBox::Yes) {
+        qApp->quit();
     }
 }

@@ -1,6 +1,12 @@
 #ifndef MAINWINDOW_H
 #define MAINWINDOW_H
 
+#include <QAction>
+#include <QMenuBar>
+#include <QVector>
+#include <QTimer>
+#include <QPair>
+#include <QMenu>
 #include "DropWidget.h"
 #include "MediaPlayers.h"
 
@@ -17,10 +23,17 @@ private slots:
     void resetUIOnPlayersCleared() const;
     void handleSeekSliderReleased();
     void handleBackendChanged(const QString &text);
+    void openNewVideo();
+    void clearAllVideos();
+    void openSettings();
+    void exitApplication();
 
 private:
     void createWidgets();
     void makeConnections();
+
+    void setupMenuBar();
+
     void applyStyles();
 
     DropWidget *centralWidget = nullptr;
@@ -40,6 +53,20 @@ private:
     QSlider *seekSlider = nullptr;
     QComboBox *backendComboBox = nullptr;
     QVector<MediaPlayerBase*> mediaPlayers;
+
+    // Menu bar components
+    QMenuBar *menuBar;
+    QMenu *fileMenu;
+    QMenu *editMenu; // Consider adding for "Clear" or a separate "Media" menu
+    QMenu *optionsMenu; // Consider adding for "Settings"
+    QAction *openNewVideoAction;
+    QAction *clearAction;
+    QAction *settingsAction;
+    QAction *exitAction;
+
+    const float SPEED_INCREMENT = 0.25f;
+    const float MIN_PLAYBACK_SPEED = 0.25f;
+    const float MAX_PLAYBACK_SPEED = 2.0f;
 };
 
 #endif // MAINWINDOW_H
