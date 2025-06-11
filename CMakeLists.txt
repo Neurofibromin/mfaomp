@@ -65,14 +65,15 @@ else()
 endif()
 
 
-find_package(Qt6 COMPONENTS
+find_package(Qt6 REQUIRED COMPONENTS
         Core
         Gui
         Widgets
         Multimedia
         MultimediaWidgets
         WebEngineWidgets
-        REQUIRED)
+        OPTIONAL_COMPONENTS Test
+)
 
 find_package(PkgConfig REQUIRED)
 pkg_check_modules(LIBVLC REQUIRED libvlc)
@@ -161,6 +162,15 @@ install(FILES "${PROJECT_LICENSE_FILE}"
 )
 
 install(FILES mfaomp.desktop DESTINATION ${CMAKE_INSTALL_DATADIR}/applications)
+
+if (Qt6Test_FOUND)
+    get_target_property(_qt_test_exists Qt6::Test IMPORTED)
+    message(STATUS "Qt6::Test target exists: ${_qt_test_exists}")
+    message(STATUS "Qt6 Test found, enabling 'tests' subdirectory.")
+    add_subdirectory(tests)
+else ()
+    message(STATUS "Qt6 Test not found, skipping 'tests' subdirectory.")
+endif ()
 
 include(CPack)
 set(CPACK_PACKAGE_VENDOR "${PROJECT_COPYRIGHT_HOLDER}")
