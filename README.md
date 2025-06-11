@@ -74,7 +74,7 @@ Backends have differing feature-sets. QMediaPlayer supports rate change, but wil
 ## Aims <a name="aims"/>
 CI/CD
 - [ ] [OpenSuse Build Service](https://build.opensuse.org/package/show/home:Neurofibromin/mfaomp)
-- [ ] Nix
+- [ ] [Nix](https://github.com/NixOS/nixpkgs/pull/414760)
 - [ ] Flathub
 - [ ] Debian
 - [x] [Arch/AUR](https://aur.archlinux.org/packages/mfaomp)
@@ -116,6 +116,7 @@ Features:
 - 0.5: add Nix support
 - 0.5: menu system with settings
 - 0.5: drag-and-drop
+- 0.6: QTests
 - 0.6: CEF backend
 - 0.6: theming, ui-ux design
 - 0.7: sdl-ffmpeg backend
