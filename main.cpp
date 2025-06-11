@@ -35,9 +35,17 @@
 #include <QFont>
 #include <QWebEngineProfile>
 #include "MainWindow.h"
+#include "version.h"
 // #include <vlc/vlc.h> // no longer needed as libvlcpp used instead
 
 int main(int argc, char *argv[]) {
+    for (int i = 1; i < argc; ++i) {
+        std::string arg = argv[i];
+        if (arg == "--version" || arg == "-v") {
+            std::cout << APP_DESCRIPTION << " version " << APP_VERSION << std::endl;
+            return 0;
+        }
+    }
     // Force Qt to use the XCB (X11) platform plugin
     // This will make the application run via XWayland if on a Wayland session.
     // This must be set before QApplication is constructed.
