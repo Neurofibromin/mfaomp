@@ -101,7 +101,7 @@ Features:
 - [x] settings + menu + theming
 - [x] testing setup
 - [ ] plugin system for backends
-- [ ] compile flags for backends 
+- [x] compile flags for backends 
 - [ ] Chromium Embedded Framework (CEF) or
 - [ ] FFmpeg backend
 - [ ] SDL2? backend maybe something like this: https://github.com/fosterseth/sdl2_video_player

@@ -15,27 +15,14 @@
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-#include <algorithm>
 #include <iostream>
 #include <thread>
-#include "AddVideo.h"
 #include "DropWidget.h"
-#include "vlc.hpp" // uses libvlcpp from https://github.com/videolan/libvlcpp
+// #include "vlc.hpp" // uses libvlcpp from https://github.com/videolan/libvlcpp
 #include <QApplication>
-#include <QLabel>
-#include <QMainWindow>
-#include <QPushButton>
-#include <QGridLayout>
-#include <QHBoxLayout>
 #include <QWidget>
-#include <QSlider>
-#include <QFrame>
-#include <QTimer>
-#include <QComboBox>
-#include <QFont>
 #include <QWebEngineSettings>
-#include <QWebEngineView>
-#include <QWidget>
+// #include <QWebEngineView>
 #include <QWebEngineProfile>
 #include "MainWindow.h"
 #include "config.h"
@@ -59,7 +46,7 @@ int main(int argc, char *argv[]) {
     MainWindow w;
     QCoreApplication::setAttribute(Qt::AA_ShareOpenGLContexts);
     QWebEngineProfile::defaultProfile()->settings()->setAttribute(
-        QWebEngineSettings::PlaybackRequiresUserGesture, false);
+            QWebEngineSettings::PlaybackRequiresUserGesture, false);
     w.show();
     return a.exec();
 }

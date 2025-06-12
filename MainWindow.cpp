@@ -9,11 +9,19 @@
 #include <QLabel>
 #include <QPushButton>
 #include <QSlider>
-#include <QWebEngineProfile>
+// #include <QWebEngineProfile>
 #include <QMessageBox>
 #include <QApplication>
 #include "AddVideo.h"
 #include <QStyleFactory>
+#include <QWidget>
+#include <QVBoxLayout>
+#include <QComboBox>
+#include <QStandardItemModel>
+#include <QStandardItem>
+#include <QLabel>
+
+#include "BackendAvailability.h"
 
 MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), mediaPlayers() {
     createWidgets();
@@ -52,10 +60,38 @@ void MainWindow::createWidgets() {
     seekSlider->setPageStep(10);
     seekSlider->setTracking(true);
 
+    //=============
     backendComboBox = new QComboBox(centralWidget);
-    backendComboBox->addItem("VLC Backend");
-    backendComboBox->addItem("QMediaPlayer Backend");
-    backendComboBox->addItem("QWebEngine Backend");
+    // backendComboBox->addItem("VLC Backend");
+    // backendComboBox->addItem("QMediaPlayer Backend");
+    // backendComboBox->addItem("QWebEngine Backend");
+    // Create a QStandardItemModel to manage the items
+    QStandardItemModel *model = new QStandardItemModel();
+
+    // Add "VLC Backend" item
+    QStandardItem *vlcItem = new QStandardItem("VLC Backend");
+    vlcItem->setEnabled(true);
+    if (not mfaomp::BackendAvailability::isVLCAvailableAtRuntime())
+        vlcItem->setEnabled(false);
+    model->appendRow(vlcItem);
+
+    // Add "QMediaPlayer Backend" item
+    QStandardItem *qMediaPlayerItem = new QStandardItem("QMediaPlayer Backend");
+    if (not mfaomp::BackendAvailability::isQtMultimediaAvailableAtRuntime())
+        qMediaPlayerItem->setEnabled(false);
+
+    model->appendRow(qMediaPlayerItem);
+
+    // Add "QWebEngine Backend" item
+    QStandardItem *qWebEngineItem = new QStandardItem("QWebEngine Backend");
+    if (not mfaomp::BackendAvailability::isQtWebEngineAvailableAtRuntime())
+        qWebEngineItem->setEnabled(false);
+    model->appendRow(qWebEngineItem);
+
+    // Set the model to the QComboBox
+    backendComboBox->setModel(model);
+
+    //============
 
     QWidget *buttonContainer = new QWidget(centralWidget);
     QHBoxLayout *buttonLayout = new QHBoxLayout(buttonContainer);
