@@ -85,7 +85,9 @@ add_executable(mfaomp main.cpp
         MediaPlayers.h
         DropWidget.h
         MainWindow.cpp
-        MainWindow.h)
+        MainWindow.h
+        SettingsDialog.cpp
+        SettingsDialog.h)
 
 target_include_directories(mfaomp PRIVATE "${CMAKE_CURRENT_BINARY_DIR}") #needed for version.h inclusion
 

@@ -29,6 +29,7 @@ private slots:
     void openSettings();
     void exitApplication();
     void updatePlaybackSettings(float newSpeedIncrement, float newMinSpeed, float newMaxSpeed);
+    void updateApplicationStyle(const QString& newStyle);
 
 private:
     void createWidgets();

@@ -1,6 +1,9 @@
 #include "SettingsDialog.h"
 
+#include <iostream>
+#include <QApplication>
 #include <QMessageBox>
+#include <qstylefactory.h>
 
 SettingsDialog::SettingsDialog(float speedIncrement, float minSpeed, float maxSpeed, QWidget *parent)
     : QDialog(parent) {
@@ -10,6 +13,15 @@ SettingsDialog::SettingsDialog(float speedIncrement, float minSpeed, float maxSp
     speedIncrementSpinBox = new QDoubleSpinBox(this);
     minPlaybackSpeedSpinBox = new QDoubleSpinBox(this);
     maxPlaybackSpeedSpinBox = new QDoubleSpinBox(this);
+    styleComboBox = new QComboBox(this);
+
+    // QStringList availableStyles = QApplication::styleFactory()->keys();
+    QStringList availableStyles = QStyleFactory::keys();
+    styleComboBox->addItems(availableStyles);
+    // int currentIndex = styleComboBox->findText(currentStyle);
+    // if (currentIndex != -1) {
+    //     styleComboBox->setCurrentIndex(currentIndex);
+    // }
 
     speedIncrementSpinBox->setRange(0.01, 5.0);
     speedIncrementSpinBox->setSingleStep(0.01);
@@ -29,6 +41,7 @@ SettingsDialog::SettingsDialog(float speedIncrement, float minSpeed, float maxSp
     QLabel *speedIncrementLabel = new QLabel("Speed Increment:", this);
     QLabel *minPlaybackSpeedLabel = new QLabel("Min Playback Speed:", this);
     QLabel *maxPlaybackSpeedLabel = new QLabel("Max Playback Speed:", this);
+    QLabel *styleLabel = new QLabel("Application Style:", this);
 
     QPushButton *okButton = new QPushButton("OK", this);
     QPushButton *cancelButton = new QPushButton("Cancel", this);
@@ -37,6 +50,7 @@ SettingsDialog::SettingsDialog(float speedIncrement, float minSpeed, float maxSp
     formLayout->addRow(speedIncrementLabel, speedIncrementSpinBox);
     formLayout->addRow(minPlaybackSpeedLabel, minPlaybackSpeedSpinBox);
     formLayout->addRow(maxPlaybackSpeedLabel, maxPlaybackSpeedSpinBox);
+    formLayout->addRow(styleLabel, styleComboBox);
 
     QHBoxLayout *buttonLayout = new QHBoxLayout();
     buttonLayout->addStretch();
@@ -48,12 +62,12 @@ SettingsDialog::SettingsDialog(float speedIncrement, float minSpeed, float maxSp
     mainLayout->addLayout(formLayout);
     mainLayout->addStretch();
     mainLayout->addLayout(buttonLayout);
-    // should check if minplaybackspeed <= maxplaybackspeed
     connect(okButton, &QPushButton::clicked, this, &SettingsDialog::acceptSettings);
     connect(cancelButton, &QPushButton::clicked, this, &SettingsDialog::reject);
 }
 
 void SettingsDialog::acceptSettings() {
+    std::cout << styleComboBox->currentText().toStdString() << " is the chosen style";
     float minSpeed = minPlaybackSpeedSpinBox->value();
     float maxSpeed = maxPlaybackSpeedSpinBox->value();
     if (minSpeed > maxSpeed) {
@@ -61,5 +75,7 @@ void SettingsDialog::acceptSettings() {
         return;
     }
     emit settingsAccepted(speedIncrementSpinBox->value(), minSpeed, maxSpeed);
+    std::cout << styleComboBox->currentText().toStdString() << " is the chosen style";
+    emit styleAccepted(styleComboBox->currentText());
     accept();
 }

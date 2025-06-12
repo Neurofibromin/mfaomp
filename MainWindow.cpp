@@ -303,6 +303,8 @@ void MainWindow::openSettings() {
     // Connect the signal emitted by the settings dialog to a slot in MainWindow.
     connect(&settingsDialog, &SettingsDialog::settingsAccepted,
             this, &MainWindow::updatePlaybackSettings);
+    connect(&settingsDialog, &SettingsDialog::styleAccepted,
+            this, &MainWindow::updateApplicationStyle);
     settingsDialog.exec();
 }
 
@@ -314,6 +316,13 @@ void MainWindow::updatePlaybackSettings(float newSpeedIncrement, float newMinSpe
              << ", Min=" << MIN_PLAYBACK_SPEED
              << ", Max=" << MAX_PLAYBACK_SPEED;
 }
+
+
+void MainWindow::updateApplicationStyle(const QString& newStyle) {
+    QApplication::setStyle(QStyleFactory::create(newStyle)); // Apply the new style
+    qDebug() << "Application style updated to: " << newStyle;
+}
+
 
 void MainWindow::exitApplication() {
     QMessageBox::StandardButton reply;
