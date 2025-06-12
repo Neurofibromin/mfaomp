@@ -129,6 +129,8 @@ set(MFAOMP_SOURCES
         SettingsDialog.cpp
         SettingsDialog.h
         MediaPlayers.cpp
+        BackendAvailability.cpp
+        BackendAvailability.h
 )
 
 if (HAVE_LIBVLC)

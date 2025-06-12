@@ -1,18 +1,8 @@
-#pragma once
+#ifndef CONFIG_H
+#define CONFIG_H
 #define HAVE_QTMULTIMEDIA @HAVE_QTMULTIMEDIA@
 #define HAVE_LIBVLC @HAVE_LIBVLC@
 #define HAVE_QTWEBENGINE @HAVE_QTWEBENGINE@
 #define APP_VERSION "@PROJECT_VERSION@"
 #define APP_DESCRIPTION "@PROJECT_DESCRIPTION@"
-
-//runtime tests
-bool isVLCAvailable() {
-#ifdef HAVE_LIBVLC
-    libvlc_instance_t* inst = libvlc_new(0, nullptr);
-    if (inst) {
-        libvlc_release(inst);
-        return true;
-    }
-#endif
-    return false;
-}
+#endif //CONFIG_H
