@@ -122,15 +122,14 @@ endif()
 set(MFAOMP_SOURCES
         AddVideo.cpp
         AddVideo.h
-        MediaPlayers.h
+        BackendAvailability.cpp
+        BackendAvailability.h
         DropWidget.h
         MainWindow.cpp
         MainWindow.h
+        MediaPlayers.h
         SettingsDialog.cpp
         SettingsDialog.h
-        MediaPlayers.cpp
-        BackendAvailability.cpp
-        BackendAvailability.h
 )
 
 if (HAVE_LIBVLC)
@@ -141,59 +140,58 @@ if (HAVE_QTMULTIMEDIA)
 endif()
 if (HAVE_QTWEBENGINE)
     list(APPEND MFAOMP_SOURCES MediaPlayerImpls/QWebEngineStruct.h)
-    list(APPEND MFAOMP_SOURCES MediaPlayerImpls/QWebEngineStruct.cpp)
 endif()
 
 add_executable(mfaomp ${MFAOMP_SOURCES} main.cpp)
 
 target_include_directories(mfaomp PRIVATE "${CMAKE_CURRENT_BINARY_DIR}") #needed for version.h inclusion
+if (HAVE_LIBVLC)
+    set(LIBVLCPP_SOURCE_COUNT 0)
+    if (USE_PREDOWNLOADED_LIBVLCPP)
+        math(EXPR LIBVLCPP_SOURCE_COUNT "${LIBVLCPP_SOURCE_COUNT} + 1")
+    endif()
+    if (USE_SYSTEM_PROVIDED_LIBVLCPP)
+        math(EXPR LIBVLCPP_SOURCE_COUNT "${LIBVLCPP_SOURCE_COUNT} + 1")
+    endif()
+    if (USE_FETCHED_LIBVLCPP)
+        math(EXPR LIBVLCPP_SOURCE_COUNT "${LIBVLCPP_SOURCE_COUNT} + 1")
+    endif()
 
-set(LIBVLCPP_SOURCE_COUNT 0)
-if (USE_PREDOWNLOADED_LIBVLCPP)
-    math(EXPR LIBVLCPP_SOURCE_COUNT "${LIBVLCPP_SOURCE_COUNT} + 1")
-endif()
-if (USE_SYSTEM_PROVIDED_LIBVLCPP)
-    math(EXPR LIBVLCPP_SOURCE_COUNT "${LIBVLCPP_SOURCE_COUNT} + 1")
-endif()
-if (USE_FETCHED_LIBVLCPP)
-    math(EXPR LIBVLCPP_SOURCE_COUNT "${LIBVLCPP_SOURCE_COUNT} + 1")
-endif()
+    if (LIBVLCPP_SOURCE_COUNT GREATER 1)
+        message(SEND_ERROR "Please select only one source for libvlcpp (USE_PREDOWNLOADED_LIBVLCPP, USE_SYSTEM_PROVIDED_LIBVLCPP, or USE_FETCHED_LIBVLCPP).")
+    elseif (LIBVLCPP_SOURCE_COUNT EQUAL 0)
+        message(SEND_ERROR "No source for libvlcpp selected. Please enable one of USE_PREDOWNLOADED_LIBVLCPP, USE_SYSTEM_PROVIDED_LIBVLCPP, or USE_FETCHED_LIBVLCPP.")
+    endif()
 
-if (LIBVLCPP_SOURCE_COUNT GREATER 1)
-    message(SEND_ERROR "Please select only one source for libvlcpp (USE_PREDOWNLOADED_LIBVLCPP, USE_SYSTEM_PROVIDED_LIBVLCPP, or USE_FETCHED_LIBVLCPP).")
-elseif (LIBVLCPP_SOURCE_COUNT EQUAL 0)
-    message(SEND_ERROR "No source for libvlcpp selected. Please enable one of USE_PREDOWNLOADED_LIBVLCPP, USE_SYSTEM_PROVIDED_LIBVLCPP, or USE_FETCHED_LIBVLCPP.")
+    if (USE_PREDOWNLOADED_LIBVLCPP)
+        message(STATUS "Using predownloaded libvlcpp, FetchContent disabled")
+        target_include_directories(mfaomp PRIVATE
+                ${LIBVLC_INCLUDE_DIRS}
+                ${CMAKE_CURRENT_SOURCE_DIR}/third_party/libvlcpp/vlcpp
+        )
+    elseif (USE_SYSTEM_PROVIDED_LIBVLCPP)
+        message(STATUS "Using system-provided libvlcpp, FetchContent disabled")
+        target_include_directories(mfaomp PRIVATE
+                ${LIBVLC_INCLUDE_DIRS}
+                ${LIBVLCPP_INCLUDE_DIRS}/vlcpp
+        )
+    elseif (USE_FETCHED_LIBVLCPP)
+        message(STATUS "Fetching libvlcpp with FetchContent")
+        include(FetchContent)
+        FetchContent_Declare(
+                libvlcpp #libvlcpp has no cmakelists, but it's header only so only including from the fetched repo
+                GIT_REPOSITORY https://github.com/videolan/libvlcpp.git
+                GIT_TAG master
+        )
+        FetchContent_MakeAvailable(libvlcpp)
+        target_include_directories(mfaomp PRIVATE
+                ${LIBVLC_INCLUDE_DIRS}
+                ${libvlcpp_SOURCE_DIR}/vlcpp
+        )
+    else ()
+        message(SEND_ERROR "No source of libvlcpp provided!" )
+    endif()
 endif()
-
-if (USE_PREDOWNLOADED_LIBVLCPP)
-    message(STATUS "Using predownloaded libvlcpp, FetchContent disabled")
-    target_include_directories(mfaomp PRIVATE
-            ${LIBVLC_INCLUDE_DIRS}
-            ${CMAKE_CURRENT_SOURCE_DIR}/third_party/libvlcpp/vlcpp
-    )
-elseif (USE_SYSTEM_PROVIDED_LIBVLCPP)
-    message(STATUS "Using system-provided libvlcpp, FetchContent disabled")
-    target_include_directories(mfaomp PRIVATE
-            ${LIBVLC_INCLUDE_DIRS}
-            ${LIBVLCPP_INCLUDE_DIRS}/vlcpp
-    )
-elseif (USE_FETCHED_LIBVLCPP)
-    message(STATUS "Fetching libvlcpp with FetchContent")
-    include(FetchContent)
-    FetchContent_Declare(
-            libvlcpp #libvlcpp has no cmakelists, but it's header only so only including from the fetched repo
-            GIT_REPOSITORY https://github.com/videolan/libvlcpp.git
-            GIT_TAG master
-    )
-    FetchContent_MakeAvailable(libvlcpp)
-    target_include_directories(mfaomp PRIVATE
-            ${LIBVLC_INCLUDE_DIRS}
-            ${libvlcpp_SOURCE_DIR}/vlcpp
-    )
-else ()
-    message(SEND_ERROR "No source of libvlcpp provided!" )
-endif()
-
 set(MFAOMP_LIBRARIES
         Qt::Core
         Qt::Gui
@@ -225,13 +223,13 @@ install(FILES "${PROJECT_LICENSE_FILE}"
 
 install(FILES mfaomp.desktop DESTINATION ${CMAKE_INSTALL_DATADIR}/applications)
 
-if (Qt6Test_FOUND)
+if (Qt6Test_FOUND AND HAVE_QTMULTIMEDIA AND HAVE_QTWEBENGINE AND HAVE_LIBVLC)
     get_target_property(_qt_test_exists Qt6::Test IMPORTED)
     message(STATUS "Qt6::Test target exists: ${_qt_test_exists}")
     message(STATUS "Qt6 Test found, enabling 'tests' subdirectory.")
     add_subdirectory(tests)
 else ()
-    message(STATUS "Qt6 Test not found, skipping 'tests' subdirectory.")
+    message(STATUS "Qt6 Test not found or backends missing, skipping 'tests' subdirectory.")
 endif ()
 
 include(CPack)
