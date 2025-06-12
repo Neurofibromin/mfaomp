@@ -119,7 +119,7 @@ if (ENABLE_QTWEBENGINE)
     endif()
 endif()
 
-add_executable(mfaomp main.cpp
+set(MFAOMP_SOURCES
         AddVideo.cpp
         AddVideo.h
         MediaPlayers.h
@@ -129,10 +129,20 @@ add_executable(mfaomp main.cpp
         SettingsDialog.cpp
         SettingsDialog.h
         MediaPlayers.cpp
-        MediaPlayerImpls/VLCPlayerStruct.h
-        MediaPlayerImpls/QMediaPlayerStruct.h
-        MediaPlayerImpls/QWebEngineStruct.h
-        MediaPlayerImpls/QWebEngineStruct.cpp)
+)
+
+if (HAVE_LIBVLC)
+    list(APPEND MFAOMP_SOURCES MediaPlayerImpls/VLCPlayerStruct.h)
+endif()
+if (HAVE_QTMULTIMEDIA)
+    list(APPEND MFAOMP_SOURCES MediaPlayerImpls/QMediaPlayerStruct.h)
+endif()
+if (HAVE_QTWEBENGINE)
+    list(APPEND MFAOMP_SOURCES MediaPlayerImpls/QWebEngineStruct.h)
+    list(APPEND MFAOMP_SOURCES MediaPlayerImpls/QWebEngineStruct.cpp)
+endif()
+
+add_executable(mfaomp ${MFAOMP_SOURCES} main.cpp)
 
 target_include_directories(mfaomp PRIVATE "${CMAKE_CURRENT_BINARY_DIR}") #needed for version.h inclusion
 
@@ -182,15 +192,24 @@ else ()
     message(SEND_ERROR "No source of libvlcpp provided!" )
 endif()
 
-target_link_libraries(mfaomp
+set(MFAOMP_LIBRARIES
         Qt::Core
         Qt::Gui
         Qt::Widgets
-        Qt::Multimedia
-        Qt::MultimediaWidgets
-        Qt::WebEngineWidgets
-        ${LIBVLC_LIBRARIES}
 )
+
+# Conditionally add backend-specific Qt libraries and VLC library
+if (HAVE_QTMULTIMEDIA)
+    list(APPEND MFAOMP_LIBRARIES Qt::Multimedia Qt::MultimediaWidgets)
+endif()
+if (HAVE_QTWEBENGINE)
+    list(APPEND MFAOMP_LIBRARIES Qt::WebEngineWidgets)
+endif()
+if (HAVE_LIBVLC)
+    list(APPEND MFAOMP_LIBRARIES ${LIBVLC_LIBRARIES})
+endif()
+
+target_link_libraries(mfaomp ${MFAOMP_LIBRARIES})
 
 install(TARGETS mfaomp
         RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}

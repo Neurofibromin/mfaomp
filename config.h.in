@@ -5,8 +5,9 @@
 #define APP_VERSION "@PROJECT_VERSION@"
 #define APP_DESCRIPTION "@PROJECT_DESCRIPTION@"
 
+//runtime tests
 bool isVLCAvailable() {
-#if HAVE_LIBVLC
+#ifdef HAVE_LIBVLC
     libvlc_instance_t* inst = libvlc_new(0, nullptr);
     if (inst) {
         libvlc_release(inst);
