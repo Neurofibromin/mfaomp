@@ -66,6 +66,7 @@ private:
     QAction *clearAction;
     QAction *settingsAction;
     QAction *exitAction;
+    QString currentStyle;
 
     float SPEED_INCREMENT = 0.25f;
     float MIN_PLAYBACK_SPEED = 0.25f;

@@ -5,7 +5,7 @@
 #include <QMessageBox>
 #include <qstylefactory.h>
 
-SettingsDialog::SettingsDialog(float speedIncrement, float minSpeed, float maxSpeed, QWidget *parent)
+SettingsDialog::SettingsDialog(float speedIncrement, float minSpeed, float maxSpeed, const QString& currentStyle, QWidget *parent)
     : QDialog(parent) {
     setWindowTitle("Playback Settings");
     setFixedSize(300, 200);
@@ -18,10 +18,10 @@ SettingsDialog::SettingsDialog(float speedIncrement, float minSpeed, float maxSp
     // QStringList availableStyles = QApplication::styleFactory()->keys();
     QStringList availableStyles = QStyleFactory::keys();
     styleComboBox->addItems(availableStyles);
-    // int currentIndex = styleComboBox->findText(currentStyle);
-    // if (currentIndex != -1) {
-    //     styleComboBox->setCurrentIndex(currentIndex);
-    // }
+    int currentIndex = styleComboBox->findText(currentStyle);
+    if (currentIndex != -1) {
+        styleComboBox->setCurrentIndex(currentIndex);
+    }
 
     speedIncrementSpinBox->setRange(0.01, 5.0);
     speedIncrementSpinBox->setSingleStep(0.01);
@@ -75,7 +75,7 @@ void SettingsDialog::acceptSettings() {
         return;
     }
     emit settingsAccepted(speedIncrementSpinBox->value(), minSpeed, maxSpeed);
-    std::cout << styleComboBox->currentText().toStdString() << " is the chosen style";
+    qDebug() << styleComboBox->currentText() << " is the chosen style";
     emit styleAccepted(styleComboBox->currentText());
     accept();
 }

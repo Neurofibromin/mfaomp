@@ -299,7 +299,7 @@ void MainWindow::clearAllVideos() {
 }
 
 void MainWindow::openSettings() {
-    SettingsDialog settingsDialog(SPEED_INCREMENT, MIN_PLAYBACK_SPEED, MAX_PLAYBACK_SPEED, this);
+    SettingsDialog settingsDialog(SPEED_INCREMENT, MIN_PLAYBACK_SPEED, MAX_PLAYBACK_SPEED,currentStyle,  this);
     // Connect the signal emitted by the settings dialog to a slot in MainWindow.
     connect(&settingsDialog, &SettingsDialog::settingsAccepted,
             this, &MainWindow::updatePlaybackSettings);
@@ -319,6 +319,7 @@ void MainWindow::updatePlaybackSettings(float newSpeedIncrement, float newMinSpe
 
 
 void MainWindow::updateApplicationStyle(const QString& newStyle) {
+    currentStyle = newStyle;
     QApplication::setStyle(QStyleFactory::create(newStyle)); // Apply the new style
     qDebug() << "Application style updated to: " << newStyle;
 }

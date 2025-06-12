@@ -9,12 +9,13 @@
 #include <QHBoxLayout>
 #include <QFormLayout>
 #include <QLabel>
+#include <QDebug>
 
 class SettingsDialog : public QDialog {
     Q_OBJECT
 
 public:
-    explicit SettingsDialog(float speedIncrement, float minSpeed, float maxSpeed, QWidget *parent = nullptr);
+    explicit SettingsDialog(float speedIncrement, float minSpeed, float maxSpeed, const QString& currentStyle, QWidget *parent = nullptr);
 
     signals:
         void settingsAccepted(float newSpeedIncrement, float newMinSpeed, float newMaxSpeed);
