@@ -1,4 +1,0 @@
-// version.h.in
-#pragma once
-#define APP_VERSION "@PROJECT_VERSION@"
-#define APP_DESCRIPTION "@PROJECT_DESCRIPTION@"

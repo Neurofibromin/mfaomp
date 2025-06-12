@@ -35,49 +35,89 @@ set(CMAKE_AUTOMOC ON)
 set(CMAKE_AUTORCC ON)
 set(CMAKE_AUTOUIC ON)
 
+option(ENABLE_QTMULTIMEDIA "Enable Qt Multimedia backend" ON)
+option(ENABLE_LIBVLC "Enable VLC backend" ON)
+option(ENABLE_QTWEBENGINE "Enable Qt WebEngine backend" ON)
+option(USE_VCPKG "Enable vcpkg for qt (not system libraries)" OFF)
+option(USE_PREDOWNLOADED_LIBVLCPP "Use predownloaded libvlcpp (disable FetchContent)" OFF) # needed because Fedora disables build time fetching of dependencies, all sources must be downloaded beforehand
+option(USE_SYSTEM_PROVIDED_LIBVLCPP "Use libvlcpp system package (disable FetchContent, used on NixOS)" OFF) # libvlcpp is available as a package for NixOS
+option(USE_FETCHED_LIBVLCPP "Fetch libvlcpp (enable FetchContent, used by default)" ON)
 configure_file(
-        "${CMAKE_CURRENT_SOURCE_DIR}/version.h.in"
-        "${CMAKE_CURRENT_BINARY_DIR}/version.h"
+        "${CMAKE_CURRENT_SOURCE_DIR}/config.h.in"
+        "${CMAKE_CURRENT_BINARY_DIR}/config.h"
         @ONLY
 )
 
-# VCPKG
 # cmake -B build -S . -DCMAKE_TOOLCHAIN_FILE=<path_to_vcpkg>/scripts/buildsystems/vcpkg.cmake
-if (WIN32)
-    option(USE_VCPKG "Enable vcpkg for qt (not system libraries)" ON)
-    if (NOT DEFINED VCPKG_ROOT)
+if (WIN32 AND USE_VCPKG AND NOT DEFINED VCPKG_ROOT AND NOT DEFINED CMAKE_TOOLCHAIN_FILE)
         set(VCPKG_ROOT "C:/vcpkg")
-    endif ()
-else ()
-    option(USE_VCPKG "Enable vcpkg for qt (not system libraries)" OFF)
 endif()
 if (USE_VCPKG)
-    message(STATUS "Enable vcpkg for Qt")
+    message(STATUS "Enabling vcpkg")
     if (DEFINED CMAKE_TOOLCHAIN_FILE)
     elseif (DEFINED ENV{VCPKG_ROOT})
         set(CMAKE_TOOLCHAIN_FILE "$ENV{VCPKG_ROOT}/scripts/buildsystems/vcpkg.cmake")
+    elseif (DEFINED VCPKG_ROOT)
+        set(CMAKE_TOOLCHAIN_FILE "${VCPKG_ROOT}/scripts/buildsystems/vcpkg.cmake")
     else()
         set(VCPKG_ROOT "$ENV{HOME}/.vcpkg")
         set(CMAKE_TOOLCHAIN_FILE "$ENV{VCPKG_ROOT}/scripts/buildsystems/vcpkg.cmake")
     endif()
-else()
-    message(STATUS "Using system provided Qt")
 endif()
-
 
 find_package(Qt6 REQUIRED COMPONENTS
         Core
         Gui
         Widgets
+        OPTIONAL_COMPONENTS
         Multimedia
         MultimediaWidgets
         WebEngineWidgets
-        OPTIONAL_COMPONENTS Test
+        Test
 )
 
-find_package(PkgConfig REQUIRED)
-pkg_check_modules(LIBVLC REQUIRED libvlc)
-pkg_check_modules(LIBVLCPP libvlcpp QUIET) # try to find libvlcpp system package
+# VLC
+if (ENABLE_LIBVLC)
+    find_package(PkgConfig REQUIRED)
+    pkg_check_modules(LIBVLC libvlc)
+    if (LIBVLC_FOUND)
+        message(STATUS "libVLC backend enabled")
+        set(HAVE_LIBVLC TRUE)
+    else()
+        message(WARNING "libVLC not found; disabling backend")
+        set(HAVE_LIBVLC FALSE)
+    endif()
+    if(USE_SYSTEM_PROVIDED_LIBVLCPP)
+        pkg_check_modules(LIBVLCPP libvlcpp QUIET)
+        if (LIBVLCPP_FOUND)
+            message(STATUS "libvlcpp system package found")
+        else()
+            message(FATAL_ERROR "System provided libvlcpp package not found")
+        endif()
+    endif ()
+endif()
+
+# Qt Multimedia
+if (ENABLE_QTMULTIMEDIA)
+    if (Qt6Multimedia_FOUND AND Qt6MultimediaWidgets_FOUND)
+        message(STATUS "QtMultimedia backend enabled")
+        set(HAVE_QTMULTIMEDIA TRUE)
+    else()
+        message(WARNING "QtMultimedia not found; disabling backend")
+        set(HAVE_QTMULTIMEDIA FALSE)
+    endif()
+endif()
+
+# WebEngine
+if (ENABLE_QTWEBENGINE)
+    if (Qt6WebEngineWidgets_FOUND)
+        message(STATUS "QtWebEngine backend enabled")
+        set(HAVE_QTWEBENGINE TRUE)
+    else()
+        message(WARNING "QtWebEngineWidgets not found; disabling backend")
+        set(HAVE_QTWEBENGINE FALSE)
+    endif()
+endif()
 
 add_executable(mfaomp main.cpp
         AddVideo.cpp
@@ -95,12 +135,6 @@ add_executable(mfaomp main.cpp
         MediaPlayerImpls/QWebEngineStruct.cpp)
 
 target_include_directories(mfaomp PRIVATE "${CMAKE_CURRENT_BINARY_DIR}") #needed for version.h inclusion
-
-# needed because Fedora disables build time fetching of dependencies, all sources must be downloaded beforehand
-option(USE_PREDOWNLOADED_LIBVLCPP "Use predownloaded libvlcpp (disable FetchContent)" OFF)
-# libvlcpp is available as a package for NixOS
-option(USE_SYSTEM_PROVIDED_LIBVLCPP "Use libvlcpp system package (disable FetchContent, used on NixOS)" ${LIBVLCPP_FOUND})
-option(USE_FETCHED_LIBVLCPP "Fetch libvlcpp (enable FetchContent, used by default)" ON)
 
 set(LIBVLCPP_SOURCE_COUNT 0)
 if (USE_PREDOWNLOADED_LIBVLCPP)

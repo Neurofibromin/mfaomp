@@ -35,7 +35,7 @@
 #include <QFont>
 #include <QWebEngineProfile>
 #include "MainWindow.h"
-#include "version.h"
+#include "config.h"
 // #include <vlc/vlc.h> // no longer needed as libvlcpp used instead
 
 int main(int argc, char *argv[]) {

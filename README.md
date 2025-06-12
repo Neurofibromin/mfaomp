@@ -74,7 +74,7 @@ Backends have differing feature-sets. QMediaPlayer supports rate change, but wil
 ## Aims <a name="aims"/>
 CI/CD
 - [ ] [OpenSuse Build Service](https://build.opensuse.org/package/show/home:Neurofibromin/mfaomp)
-- [ ] [Nix](https://github.com/NixOS/nixpkgs/pull/414760)
+- [x] [Nix](https://github.com/NixOS/nixpkgs/pull/414760)
 - [ ] Flathub
 - [ ] Debian
 - [x] [Arch/AUR](https://aur.archlinux.org/packages/mfaomp)
@@ -92,10 +92,16 @@ CI/CD
   - [ ] nsis (only this works with CPack)
   - [ ] wix
 
+  
 Features:
 - [x] QMediaPlayer backend 
 - [x] VLC backend 
 - [x] QtWebEngine backend
+- [x] drag-and-drop
+- [x] settings + menu + theming
+- [x] testing setup
+- [ ] plugin system for backends
+- [ ] compile flags for backends 
 - [ ] Chromium Embedded Framework (CEF) or
 - [ ] FFmpeg backend
 - [ ] SDL2? backend maybe something like this: https://github.com/fosterseth/sdl2_video_player
@@ -118,6 +124,8 @@ Features:
 - 0.6: QTests
 - 0.6: theming, ui-ux design
 - 0.6: CEF backend
+- 0.6: add plugin system for runtime backend detection
+- 0.6: add compile flags for enabling backends
 - 0.7: sdl-ffmpeg backend
 - 0.x: multithreaded approach
 - 0.x: other graphics backends (opengl vulcan directx)
