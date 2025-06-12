@@ -2,6 +2,7 @@
 #define MAINWINDOW_H
 
 #include <QAction>
+#include <QMainWindow>
 #include <QMenuBar>
 #include <QVector>
 #include <QTimer>

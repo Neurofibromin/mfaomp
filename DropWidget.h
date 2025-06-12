@@ -21,6 +21,9 @@ mfaomp - Multiple Files At Once Media Player
 
 #include "AddVideo.h"
 #include "MediaPlayers.h"
+#include <QWidget>
+#include <QDragEnterEvent>
+#include <QMimeData>
 
 class DropWidget : public QWidget {
     Q_OBJECT

@@ -18,8 +18,8 @@
 
 #ifndef ADDVIDEO_H
 #define ADDVIDEO_H
-#include <QtMultimedia>
 #include "MediaPlayers.h"
+#include <QGridLayout>
 
 enum currentBackEnd {
     QMediaPlayerBackEnd,

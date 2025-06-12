@@ -13,6 +13,7 @@
 #include <QMessageBox>
 #include <QApplication>
 #include "AddVideo.h"
+#include <QStyleFactory>
 
 MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), mediaPlayers() {
     createWidgets();

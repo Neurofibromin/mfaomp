@@ -2,6 +2,8 @@
 #define QMEDIAPLAYERSTRUCT_H
 
 #include "../MediaPlayers.h"
+#include <QtMultimedia>
+#include <QtMultimediaWidgets>
 
 struct QMediaPlayerStruct : public MediaPlayerBase {
     QMediaPlayer *mediaPlayer = nullptr;

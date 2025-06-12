@@ -2,6 +2,7 @@
 #define VLCPLAYERSTRUCT_H
 
 #include "../MediaPlayers.h"
+#include "vlc.hpp" // uses libvlcpp from https://github.com/videolan/libvlcpp
 
 struct VLCPlayerStruct : public MediaPlayerBase {
     VLC::Instance *vlcInstance = nullptr;

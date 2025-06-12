@@ -33,6 +33,9 @@
 #include <QTimer>
 #include <QComboBox>
 #include <QFont>
+#include <QWebEngineSettings>
+#include <QWebEngineView>
+#include <QWidget>
 #include <QWebEngineProfile>
 #include "MainWindow.h"
 #include "config.h"
