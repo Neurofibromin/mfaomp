@@ -116,8 +116,8 @@ Features:
 - 0.5: drag-and-drop
 - 0.5: menu system with settings
 - 0.6: QTests
-- 0.6: CEF backend
 - 0.6: theming, ui-ux design
+- 0.6: CEF backend
 - 0.7: sdl-ffmpeg backend
 - 0.x: multithreaded approach
 - 0.x: other graphics backends (opengl vulcan directx)

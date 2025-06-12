@@ -87,7 +87,12 @@ add_executable(mfaomp main.cpp
         MainWindow.cpp
         MainWindow.h
         SettingsDialog.cpp
-        SettingsDialog.h)
+        SettingsDialog.h
+        MediaPlayers.cpp
+        MediaPlayerImpls/VLCPlayerStruct.h
+        MediaPlayerImpls/QMediaPlayerStruct.h
+        MediaPlayerImpls/QWebEngineStruct.h
+        MediaPlayerImpls/QWebEngineStruct.cpp)
 
 target_include_directories(mfaomp PRIVATE "${CMAKE_CURRENT_BINARY_DIR}") #needed for version.h inclusion
 

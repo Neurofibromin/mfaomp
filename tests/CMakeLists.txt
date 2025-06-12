@@ -18,11 +18,29 @@ find_package(Qt6 REQUIRED COMPONENTS
 )
 enable_testing(true)
 
-add_executable(mfaomp_tests tst_mfaomp.cpp)
+set(target_sources
+        AddVideo.cpp
+        AddVideo.h
+        MediaPlayers.h
+        DropWidget.h
+        MainWindow.cpp
+        MainWindow.h
+        SettingsDialog.cpp
+        SettingsDialog.h
+)
+list(TRANSFORM target_sources PREPEND "../")
+
+add_executable(mfaomp_tests
+        tst_mfaomp.cpp
+        ${target_sources}
+        )
+
 
 target_include_directories(mfaomp_tests PRIVATE
         ${CMAKE_SOURCE_DIR}
         ${CMAKE_BINARY_DIR}
+        ${LIBVLC_INCLUDE_DIRS}
+        ${libvlcpp_SOURCE_DIR}/vlcpp # this is very unportable, assumes fetchcontent in root cmakelists
 )
 
 target_link_libraries(mfaomp_tests
@@ -33,9 +51,8 @@ target_link_libraries(mfaomp_tests
         Qt::Multimedia
         Qt::MultimediaWidgets
         Qt::WebEngineWidgets
-#        mfaomp # Target "mfaomp" of type EXECUTABLE may not be linked into another target.
-        #  One may link only to INTERFACE, OBJECT, STATIC or SHARED libraries, or to
-        #  executables with the ENABLE_EXPORTS property set.
+        ${LIBVLC_LIBRARIES}
+        #        mfaomp
 )
 
 add_test(NAME mfaomp_test COMMAND mfaomp_tests)

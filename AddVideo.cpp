@@ -36,6 +36,10 @@
 #include <QtMultimediaWidgets>
 #include <cmath>
 
+#include "MediaPlayerImpls/QMediaPlayerStruct.h"
+#include "MediaPlayerImpls/QWebEngineStruct.h"
+#include "MediaPlayerImpls/VLCPlayerStruct.h"
+
 void openAndAddVideo(QWidget& parent, QGridLayout& layout, QVector<MediaPlayerBase*>& mediaPlayers) {
     QString videoFilter = "Video Files (*.mp4 *.avi *.mkv *.mov *.wmv);;All Files (*)";
     QString defaultDir = QStandardPaths::writableLocation(QStandardPaths::MoviesLocation);
