@@ -42,11 +42,9 @@ option(USE_VCPKG "Enable vcpkg for qt (not system libraries)" OFF)
 option(USE_PREDOWNLOADED_LIBVLCPP "Use predownloaded libvlcpp (disable FetchContent)" OFF) # needed because Fedora disables build time fetching of dependencies, all sources must be downloaded beforehand
 option(USE_SYSTEM_PROVIDED_LIBVLCPP "Use libvlcpp system package (disable FetchContent, used on NixOS)" OFF) # libvlcpp is available as a package for NixOS
 option(USE_FETCHED_LIBVLCPP "Fetch libvlcpp (enable FetchContent, used by default)" ON)
-configure_file(
-        "${CMAKE_CURRENT_SOURCE_DIR}/config.h.in"
-        "${CMAKE_CURRENT_BINARY_DIR}/config.h"
-        @ONLY
-)
+set(HAVE_QTMULTIMEDIA FALSE)
+set(HAVE_LIBVLC FALSE)
+set(HAVE_QTWEBENGINE FALSE)
 
 # cmake -B build -S . -DCMAKE_TOOLCHAIN_FILE=<path_to_vcpkg>/scripts/buildsystems/vcpkg.cmake
 if (WIN32 AND USE_VCPKG AND NOT DEFINED VCPKG_ROOT AND NOT DEFINED CMAKE_TOOLCHAIN_FILE)
@@ -234,6 +232,12 @@ if (Qt6Test_FOUND AND HAVE_QTMULTIMEDIA AND HAVE_QTWEBENGINE AND HAVE_LIBVLC)
 else ()
     message(STATUS "Qt6 Test not found or backends missing, skipping 'tests' subdirectory.")
 endif ()
+
+configure_file(
+        "${CMAKE_CURRENT_SOURCE_DIR}/config.h.in"
+        "${CMAKE_CURRENT_BINARY_DIR}/config.h"
+        @ONLY
+)
 
 include(CPack)
 set(CPACK_PACKAGE_VENDOR "${PROJECT_COPYRIGHT_HOLDER}")

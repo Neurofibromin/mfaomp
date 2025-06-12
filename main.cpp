@@ -18,15 +18,14 @@
 #include <iostream>
 #include <thread>
 #include "DropWidget.h"
-// #include "vlc.hpp" // uses libvlcpp from https://github.com/videolan/libvlcpp
 #include <QApplication>
 #include <QWidget>
+#ifdef HAVE_QTWEBENGINE
 #include <QWebEngineSettings>
-// #include <QWebEngineView>
 #include <QWebEngineProfile>
+#endif
 #include "MainWindow.h"
 #include "config.h"
-// #include <vlc/vlc.h> // no longer needed as libvlcpp used instead
 
 int main(int argc, char *argv[]) {
     for (int i = 1; i < argc; ++i) {
@@ -45,8 +44,10 @@ int main(int argc, char *argv[]) {
     // a.setStyle("windows"); //https://forum.qt.io/topic/127907/where-can-i-find-win95-win2000-stylesheet/4
     MainWindow w;
     QCoreApplication::setAttribute(Qt::AA_ShareOpenGLContexts);
+#ifdef HAVE_QTWEBENGINE
     QWebEngineProfile::defaultProfile()->settings()->setAttribute(
             QWebEngineSettings::PlaybackRequiresUserGesture, false);
+#endif
     w.show();
     return a.exec();
 }
