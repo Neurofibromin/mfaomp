@@ -299,7 +299,20 @@ void MainWindow::clearAllVideos() {
 }
 
 void MainWindow::openSettings() {
-    QMessageBox::information(this, "Settings", "TODO");
+    SettingsDialog settingsDialog(SPEED_INCREMENT, MIN_PLAYBACK_SPEED, MAX_PLAYBACK_SPEED, this);
+    // Connect the signal emitted by the settings dialog to a slot in MainWindow.
+    connect(&settingsDialog, &SettingsDialog::settingsAccepted,
+            this, &MainWindow::updatePlaybackSettings);
+    settingsDialog.exec();
+}
+
+void MainWindow::updatePlaybackSettings(float newSpeedIncrement, float newMinSpeed, float newMaxSpeed) {
+    SPEED_INCREMENT = newSpeedIncrement;
+    MIN_PLAYBACK_SPEED = newMinSpeed;
+    MAX_PLAYBACK_SPEED = newMaxSpeed;
+    qDebug() << "Settings updated: Increment=" << SPEED_INCREMENT
+             << ", Min=" << MIN_PLAYBACK_SPEED
+             << ", Max=" << MAX_PLAYBACK_SPEED;
 }
 
 void MainWindow::exitApplication() {

@@ -9,6 +9,7 @@
 #include <QMenu>
 #include "DropWidget.h"
 #include "MediaPlayers.h"
+#include "SettingsDialog.h"
 
 class MainWindow : public QMainWindow {
     Q_OBJECT
@@ -27,6 +28,7 @@ private slots:
     void clearAllVideos();
     void openSettings();
     void exitApplication();
+    void updatePlaybackSettings(float newSpeedIncrement, float newMinSpeed, float newMaxSpeed);
 
 private:
     void createWidgets();
@@ -57,16 +59,16 @@ private:
     // Menu bar components
     QMenuBar *menuBar;
     QMenu *fileMenu;
-    QMenu *editMenu; // Consider adding for "Clear" or a separate "Media" menu
-    QMenu *optionsMenu; // Consider adding for "Settings"
+    QMenu *editMenu;
+    QMenu *optionsMenu;
     QAction *openNewVideoAction;
     QAction *clearAction;
     QAction *settingsAction;
     QAction *exitAction;
 
-    const float SPEED_INCREMENT = 0.25f;
-    const float MIN_PLAYBACK_SPEED = 0.25f;
-    const float MAX_PLAYBACK_SPEED = 2.0f;
+    float SPEED_INCREMENT = 0.25f;
+    float MIN_PLAYBACK_SPEED = 0.25f;
+    float MAX_PLAYBACK_SPEED = 2.0f;
 };
 
 #endif // MAINWINDOW_H

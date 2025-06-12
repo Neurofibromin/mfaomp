@@ -112,10 +112,9 @@ Features:
 ### Roadmap
 
 - 0.4: qwebengine backend
-- 0.4: add Windows support
 - 0.5: add Nix support
-- 0.5: menu system with settings
 - 0.5: drag-and-drop
+- 0.5: menu system with settings
 - 0.6: QTests
 - 0.6: CEF backend
 - 0.6: theming, ui-ux design
@@ -123,6 +122,7 @@ Features:
 - 0.x: multithreaded approach
 - 0.x: other graphics backends (opengl vulcan directx)
 - 0.x: add c++ modules support
+- 1.0: add Windows support
 - 1.x: work on performance
 - 1.x: self contained build artifacts
 - 1.x: reproducible build artifacts (SBOM)
