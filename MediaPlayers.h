@@ -21,6 +21,8 @@
 
 #include <QDebug>
 #include <QUrl>
+#include <QWidget>
+#include <QGridLayout>
 
 struct MediaPlayerBase {
     QUrl videoUrl;

@@ -20,6 +20,7 @@
 #define ADDVIDEO_H
 #include "MediaPlayers.h"
 #include <QGridLayout>
+#include "config.h"
 
 enum currentBackEnd {
     QMediaPlayerBackEnd,
@@ -54,8 +55,14 @@ private:
 void openAndAddVideo(QWidget& parent, QGridLayout& layout, QVector<MediaPlayerBase*>& mediaPlayers);
 void rearrangeVideoPlayers(QGridLayout& layout, QVector<MediaPlayerBase*>& mediaPlayers);
 void addVideoPlayer(QGridLayout& layout, const QUrl& videoUrl, QVector<MediaPlayerBase*>& mediaPlayers);
+#ifdef HAVE_LIBVLC
 void addVLCVideoPlayer(QGridLayout& layout, const QUrl& videoUrl, QVector<MediaPlayerBase*>& vlcPlayers);
+#endif
+#ifdef HAVE_QTMULTIMEDIA
 void addQMediaPlayer(QGridLayout& layout, const QUrl& videoUrl, QVector<MediaPlayerBase*>& players);
+#endif
+#ifdef HAVE_QTWEBENGINE
 void addQWebEnginePlayer(QGridLayout& layout, const QUrl& videoUrl, QVector<MediaPlayerBase*>& players);
+#endif
 
 #endif //ADDVIDEO_H

@@ -134,12 +134,15 @@ set(MFAOMP_SOURCES
 
 if (HAVE_LIBVLC)
     list(APPEND MFAOMP_SOURCES MediaPlayerImpls/VLCPlayerStruct.h)
+    list(APPEND MFAOMP_SOURCES MediaPlayerImpls/VLCPlayerStruct.cpp)
 endif()
 if (HAVE_QTMULTIMEDIA)
     list(APPEND MFAOMP_SOURCES MediaPlayerImpls/QMediaPlayerStruct.h)
+    list(APPEND MFAOMP_SOURCES MediaPlayerImpls/QMediaPlayerStruct.cpp)
 endif()
 if (HAVE_QTWEBENGINE)
     list(APPEND MFAOMP_SOURCES MediaPlayerImpls/QWebEngineStruct.h)
+    list(APPEND MFAOMP_SOURCES MediaPlayerImpls/QWebEngineStruct.cpp)
 endif()
 
 add_executable(mfaomp ${MFAOMP_SOURCES} main.cpp)
