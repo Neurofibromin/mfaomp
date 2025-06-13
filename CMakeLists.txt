@@ -38,6 +38,7 @@ set(CMAKE_AUTOUIC ON)
 option(ENABLE_QTMULTIMEDIA "Enable Qt Multimedia backend" ON)
 option(ENABLE_LIBVLC "Enable VLC backend" ON)
 option(ENABLE_QTWEBENGINE "Enable Qt WebEngine backend" ON)
+option(ENABLE_CATCH "Enable Catch testing" ON)
 option(USE_VCPKG "Enable vcpkg for qt (not system libraries)" OFF)
 option(USE_PREDOWNLOADED_LIBVLCPP "Use predownloaded libvlcpp (disable FetchContent)" OFF) # needed because Fedora disables build time fetching of dependencies, all sources must be downloaded beforehand
 option(USE_SYSTEM_PROVIDED_LIBVLCPP "Use libvlcpp system package (disable FetchContent, used on NixOS)" OFF) # libvlcpp is available as a package for NixOS
@@ -231,6 +232,11 @@ if (Qt6Test_FOUND AND HAVE_QTMULTIMEDIA AND HAVE_QTWEBENGINE AND HAVE_LIBVLC)
     add_subdirectory(tests)
 else ()
     message(STATUS "Qt6 Test not found or backends missing, skipping 'tests' subdirectory.")
+endif ()
+
+if (HAVE_QTMULTIMEDIA AND HAVE_QTWEBENGINE AND HAVE_LIBVLC AND ENABLE_CATCH)
+    message(STATUS "Catch enabled, enabling 'catchtests' subdirectory.")
+    add_subdirectory(catchtests)
 endif ()
 
 configure_file(

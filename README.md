@@ -83,7 +83,7 @@ CI/CD
 - [ ] chocolatey
 - [x] separate nighly and release workflow
 - [ ] Create Icon for the project
-- [ ] make backends optional dependencies, reflect this in the build files
+- [x] make backends optional dependencies, reflect this in the build files
 - [x] version coherency with a script
 - [ ] add gpg signatures and checksums to CICD pipelines
 - [ ] install wizards
@@ -138,7 +138,7 @@ Features:
 Testing
 - [ ] runtime dependencies
 - [ ] integration tests
-- [ ] catch2 with modules
+- [x] catch2
 
 Bugs:
 

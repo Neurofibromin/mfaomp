@@ -21,22 +21,23 @@ message(STATUS "source dir: " ${CMAKE_SOURCE_DIR})
 set(target_sources ${MFAOMP_SOURCES})
 list(TRANSFORM target_sources PREPEND "../")
 
-add_executable(mfaomp_tests
+add_executable(mfaomp_qtests
         tst_mfaomp.cpp
         ${target_sources}
         )
 
 
-target_include_directories(mfaomp_tests PRIVATE
+target_include_directories(mfaomp_qtests PRIVATE
         ${CMAKE_SOURCE_DIR}
         ${CMAKE_BINARY_DIR}
         ${LIBVLC_INCLUDE_DIRS}
         ${libvlcpp_SOURCE_DIR}/vlcpp # this is very unportable, assumes fetchcontent in root cmakelists
 )
 
-target_link_libraries(mfaomp_tests
+target_link_libraries(mfaomp_qtests
         Qt6::Test
         ${MFAOMP_LIBRARIES}
 )
 
-add_test(NAME mfaomp_test COMMAND mfaomp_tests)
+include(CTest)
+add_test(NAME mfaomp_qtest COMMAND mfaomp_qtests)
