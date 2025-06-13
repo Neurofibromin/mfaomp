@@ -17,17 +17,8 @@ find_package(Qt6 REQUIRED COMPONENTS
         Test
 )
 enable_testing(true)
-
-set(target_sources
-        AddVideo.cpp
-        AddVideo.h
-        MediaPlayers.h
-        DropWidget.h
-        MainWindow.cpp
-        MainWindow.h
-        SettingsDialog.cpp
-        SettingsDialog.h
-)
+message(STATUS "source dir: " ${CMAKE_SOURCE_DIR})
+set(target_sources ${MFAOMP_SOURCES})
 list(TRANSFORM target_sources PREPEND "../")
 
 add_executable(mfaomp_tests
@@ -45,14 +36,7 @@ target_include_directories(mfaomp_tests PRIVATE
 
 target_link_libraries(mfaomp_tests
         Qt6::Test
-        Qt::Core
-        Qt::Gui
-        Qt::Widgets
-        Qt::Multimedia
-        Qt::MultimediaWidgets
-        Qt::WebEngineWidgets
-        ${LIBVLC_LIBRARIES}
-        #        mfaomp
+        ${MFAOMP_LIBRARIES}
 )
 
 add_test(NAME mfaomp_test COMMAND mfaomp_tests)

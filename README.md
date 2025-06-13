@@ -117,32 +117,31 @@ Features:
 
 ### Roadmap
 
-- 0.4: qwebengine backend
-- 0.5: add Nix support
-- 0.5: drag-and-drop
-- 0.5: menu system with settings
-- 0.6: QTests
-- 0.6: theming, ui-ux design
+- [x] 0.4: qwebengine backend
+- [x] 0.5: add Nix support
+- [x] 0.5: drag-and-drop
+- [x] 0.5: menu system with settings
+- [x] 0.6: QTests
+- [x] 0.6: theming, ui-ux design
+- [x] 0.6: add Windows support
+- [x] 0.6: add compile flags for enabling backends
 - 0.6: CEF backend
 - 0.6: add plugin system for runtime backend detection
-- 0.6: add compile flags for enabling backends
 - 0.7: sdl-ffmpeg backend
 - 0.x: multithreaded approach
 - 0.x: other graphics backends (opengl vulcan directx)
 - 0.x: add c++ modules support
-- 1.0: add Windows support
 - 1.x: work on performance
 - 1.x: self contained build artifacts
 - 1.x: reproducible build artifacts (SBOM)
 
 Testing
-- [ ] testing packaging, esp. runtime dependencies
+- [ ] runtime dependencies
+- [ ] integration tests
+- [ ] catch2 with modules
 
 Bugs:
-- [ ] QTWebEngine not compiled with proprietary codecs => no playing some codecs
-- [x] QTWebEngine not initialized before play() is called, so autoplay fails
-- [x] QTWebEngine -> something else time get doesn't work
-- [x] something else -> QTWebEngine time set doesn't work
+
 
 ### Signatures, hashes and integrity checks <a name="signatures-hashes-and-integrity-checks"/>
 
