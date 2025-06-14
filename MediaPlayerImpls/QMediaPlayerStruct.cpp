@@ -1,5 +1,8 @@
 #include "QMediaPlayerStruct.h"
 
+#include <QtMultimedia>
+#include <QtMultimediaWidgets>
+
 //forward declaration
 void rearrangeVideoPlayers(QGridLayout& layout, QVector<MediaPlayerBase*>& mediaPlayers);
 

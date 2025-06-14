@@ -22,6 +22,7 @@
 #include <QLabel>
 
 #include "BackendAvailability.h"
+#include "CurrentBackEndStatusSingleton.h"
 
 MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), mediaPlayers() {
     createWidgets();

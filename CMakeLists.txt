@@ -129,6 +129,9 @@ set(MFAOMP_SOURCES
         MediaPlayers.h
         SettingsDialog.cpp
         SettingsDialog.h
+        MediaPlayerImpls/PlayerFactory.cpp
+        MediaPlayerImpls/PlayerFactory.h
+        MediaPlayerImpls/CurrentBackEndStatusSingleton.h
 )
 
 if (HAVE_LIBVLC)
@@ -146,7 +149,11 @@ endif()
 
 add_executable(mfaomp ${MFAOMP_SOURCES} main.cpp)
 
-target_include_directories(mfaomp PRIVATE "${CMAKE_CURRENT_BINARY_DIR}") #needed for version.h inclusion
+target_include_directories(mfaomp PRIVATE
+        "${CMAKE_CURRENT_BINARY_DIR}" #needed for version.h inclusion
+        "${CMAKE_CURRENT_SOURCE_DIR}"
+        "MediaPlayerImpls"
+)
 if (HAVE_LIBVLC)
     set(LIBVLCPP_SOURCE_COUNT 0)
     if (USE_PREDOWNLOADED_LIBVLCPP)

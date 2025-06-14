@@ -26,19 +26,8 @@
 #include <QtGlobal>
 #include <iostream>
 #include <cmath>
-#include "config.h"
+#include "PlayerFactory.h"
 
-
-#ifdef HAVE_LIBVLC
-#include "MediaPlayerImpls/VLCPlayerStruct.h"
-#include "vlc.hpp" // uses libvlcpp from https://github.com/videolan/libvlcpp
-#endif
-#ifdef HAVE_QTMULTIMEDIA
-#include "MediaPlayerImpls/QMediaPlayerStruct.h"
-#endif
-#ifdef HAVE_QTWEBENGINE
-#include "MediaPlayerImpls/QWebEngineStruct.h"
-#endif
 
 void openAndAddVideo(QWidget& parent, QGridLayout& layout, QVector<MediaPlayerBase*>& mediaPlayers) {
     QString videoFilter = "Video Files (*.mp4 *.avi *.mkv *.mov *.wmv);;All Files (*)";
@@ -77,21 +66,8 @@ void rearrangeVideoPlayers(QGridLayout& layout, QVector<MediaPlayerBase*>& media
 
 void addVideoPlayer(QGridLayout& layout, const QUrl& videoUrl, QVector<MediaPlayerBase*>& mediaPlayers) {
     qDebug() << "adding video: " << videoUrl;
-    switch (CurrentBackEndStatusSingleton::getInstance().getCurrentBackEnd()) {
-#ifdef HAVE_LIBVLC
-        case VLCPlayerBackEnd:
-            addVLCVideoPlayer(layout, videoUrl, mediaPlayers);
-            break;
-#endif
-#ifdef HAVE_QTMULTIMEDIA
-        case QMediaPlayerBackEnd:
-            addQMediaPlayer(layout, videoUrl, mediaPlayers);
-            break;
-#endif
-#ifdef HAVE_QTWEBENGINE
-        case QWebEngineBackEnd:
-            addQWebEnginePlayer(layout, videoUrl, mediaPlayers);
-            break;
-#endif
-    }
+    MediaPlayerBase * video_added = PlayerFactory::createPlayer(videoUrl);
+    video_added->play();
+    mediaPlayers.append(video_added);
+    rearrangeVideoPlayers(layout, mediaPlayers);
 }

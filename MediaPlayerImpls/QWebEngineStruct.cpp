@@ -1,4 +1,11 @@
 #include "QWebEngineStruct.h"
+#include <QWebEngineView>
+#include <QWebEngineSettings>
+#include <QWebEngineView>
+#include <QWidget>
+#include <QEventLoop>
+#include <QGridLayout>
+#include <QTimer>
 
 //forward declaration
 void rearrangeVideoPlayers(QGridLayout& layout, QVector<MediaPlayerBase*>& mediaPlayers);

@@ -22,47 +22,8 @@
 #include <QGridLayout>
 #include "config.h"
 
-enum currentBackEnd {
-    QMediaPlayerBackEnd,
-    VLCPlayerBackEnd,
-    QWebEngineBackEnd
-};
-
-// Probably not best practice
-// Singleton class to store the current backend status
-class CurrentBackEndStatusSingleton {
-public:
-    static CurrentBackEndStatusSingleton& getInstance() {
-        static CurrentBackEndStatusSingleton instance;
-        return instance;
-    }
-    void setCurrentBackEnd(currentBackEnd backend) {
-        currentBackend_ = backend;
-    }
-    currentBackEnd getCurrentBackEnd() const {
-        return currentBackend_;
-    }
-private:
-    CurrentBackEndStatusSingleton() : currentBackend_(VLCPlayerBackEnd) {}
-    CurrentBackEndStatusSingleton(const CurrentBackEndStatusSingleton&) = delete;
-    CurrentBackEndStatusSingleton& operator=(const CurrentBackEndStatusSingleton&) = delete;
-    currentBackEnd currentBackend_;
-};
-
-
-
-
 void openAndAddVideo(QWidget& parent, QGridLayout& layout, QVector<MediaPlayerBase*>& mediaPlayers);
 void rearrangeVideoPlayers(QGridLayout& layout, QVector<MediaPlayerBase*>& mediaPlayers);
 void addVideoPlayer(QGridLayout& layout, const QUrl& videoUrl, QVector<MediaPlayerBase*>& mediaPlayers);
-#ifdef HAVE_LIBVLC
-void addVLCVideoPlayer(QGridLayout& layout, const QUrl& videoUrl, QVector<MediaPlayerBase*>& vlcPlayers);
-#endif
-#ifdef HAVE_QTMULTIMEDIA
-void addQMediaPlayer(QGridLayout& layout, const QUrl& videoUrl, QVector<MediaPlayerBase*>& players);
-#endif
-#ifdef HAVE_QTWEBENGINE
-void addQWebEnginePlayer(QGridLayout& layout, const QUrl& videoUrl, QVector<MediaPlayerBase*>& players);
-#endif
 
 #endif //ADDVIDEO_H

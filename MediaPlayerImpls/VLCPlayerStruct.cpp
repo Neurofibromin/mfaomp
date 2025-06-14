@@ -1,5 +1,5 @@
 #include "VLCPlayerStruct.h"
-
+#include "vlc.hpp"
 //forward declaration
 void rearrangeVideoPlayers(QGridLayout& layout, QVector<MediaPlayerBase*>& mediaPlayers);
 

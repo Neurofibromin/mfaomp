@@ -1,13 +1,8 @@
 #ifndef QWEBENGINESTRUCT_H
 #define QWEBENGINESTRUCT_H
-#include <QWebEngineView>
-#include <QWebEngineSettings>
-#include <QWebEngineView>
-#include <QWidget>
 #include "../MediaPlayers.h"
-#include <QEventLoop>
-#include <QGridLayout>
-#include <QTimer>
+
+class QWebEngineView;
 
 struct QWebEngineStruct : public MediaPlayerBase {
     QWebEngineView *webView = nullptr;
