@@ -20,7 +20,6 @@ mfaomp - Multiple Files At Once Media Player
 #define DROPWIDGET_H
 
 #include "AddVideo.h"
-#include "MediaPlayers.h"
 #include <QWidget>
 #include <QDragEnterEvent>
 #include <QMimeData>

@@ -17,15 +17,15 @@
  */
 
 #include "AddVideo.h"
+#include <cmath>
+#include <iostream>
 #include <QDebug>
+#include <QFile>
 #include <QFileDialog>
 #include <QGridLayout>
 #include <QStandardPaths>
-#include <QUrl>
-#include <QFile>
 #include <QtGlobal>
-#include <iostream>
-#include <cmath>
+#include <QUrl>
 #include "PlayerFactory.h"
 
 

@@ -3,9 +3,6 @@
 #include <QtMultimedia>
 #include <QtMultimediaWidgets>
 
-//forward declaration
-void rearrangeVideoPlayers(QGridLayout& layout, QVector<MediaPlayerBase*>& mediaPlayers);
-
 QMediaPlayerStruct::QMediaPlayerStruct(const QUrl& videoUrl): MediaPlayerBase(videoUrl) {
     videoWidget = new QVideoWidget();
     videoWidget->setStyleSheet("background-color: black;");
@@ -74,17 +71,4 @@ QMediaPlayerStruct::~QMediaPlayerStruct() {
 
 QWidget * QMediaPlayerStruct::getVideoWidget() {
     return videoWidget;
-}
-
-void addQMediaPlayer(QGridLayout& layout, const QUrl& videoUrl, QVector<MediaPlayerBase*>& players) {
-    QMediaPlayerStruct* player = new QMediaPlayerStruct(videoUrl);
-    player->mediaPlayer->play();
-
-    // Connect error signals for debugging
-    QObject::connect(player->mediaPlayer, &QMediaPlayer::errorOccurred,
-                     [](QMediaPlayer::Error error, const QString &errorString){
-        qWarning() << "QMediaPlayer Error:" << error << "-" << errorString;
-    });
-    players.append(player);
-    rearrangeVideoPlayers(layout, players);
 }

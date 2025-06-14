@@ -19,10 +19,8 @@
 #ifndef MEDIAPLAYERS_H
 #define MEDIAPLAYERS_H
 
-#include <QDebug>
 #include <QUrl>
 #include <QWidget>
-#include <QGridLayout>
 
 struct MediaPlayerBase {
     QUrl videoUrl;

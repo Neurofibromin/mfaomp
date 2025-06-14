@@ -4,12 +4,6 @@
 #include <QComboBox>
 #include <QDialog>
 #include <QDoubleSpinBox>
-#include <QPushButton>
-#include <QVBoxLayout>
-#include <QHBoxLayout>
-#include <QFormLayout>
-#include <QLabel>
-#include <QDebug>
 
 class SettingsDialog : public QDialog {
     Q_OBJECT

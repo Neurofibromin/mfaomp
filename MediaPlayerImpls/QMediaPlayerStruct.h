@@ -36,7 +36,4 @@ struct QMediaPlayerStruct : public MediaPlayerBase {
     QWidget* getVideoWidget() override;
 };
 
-
-void addQMediaPlayer(QGridLayout& layout, const QUrl& videoUrl, QVector<MediaPlayerBase*>& players);
-
 #endif //QMEDIAPLAYERSTRUCT_H

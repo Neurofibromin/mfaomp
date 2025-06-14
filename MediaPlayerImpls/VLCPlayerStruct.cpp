@@ -1,7 +1,5 @@
 #include "VLCPlayerStruct.h"
 #include "vlc.hpp"
-//forward declaration
-void rearrangeVideoPlayers(QGridLayout& layout, QVector<MediaPlayerBase*>& mediaPlayers);
 
 VLCPlayerStruct::VLCPlayerStruct(const QUrl& videoUrl): MediaPlayerBase(videoUrl) {
     vlcInstance = new VLC::Instance(0, nullptr);
@@ -77,14 +75,4 @@ VLCPlayerStruct::~VLCPlayerStruct() {
 
 QWidget * VLCPlayerStruct::getVideoWidget() {
     return videoWidget;
-}
-
-void addVLCVideoPlayer(QGridLayout& layout, const QUrl& videoUrl, QVector<MediaPlayerBase*>& vlcPlayers) {
-    VLCPlayerStruct* player = new VLCPlayerStruct(videoUrl);
-    player->mediaPlayer->play();
-    if (!player->mediaPlayer->isPlaying()) {
-        qWarning("Failed to start VLC playback.");
-    }
-    vlcPlayers.append(player);
-    rearrangeVideoPlayers(layout, vlcPlayers);
 }

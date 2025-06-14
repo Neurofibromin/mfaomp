@@ -1,14 +1,10 @@
 #include "QWebEngineStruct.h"
-#include <QWebEngineView>
 #include <QWebEngineSettings>
 #include <QWebEngineView>
 #include <QWidget>
-#include <QEventLoop>
 #include <QGridLayout>
 #include <QTimer>
 
-//forward declaration
-void rearrangeVideoPlayers(QGridLayout& layout, QVector<MediaPlayerBase*>& mediaPlayers);
 
 QWebEngineStruct::QWebEngineStruct(const QUrl& videoUrl): MediaPlayerBase(videoUrl) {
     webView = new QWebEngineView();
@@ -273,14 +269,4 @@ QString QWebEngineStruct::generateHtmlContent(const QUrl& videoUrl) {
             </html>
         )").arg(videoUrl.toString());
          */
-}
-
-void addQWebEnginePlayer(QGridLayout &layout, const QUrl &videoUrl, QVector<MediaPlayerBase *> &players) {
-    // The Mediaplayers can be embedded in a single web page or multiple webrenderer instances.
-    // implementation will be more similar of multiple instances are created because other MediaPlayerDerived implementations
-    // are independent between videos - potentially multiple videos could be playing with different backends at once potentially
-    QWebEngineStruct* player = new QWebEngineStruct(videoUrl);
-    player->play();
-    players.append(player);
-    rearrangeVideoPlayers(layout, players);
 }

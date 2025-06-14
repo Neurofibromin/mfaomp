@@ -20,7 +20,6 @@
 #define ADDVIDEO_H
 #include "MediaPlayers.h"
 #include <QGridLayout>
-#include "config.h"
 
 void openAndAddVideo(QWidget& parent, QGridLayout& layout, QVector<MediaPlayerBase*>& mediaPlayers);
 void rearrangeVideoPlayers(QGridLayout& layout, QVector<MediaPlayerBase*>& mediaPlayers);

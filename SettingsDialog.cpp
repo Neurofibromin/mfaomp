@@ -2,8 +2,11 @@
 
 #include <iostream>
 #include <QApplication>
+#include <QFormLayout>
 #include <QMessageBox>
-#include <qstylefactory.h>
+#include <QPushButton>
+#include <QLabel>
+#include <QStyleFactory>
 
 SettingsDialog::SettingsDialog(float speedIncrement, float minSpeed, float maxSpeed, const QString& currentStyle, QWidget *parent)
     : QDialog(parent) {

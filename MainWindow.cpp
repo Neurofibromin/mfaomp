@@ -1,5 +1,6 @@
 #include "MainWindow.h"
 #include <iostream>
+#include <QApplication>
 #include <QComboBox>
 #include <QDebug>
 #include <QFont>
@@ -7,19 +8,13 @@
 #include <QGridLayout>
 #include <QHBoxLayout>
 #include <QLabel>
+#include <QMessageBox>
 #include <QPushButton>
 #include <QSlider>
-// #include <QWebEngineProfile>
-#include <QMessageBox>
-#include <QApplication>
-#include "AddVideo.h"
+#include <QStandardItemModel>
 #include <QStyleFactory>
 #include <QWidget>
-#include <QVBoxLayout>
-#include <QComboBox>
-#include <QStandardItemModel>
-#include <QStandardItem>
-#include <QLabel>
+#include "AddVideo.h"
 
 #include "BackendAvailability.h"
 #include "CurrentBackEndStatusSingleton.h"
@@ -155,13 +150,6 @@ void MainWindow::makeConnections() {
             p->unmute();
     });
 
-    // QObject::connect(clearAllButton, &QPushButton::clicked, [&]() {
-    //     for (auto &p : mediaPlayers) {
-    //         p->clear();
-    //     }
-    //     mediaPlayers.clear();
-    //     resetUIOnPlayersCleared();
-    // });
     QObject::connect(clearAllButton, &QPushButton::clicked, this, &MainWindow::clearAllVideos);
 
     QObject::connect(increaseSpeedButton, &QPushButton::clicked, [&]() {
@@ -322,7 +310,6 @@ void MainWindow::handleBackendChanged(const QString& text) {
         mediaPlayers.at(i)->set_time(currently_playing[i].second);
     }
 }
-
 
 void MainWindow::openNewVideo() {
     openAndAddVideo(*this, *videoLayout, mediaPlayers);

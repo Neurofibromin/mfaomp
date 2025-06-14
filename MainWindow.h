@@ -1,13 +1,11 @@
 #ifndef MAINWINDOW_H
 #define MAINWINDOW_H
 
-#include <QAction>
+#include <QLabel>
 #include <QMainWindow>
 #include <QMenuBar>
-#include <QVector>
 #include <QTimer>
-#include <QPair>
-#include <QMenu>
+#include <QVector>
 #include "DropWidget.h"
 #include "MediaPlayers.h"
 #include "SettingsDialog.h"
