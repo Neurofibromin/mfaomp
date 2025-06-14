@@ -37,6 +37,7 @@ struct MediaPlayerBase {
     virtual int64_t time() = 0;
     virtual void set_time(int64_t time) = 0;
     virtual float duration() = 0;
+    virtual QWidget* getVideoWidget() = 0;
 };
 
 #endif //MEDIAPLAYERS_H

@@ -39,11 +39,15 @@ int main(int argc, char *argv[]) {
     // This will make the application run via XWayland if on a Wayland session.
     // This must be set before QApplication is constructed.
     // Must be used until VLC supports embedding in native wayland windows: https://code.videolan.org/videolan/vlc/-/issues/16106
+#ifdef linux
     qputenv("QT_QPA_PLATFORM", "xcb");
+#endif
     QApplication a(argc, argv);
     // a.setStyle("windows"); //https://forum.qt.io/topic/127907/where-can-i-find-win95-win2000-stylesheet/4
     MainWindow w;
-    QCoreApplication::setAttribute(Qt::AA_ShareOpenGLContexts);
+#ifdef linux
+    // QCoreApplication::setAttribute(Qt::AA_ShareOpenGLContexts);
+#endif
 #ifdef HAVE_QTWEBENGINE
     QWebEngineProfile::defaultProfile()->settings()->setAttribute(
             QWebEngineSettings::PlaybackRequiresUserGesture, false);

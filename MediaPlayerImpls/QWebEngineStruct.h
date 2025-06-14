@@ -42,6 +42,8 @@ struct QWebEngineStruct : public MediaPlayerBase {
     float duration() override;
 
     ~QWebEngineStruct() override;
+
+    QWidget* getVideoWidget() override;
 };
 
 void addQWebEnginePlayer(QGridLayout &layout, const QUrl &videoUrl, QVector<MediaPlayerBase *> &players);

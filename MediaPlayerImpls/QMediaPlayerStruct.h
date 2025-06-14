@@ -31,6 +31,8 @@ struct QMediaPlayerStruct : public MediaPlayerBase {
     float duration() override;
 
     ~QMediaPlayerStruct() override;
+
+    QWidget* getVideoWidget() override;
 };
 
 

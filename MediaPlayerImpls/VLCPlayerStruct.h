@@ -30,6 +30,8 @@ struct VLCPlayerStruct : public MediaPlayerBase {
     float duration() override;
 
     ~VLCPlayerStruct() override;
+
+    QWidget* getVideoWidget() override;
 };
 
 void addVLCVideoPlayer(QGridLayout& layout, const QUrl& videoUrl, QVector<MediaPlayerBase*>& vlcPlayers);

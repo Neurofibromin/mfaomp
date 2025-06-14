@@ -56,56 +56,27 @@ void openAndAddVideo(QWidget& parent, QGridLayout& layout, QVector<MediaPlayerBa
 void rearrangeVideoPlayers(QGridLayout& layout, QVector<MediaPlayerBase*>& mediaPlayers) {
     for (int i = layout.count() - 1; i >= 0; --i) {
         QLayoutItem *item = layout.takeAt(i);
-        if (QWidget *widget = item->widget()) {
-            // not deleting the widget here, as it's owned by mediaPlayers.
-            layout.removeWidget(widget);
-        }
         delete item;
     }
     // Calculate (new) grid size
     int totalPlayers = mediaPlayers.length();
-    int numCols = static_cast<int>(std::ceil(std::sqrt(totalPlayers)));
+    int numCols = static_cast<int>(std::ceil(std::sqrt(totalPlayers))); // try to make the layout approx square
     numCols = std::max(1, numCols); // Ensure at least 1 column
 
     for (int i = 0; i < totalPlayers; ++i) {
         int row = i / numCols;
         int col = i % numCols;
-
-#ifdef HAVE_LIBVLC
-        VLCPlayerStruct * player2;
-#endif
-#ifdef HAVE_QTMULTIMEDIA
-        QMediaPlayerStruct* player;
-#endif
-#ifdef HAVE_QTWEBENGINE
-        QWebEngineStruct * player3;
-#endif
-        switch (CurrentBackEndStatusSingleton::getInstance().getCurrentBackEnd()) {
-            // maybe like this:
-            // layout.addWidget(mediaPlayers[i]->videoWidget, row, col);
-#ifdef HAVE_LIBVLC
-            case VLCPlayerBackEnd:
-                player2 = dynamic_cast<VLCPlayerStruct *> (mediaPlayers[i]);
-                layout.addWidget(player2->videoWidget, row, col);
-                break;
-#endif
-#ifdef HAVE_QTMULTIMEDIA
-            case QMediaPlayerBackEnd:
-                player = dynamic_cast<QMediaPlayerStruct *>( mediaPlayers[i]);
-                layout.addWidget(player->videoWidget, row, col);
-                break;
-#endif
-#ifdef HAVE_QTWEBENGINE
-            case QWebEngineBackEnd:
-                player3 = dynamic_cast<QWebEngineStruct *> (mediaPlayers[i]);
-                layout.addWidget(player3->webView, row, col);
-                break;
-#endif
+        QWidget* videoWidget = mediaPlayers[i]->getVideoWidget();
+        if (videoWidget) {
+            layout.addWidget(videoWidget, row, col);
+        } else {
+            qWarning() << "MediaPlayerBase at index " << i << " returned a null video widget.";
         }
     }
 }
 
 void addVideoPlayer(QGridLayout& layout, const QUrl& videoUrl, QVector<MediaPlayerBase*>& mediaPlayers) {
+    qDebug() << "adding video: " << videoUrl;
     switch (CurrentBackEndStatusSingleton::getInstance().getCurrentBackEnd()) {
 #ifdef HAVE_LIBVLC
         case VLCPlayerBackEnd:

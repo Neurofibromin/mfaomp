@@ -75,6 +75,10 @@ VLCPlayerStruct::~VLCPlayerStruct() {
     VLCPlayerStruct::clear();
 }
 
+QWidget * VLCPlayerStruct::getVideoWidget() {
+    return videoWidget;
+}
+
 void addVLCVideoPlayer(QGridLayout& layout, const QUrl& videoUrl, QVector<MediaPlayerBase*>& vlcPlayers) {
     VLCPlayerStruct* player = new VLCPlayerStruct(videoUrl);
     player->mediaPlayer->play();

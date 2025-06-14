@@ -194,6 +194,10 @@ QWebEngineStruct::~QWebEngineStruct() {
     QWebEngineStruct::clear();
 }
 
+QWidget * QWebEngineStruct::getVideoWidget() {
+    return webView;
+}
+
 QString QWebEngineStruct::generateHtmlContent(const QUrl& videoUrl) {
     return QString(R"(
             <!DOCTYPE html>

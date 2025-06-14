@@ -69,6 +69,10 @@ QMediaPlayerStruct::~QMediaPlayerStruct() {
     QMediaPlayerStruct::clear();
 }
 
+QWidget * QMediaPlayerStruct::getVideoWidget() {
+    return videoWidget;
+}
+
 void addQMediaPlayer(QGridLayout& layout, const QUrl& videoUrl, QVector<MediaPlayerBase*>& players) {
     QMediaPlayerStruct* player = new QMediaPlayerStruct(videoUrl);
     player->mediaPlayer->play();
