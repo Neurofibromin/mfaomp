@@ -17,7 +17,7 @@ jobs:
         with:
           host:         windows
           target:       desktop
-          modules:      qtwebengine, addons.qtmultimedia
+          modules:      qtmultimedia
 
       - name: "List all files"
         run: |
