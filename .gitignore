@@ -28,6 +28,7 @@ $tf/
 *.appxbundle
 *.appxupload
 *.aps
+*.avi
 *.azurePubxml
 *.bim.layout
 *.bim_*.settings

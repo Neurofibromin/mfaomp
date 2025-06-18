@@ -21,8 +21,14 @@
 
 #include "MediaPlayers.h"
 
-namespace PlayerFactory {
-    MediaPlayerBase* createPlayer(const QUrl& videoUrl);
-}
+using CreatePlayerFuncPtrType = MediaPlayerBase* (*)(const QUrl&);
+
+class PlayerFactory {
+public:
+    static CreatePlayerFuncPtrType CreatorInstance;
+    static MediaPlayerBase* createPlayer(const QUrl& videoUrl);
+private:
+    static MediaPlayerBase* defaultRealCreatePlayer(const QUrl& url);
+};
 
 #endif // PLAYERFACTORY_H

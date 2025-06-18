@@ -20,11 +20,29 @@
 #define ADDVIDEO_H
 #include "MediaPlayers.h"
 #include <QGridLayout>
+#include <functional>
+#include <QFileDialog>
+#include "PlayerFactory.h"
 
-void openAndAddVideo(QWidget& parent, QGridLayout& layout, QVector<MediaPlayerBase *>& mediaPlayers);
+// Signature for the file dialog function
+using GetOpenFileUrlsFuncType = std::function<QList<QUrl>(
+    QWidget* parent,
+    const QString& caption,
+    const QUrl& dir,
+    const QString& filter,
+    QString* selectedFilter,
+    QFileDialog::Options options,
+    const QStringList& supportedSchemes
+)>;
+
+void openAndAddVideo(QWidget& parentWidget,
+                     QGridLayout& layout,
+                     QVector<MediaPlayerBase*>& mediaPlayers,
+                     GetOpenFileUrlsFuncType getUrlsFunc = QFileDialog::getOpenFileUrls,
+                     CreatePlayerFuncPtrType createPlayerFunc = PlayerFactory::createPlayer);
 
 void rearrangeVideoPlayers(QGridLayout& layout, QVector<MediaPlayerBase *>& mediaPlayers);
 
-void addVideoPlayer(QGridLayout& layout, const QUrl& videoUrl, QVector<MediaPlayerBase *>& mediaPlayers);
+void addVideoPlayer(QGridLayout& layout, const QUrl& videoUrl, QVector<MediaPlayerBase *>& mediaPlayers, CreatePlayerFuncPtrType createPlayerFunc = PlayerFactory::createPlayer);
 
 #endif //ADDVIDEO_H

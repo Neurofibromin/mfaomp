@@ -29,17 +29,29 @@
 #include <QUrl>
 #include "PlayerFactory.h"
 
-
-void openAndAddVideo(QWidget& parent, QGridLayout& layout, QVector<MediaPlayerBase *>& mediaPlayers) {
+//allow for dependency injection of getUrlsFunc
+void openAndAddVideo(QWidget& parent,
+                     QGridLayout& layout,
+                     QVector<MediaPlayerBase*>& mediaPlayers,
+                     GetOpenFileUrlsFuncType getUrlsFunc,
+                     CreatePlayerFuncPtrType createPlayerFunc) {
     QString videoFilter = "Video Files (*.mp4 *.avi *.mkv *.mov *.wmv);;All Files (*)";
     QString defaultDir = QStandardPaths::writableLocation(QStandardPaths::MoviesLocation);
     if (defaultDir.isEmpty()) defaultDir = QDir::homePath();
-    QList<QUrl> videoUrls = QFileDialog::getOpenFileUrls(
-        &parent, "Open Video Files", QUrl::fromLocalFile(defaultDir), videoFilter
+
+    QList<QUrl> videoUrls = getUrlsFunc(
+        &parent,
+        QObject::tr("Open Video Files"),
+        QUrl::fromLocalFile(defaultDir),
+        videoFilter,
+        nullptr,
+        QFileDialog::Options(),
+        QStringList()
     );
+
     for (const QUrl& url: videoUrls) {
         if (url.isValid())
-            addVideoPlayer(layout, url, mediaPlayers);
+            addVideoPlayer(layout, url, mediaPlayers, createPlayerFunc);
     }
 }
 
@@ -65,9 +77,9 @@ void rearrangeVideoPlayers(QGridLayout& layout, QVector<MediaPlayerBase *>& medi
     }
 }
 
-void addVideoPlayer(QGridLayout& layout, const QUrl& videoUrl, QVector<MediaPlayerBase *>& mediaPlayers) {
+void addVideoPlayer(QGridLayout& layout, const QUrl& videoUrl, QVector<MediaPlayerBase *>& mediaPlayers, CreatePlayerFuncPtrType createPlayerFunc) {
     qDebug() << "adding video: " << videoUrl;
-    MediaPlayerBase* video_added = PlayerFactory::createPlayer(videoUrl);
+    MediaPlayerBase* video_added = createPlayerFunc(videoUrl);
     video_added->play();
     mediaPlayers.append(video_added);
     rearrangeVideoPlayers(layout, mediaPlayers);
