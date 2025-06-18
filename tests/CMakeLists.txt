@@ -7,6 +7,14 @@ set(CMAKE_AUTOMOC ON)
 set(CMAKE_AUTORCC ON)
 set(CMAKE_AUTOUIC ON)
 
+enable_testing()
+include(FetchContent)
+FetchContent_Declare(
+        Catch2
+        GIT_REPOSITORY https://github.com/catchorg/Catch2.git
+        GIT_TAG v3.6.0
+)
+FetchContent_MakeAvailable(Catch2)
 find_package(Qt6 REQUIRED COMPONENTS
         Core
         Gui
@@ -16,28 +24,28 @@ find_package(Qt6 REQUIRED COMPONENTS
         WebEngineWidgets
         Test
 )
-enable_testing(true)
-message(STATUS "source dir: " ${CMAKE_SOURCE_DIR})
+
+
 set(target_sources ${MFAOMP_SOURCES})
 list(TRANSFORM target_sources PREPEND "../")
-
-add_executable(mfaomp_qtests
-        tst_mfaomp.cpp
+add_executable(mfaomp_tests
+        test_main.cpp
         ${target_sources}
-        )
+)
 
-
-target_include_directories(mfaomp_qtests PRIVATE
+target_include_directories(mfaomp_tests PRIVATE
         ${CMAKE_SOURCE_DIR}
         ${CMAKE_BINARY_DIR}
+        "${CMAKE_SOURCE_DIR}/MediaPlayerImpls"
         ${LIBVLC_INCLUDE_DIRS}
         ${libvlcpp_SOURCE_DIR}/vlcpp # this is very unportable, assumes fetchcontent in root cmakelists
 )
 
-target_link_libraries(mfaomp_qtests
+target_link_libraries(mfaomp_tests
         Qt6::Test
         ${MFAOMP_LIBRARIES}
+        Catch2::Catch2WithMain
 )
 
 include(CTest)
-add_test(NAME mfaomp_qtest COMMAND mfaomp_qtests)
+add_test(NAME mfaomp_test COMMAND mfaomp_tests)

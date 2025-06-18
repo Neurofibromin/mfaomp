@@ -246,18 +246,13 @@ install(FILES "${PROJECT_LICENSE_FILE}"
 
 install(FILES mfaomp.desktop DESTINATION ${CMAKE_INSTALL_DATADIR}/applications)
 
-if (Qt6Test_FOUND AND HAVE_QTMULTIMEDIA AND HAVE_QTWEBENGINE AND HAVE_LIBVLC)
+if (Qt6Test_FOUND AND HAVE_QTMULTIMEDIA AND HAVE_QTWEBENGINE AND HAVE_LIBVLC AND ENABLE_CATCH)
     get_target_property(_qt_test_exists Qt6::Test IMPORTED)
     message(STATUS "Qt6::Test target exists: ${_qt_test_exists}")
     message(STATUS "Qt6 Test found, enabling 'tests' subdirectory.")
     add_subdirectory(tests)
 else ()
     message(STATUS "Qt6 Test not found or backends missing, skipping 'tests' subdirectory.")
-endif ()
-
-if (HAVE_QTMULTIMEDIA AND HAVE_QTWEBENGINE AND HAVE_LIBVLC AND ENABLE_CATCH)
-    message(STATUS "Catch enabled, enabling 'catchtests' subdirectory.")
-    add_subdirectory(catchtests)
 endif ()
 
 configure_file(

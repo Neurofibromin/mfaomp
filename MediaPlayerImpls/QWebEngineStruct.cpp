@@ -22,6 +22,7 @@
 #include <QWidget>
 #include <QGridLayout>
 #include <QTimer>
+#include <QEventLoop>
 
 
 QWebEngineStruct::QWebEngineStruct(const QUrl& videoUrl): MediaPlayerBase(videoUrl) {
