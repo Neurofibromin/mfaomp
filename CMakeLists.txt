@@ -49,8 +49,8 @@ set(HAVE_QTWEBENGINE FALSE)
 
 # cmake -B build -S . -DCMAKE_TOOLCHAIN_FILE=<path_to_vcpkg>/scripts/buildsystems/vcpkg.cmake
 if (WIN32 AND USE_VCPKG AND NOT DEFINED VCPKG_ROOT AND NOT DEFINED CMAKE_TOOLCHAIN_FILE)
-        set(VCPKG_ROOT "C:/vcpkg")
-endif()
+    set(VCPKG_ROOT "C:/vcpkg")
+endif ()
 if (USE_VCPKG)
     message(STATUS "Enabling vcpkg")
     if (DEFINED CMAKE_TOOLCHAIN_FILE)
@@ -58,21 +58,21 @@ if (USE_VCPKG)
         set(CMAKE_TOOLCHAIN_FILE "$ENV{VCPKG_ROOT}/scripts/buildsystems/vcpkg.cmake")
     elseif (DEFINED VCPKG_ROOT)
         set(CMAKE_TOOLCHAIN_FILE "${VCPKG_ROOT}/scripts/buildsystems/vcpkg.cmake")
-    else()
+    else ()
         set(VCPKG_ROOT "$ENV{HOME}/.vcpkg")
         set(CMAKE_TOOLCHAIN_FILE "$ENV{VCPKG_ROOT}/scripts/buildsystems/vcpkg.cmake")
-    endif()
-endif()
+    endif ()
+endif ()
 #set(CMAKE_FIND_DEBUG_MODE 1)
 find_package(Qt6 REQUIRED COMPONENTS
-        Core
-        Gui
-        Widgets
-        OPTIONAL_COMPONENTS
-        Multimedia
-        MultimediaWidgets
-        WebEngineWidgets
-        Test
+             Core
+             Gui
+             Widgets
+             OPTIONAL_COMPONENTS
+             Multimedia
+             MultimediaWidgets
+             WebEngineWidgets
+             Test
 )
 #set(CMAKE_FIND_DEBUG_MODE 0)
 # VLC
@@ -82,120 +82,120 @@ if (ENABLE_LIBVLC)
     if (LIBVLC_FOUND)
         message(STATUS "libVLC backend enabled")
         set(HAVE_LIBVLC TRUE)
-    else()
+    else ()
         message(WARNING "libVLC not found; disabling backend")
         set(HAVE_LIBVLC FALSE)
-    endif()
-    if(USE_SYSTEM_PROVIDED_LIBVLCPP)
+    endif ()
+    if (USE_SYSTEM_PROVIDED_LIBVLCPP)
         pkg_check_modules(LIBVLCPP libvlcpp QUIET)
         if (LIBVLCPP_FOUND)
             message(STATUS "libvlcpp system package found")
-        else()
+        else ()
             message(FATAL_ERROR "System provided libvlcpp package not found")
-        endif()
+        endif ()
     endif ()
-endif()
+endif ()
 
 # Qt Multimedia
 if (ENABLE_QTMULTIMEDIA)
     if (Qt6Multimedia_FOUND AND Qt6MultimediaWidgets_FOUND)
         message(STATUS "QtMultimedia backend enabled")
         set(HAVE_QTMULTIMEDIA TRUE)
-    else()
+    else ()
         message(WARNING "QtMultimedia not found; disabling backend")
         set(HAVE_QTMULTIMEDIA FALSE)
-    endif()
-endif()
+    endif ()
+endif ()
 
 # WebEngine
 if (ENABLE_QTWEBENGINE)
     if (Qt6WebEngineWidgets_FOUND)
         message(STATUS "QtWebEngine backend enabled")
         set(HAVE_QTWEBENGINE TRUE)
-    else()
+    else ()
         message(WARNING "QtWebEngineWidgets not found; disabling backend")
         set(HAVE_QTWEBENGINE FALSE)
-    endif()
-endif()
+    endif ()
+endif ()
 
-if(POLICY CMP0167)
+if (POLICY CMP0167)
     cmake_policy(SET CMP0167 NEW)
-endif()
+endif ()
 find_package(Boost 1.80 COMPONENTS system filesystem REQUIRED)
 if (Boost_FOUND)
     message(STATUS "Boost found: ${Boost_VERSION}")
     message(STATUS "Boost include directories: ${Boost_INCLUDE_DIRS}")
     message(STATUS "Boost libraries: ${Boost_LIBRARIES}")
-else()
+else ()
     message(FATAL_ERROR "Boost not found. Please install Boost development libraries.")
-endif()
+endif ()
 
 set(MFAOMP_SOURCES
-        AddVideo.cpp
-        AddVideo.h
-        BackendAvailability.cpp
-        BackendAvailability.h
-        DropWidget.h
-        MainWindow.cpp
-        MainWindow.h
-        MediaPlayers.h
-        SettingsDialog.cpp
-        SettingsDialog.h
-        MediaPlayerImpls/PlayerFactory.cpp
-        MediaPlayerImpls/PlayerFactory.h
-        MediaPlayerImpls/CurrentBackEndStatusSingleton.h
+    AddVideo.cpp
+    AddVideo.h
+    BackendAvailability.cpp
+    BackendAvailability.h
+    DropWidget.h
+    MainWindow.cpp
+    MainWindow.h
+    MediaPlayers.h
+    SettingsDialog.cpp
+    SettingsDialog.h
+    MediaPlayerImpls/PlayerFactory.cpp
+    MediaPlayerImpls/PlayerFactory.h
+    MediaPlayerImpls/CurrentBackEndStatusSingleton.h
 )
 
 if (HAVE_LIBVLC)
     list(APPEND MFAOMP_SOURCES MediaPlayerImpls/VLCPlayerStruct.h)
     list(APPEND MFAOMP_SOURCES MediaPlayerImpls/VLCPlayerStruct.cpp)
-endif()
+endif ()
 if (HAVE_QTMULTIMEDIA)
     list(APPEND MFAOMP_SOURCES MediaPlayerImpls/QMediaPlayerStruct.h)
     list(APPEND MFAOMP_SOURCES MediaPlayerImpls/QMediaPlayerStruct.cpp)
-endif()
+endif ()
 if (HAVE_QTWEBENGINE)
     list(APPEND MFAOMP_SOURCES MediaPlayerImpls/QWebEngineStruct.h)
     list(APPEND MFAOMP_SOURCES MediaPlayerImpls/QWebEngineStruct.cpp)
-endif()
+endif ()
 
 add_executable(mfaomp ${MFAOMP_SOURCES} main.cpp)
 
 target_include_directories(mfaomp PRIVATE
-        "${CMAKE_CURRENT_BINARY_DIR}" #needed for version.h inclusion
-        "${CMAKE_CURRENT_SOURCE_DIR}"
-        "MediaPlayerImpls"
-        ${Boost_INCLUDE_DIRS}
+                           "${CMAKE_CURRENT_BINARY_DIR}" #needed for version.h inclusion
+                           "${CMAKE_CURRENT_SOURCE_DIR}"
+                           "MediaPlayerImpls"
+                           ${Boost_INCLUDE_DIRS}
 )
 if (HAVE_LIBVLC)
     set(LIBVLCPP_SOURCE_COUNT 0)
     if (USE_PREDOWNLOADED_LIBVLCPP)
         math(EXPR LIBVLCPP_SOURCE_COUNT "${LIBVLCPP_SOURCE_COUNT} + 1")
-    endif()
+    endif ()
     if (USE_SYSTEM_PROVIDED_LIBVLCPP)
         math(EXPR LIBVLCPP_SOURCE_COUNT "${LIBVLCPP_SOURCE_COUNT} + 1")
-    endif()
+    endif ()
     if (USE_FETCHED_LIBVLCPP)
         math(EXPR LIBVLCPP_SOURCE_COUNT "${LIBVLCPP_SOURCE_COUNT} + 1")
-    endif()
+    endif ()
 
     if (LIBVLCPP_SOURCE_COUNT GREATER 1)
         message(SEND_ERROR "Please select only one source for libvlcpp (USE_PREDOWNLOADED_LIBVLCPP, USE_SYSTEM_PROVIDED_LIBVLCPP, or USE_FETCHED_LIBVLCPP).")
     elseif (LIBVLCPP_SOURCE_COUNT EQUAL 0)
         message(SEND_ERROR "No source for libvlcpp selected. Please enable one of USE_PREDOWNLOADED_LIBVLCPP, USE_SYSTEM_PROVIDED_LIBVLCPP, or USE_FETCHED_LIBVLCPP.")
-    endif()
+    endif ()
 
     if (USE_PREDOWNLOADED_LIBVLCPP)
         message(STATUS "Using predownloaded libvlcpp, FetchContent disabled")
         target_include_directories(mfaomp PRIVATE
-                ${LIBVLC_INCLUDE_DIRS}
-                ${CMAKE_CURRENT_SOURCE_DIR}/third_party/libvlcpp/vlcpp
+                                   ${LIBVLC_INCLUDE_DIRS}
+                                   ${CMAKE_CURRENT_SOURCE_DIR}/third_party/libvlcpp/vlcpp
         )
     elseif (USE_SYSTEM_PROVIDED_LIBVLCPP)
         message(STATUS "Using system-provided libvlcpp, FetchContent disabled")
         target_include_directories(mfaomp PRIVATE
-                ${LIBVLC_INCLUDE_DIRS}
-                ${LIBVLCPP_INCLUDE_DIRS}/vlcpp
+                                   ${LIBVLC_INCLUDE_DIRS}
+                                   ${LIBVLCPP_INCLUDE_DIRS}/vlcpp
         )
     elseif (USE_FETCHED_LIBVLCPP)
         message(STATUS "Fetching libvlcpp with FetchContent")
@@ -207,30 +207,30 @@ if (HAVE_LIBVLC)
         )
         FetchContent_MakeAvailable(libvlcpp)
         target_include_directories(mfaomp PRIVATE
-                ${LIBVLC_INCLUDE_DIRS}
-                ${libvlcpp_SOURCE_DIR}/vlcpp
+                                   ${LIBVLC_INCLUDE_DIRS}
+                                   ${libvlcpp_SOURCE_DIR}/vlcpp
         )
     else ()
-        message(SEND_ERROR "No source of libvlcpp provided!" )
-    endif()
-endif()
+        message(SEND_ERROR "No source of libvlcpp provided!")
+    endif ()
+endif ()
 set(MFAOMP_LIBRARIES
-        Qt::Core
-        Qt::Gui
-        Qt::Widgets
-        ${Boost_LIBRARIES}
+    Qt::Core
+    Qt::Gui
+    Qt::Widgets
+    ${Boost_LIBRARIES}
 )
 
 # Conditionally add backend-specific Qt libraries and VLC library
 if (HAVE_QTMULTIMEDIA)
     list(APPEND MFAOMP_LIBRARIES Qt::Multimedia Qt::MultimediaWidgets)
-endif()
+endif ()
 if (HAVE_QTWEBENGINE)
     list(APPEND MFAOMP_LIBRARIES Qt::WebEngineWidgets)
-endif()
+endif ()
 if (HAVE_LIBVLC)
     list(APPEND MFAOMP_LIBRARIES ${LIBVLC_LIBRARIES})
-endif()
+endif ()
 
 target_link_libraries(mfaomp ${MFAOMP_LIBRARIES})
 

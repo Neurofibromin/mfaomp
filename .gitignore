@@ -125,6 +125,7 @@ $tf/
 .*crunch*.local.xml
 .axoCover/*
 .builds
+.clang-format
 .cr/personal
 .directory
 .fake/

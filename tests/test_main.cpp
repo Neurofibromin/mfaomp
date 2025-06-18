@@ -27,7 +27,6 @@ namespace {
 auto const testApp = TestApp{};
 
 TEST_CASE("SettingsDialog - Initialization emits correct initial values on accept", "[gui][SettingsDialog]") {
-
     float initialSpeedIncrement = 0.25f;
     float initialMinSpeed = 0.5f;
     float initialMaxSpeed = 4.0f;
@@ -37,7 +36,7 @@ TEST_CASE("SettingsDialog - Initialization emits correct initial values on accep
     QSignalSpy settingsSpy(&dialog, &SettingsDialog::settingsAccepted);
     QSignalSpy styleSpy(&dialog, &SettingsDialog::styleAccepted);
 
-    auto* okButton = dialog.findChild<QPushButton*>("okButton");
+    auto* okButton = dialog.findChild<QPushButton *>("okButton");
     REQUIRE(okButton);
 
 
@@ -56,15 +55,14 @@ TEST_CASE("SettingsDialog - Initialization emits correct initial values on accep
 }
 
 TEST_CASE("SettingsDialog - Accept with valid input (private members)", "[gui][SettingsDialog]") {
-
     SettingsDialog dialog(0.1f, 0.5f, 2.0f, "Fusion");
     QSignalSpy settingsSpy(&dialog, &SettingsDialog::settingsAccepted);
 
 
-    auto* speedSpinBox = dialog.findChild<QDoubleSpinBox*>("speedIncrementSpinBox");
-    auto* minSpeedSpinBox = dialog.findChild<QDoubleSpinBox*>("minPlaybackSpeedSpinBox");
-    auto* maxSpeedSpinBox = dialog.findChild<QDoubleSpinBox*>("maxPlaybackSpeedSpinBox");
-    auto* okButton = dialog.findChild<QPushButton*>("okButton");
+    auto* speedSpinBox = dialog.findChild<QDoubleSpinBox *>("speedIncrementSpinBox");
+    auto* minSpeedSpinBox = dialog.findChild<QDoubleSpinBox *>("minPlaybackSpeedSpinBox");
+    auto* maxSpeedSpinBox = dialog.findChild<QDoubleSpinBox *>("maxPlaybackSpeedSpinBox");
+    auto* okButton = dialog.findChild<QPushButton *>("okButton");
 
     REQUIRE(speedSpinBox);
     REQUIRE(minSpeedSpinBox);
@@ -96,10 +94,10 @@ TEST_CASE("SettingsDialog - Reject with invalid speed range", "[gui][SettingsDia
     QTest::qWait(50);
     QSignalSpy settingsSpy(&dialog, &SettingsDialog::settingsAccepted);
 
-    auto* speedSpinBox = dialog.findChild<QDoubleSpinBox*>("speedIncrementSpinBox");
-    auto* minSpeedSpinBox = dialog.findChild<QDoubleSpinBox*>("minPlaybackSpeedSpinBox");
-    auto* maxSpeedSpinBox = dialog.findChild<QDoubleSpinBox*>("maxPlaybackSpeedSpinBox");
-    auto* okButton = dialog.findChild<QPushButton*>("okButton");
+    auto* speedSpinBox = dialog.findChild<QDoubleSpinBox *>("speedIncrementSpinBox");
+    auto* minSpeedSpinBox = dialog.findChild<QDoubleSpinBox *>("minPlaybackSpeedSpinBox");
+    auto* maxSpeedSpinBox = dialog.findChild<QDoubleSpinBox *>("maxPlaybackSpeedSpinBox");
+    auto* okButton = dialog.findChild<QPushButton *>("okButton");
 
     REQUIRE(speedSpinBox);
     REQUIRE(minSpeedSpinBox);
@@ -112,7 +110,7 @@ TEST_CASE("SettingsDialog - Reject with invalid speed range", "[gui][SettingsDia
     QTimer::singleShot(100, []() {
         QApplication::processEvents();
         QWidget* activeModal = QApplication::activeModalWidget();
-        QMessageBox* messageBox = qobject_cast<QMessageBox*>(activeModal);
+        QMessageBox* messageBox = qobject_cast<QMessageBox *>(activeModal);
         if (messageBox) {
             messageBox->accept();
         } else {
@@ -130,7 +128,7 @@ TEST_CASE("SettingsDialog - Cancel button", "[gui][SettingsDialog]") {
     SettingsDialog dialog(0.1f, 0.5f, 2.0f, "Fusion");
     QSignalSpy settingsSpy(&dialog, &SettingsDialog::settingsAccepted);
     QSignalSpy styleSpy(&dialog, &SettingsDialog::styleAccepted);
-    auto* cancelButton = dialog.findChild<QPushButton*>("cancelButton");
+    auto* cancelButton = dialog.findChild<QPushButton *>("cancelButton");
     REQUIRE(cancelButton);
     REQUIRE(cancelButton->text() == "Cancel");
     QTest::mouseClick(cancelButton, Qt::LeftButton);

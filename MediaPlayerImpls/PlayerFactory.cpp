@@ -23,7 +23,7 @@
 #include "CurrentBackEndStatusSingleton.h"
 #include "config.h"
 
-MediaPlayerBase * PlayerFactory::createPlayer(const QUrl& videoUrl) {
+MediaPlayerBase* PlayerFactory::createPlayer(const QUrl& videoUrl) {
     switch (CurrentBackEndStatusSingleton::getInstance().getCurrentBackEnd()) {
 #ifdef HAVE_LIBVLC
         case VLCPlayerBackEnd:

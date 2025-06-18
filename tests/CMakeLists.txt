@@ -16,35 +16,35 @@ FetchContent_Declare(
 )
 FetchContent_MakeAvailable(Catch2)
 find_package(Qt6 REQUIRED COMPONENTS
-        Core
-        Gui
-        Widgets
-        Multimedia
-        MultimediaWidgets
-        WebEngineWidgets
-        Test
+             Core
+             Gui
+             Widgets
+             Multimedia
+             MultimediaWidgets
+             WebEngineWidgets
+             Test
 )
 
 
 set(target_sources ${MFAOMP_SOURCES})
 list(TRANSFORM target_sources PREPEND "../")
 add_executable(mfaomp_tests
-        test_main.cpp
-        ${target_sources}
+               test_main.cpp
+               ${target_sources}
 )
 
 target_include_directories(mfaomp_tests PRIVATE
-        ${CMAKE_SOURCE_DIR}
-        ${CMAKE_BINARY_DIR}
-        "${CMAKE_SOURCE_DIR}/MediaPlayerImpls"
-        ${LIBVLC_INCLUDE_DIRS}
-        ${libvlcpp_SOURCE_DIR}/vlcpp # this is very unportable, assumes fetchcontent in root cmakelists
+                           ${CMAKE_SOURCE_DIR}
+                           ${CMAKE_BINARY_DIR}
+                           "${CMAKE_SOURCE_DIR}/MediaPlayerImpls"
+                           ${LIBVLC_INCLUDE_DIRS}
+                           ${libvlcpp_SOURCE_DIR}/vlcpp # this is very unportable, assumes fetchcontent in root cmakelists
 )
 
 target_link_libraries(mfaomp_tests
-        Qt6::Test
-        ${MFAOMP_LIBRARIES}
-        Catch2::Catch2WithMain
+                      Qt6::Test
+                      ${MFAOMP_LIBRARIES}
+                      Catch2::Catch2WithMain
 )
 
 include(CTest)

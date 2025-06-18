@@ -29,22 +29,22 @@
 #include "PlayerFactory.h"
 
 
-void openAndAddVideo(QWidget& parent, QGridLayout& layout, QVector<MediaPlayerBase*>& mediaPlayers) {
+void openAndAddVideo(QWidget& parent, QGridLayout& layout, QVector<MediaPlayerBase *>& mediaPlayers) {
     QString videoFilter = "Video Files (*.mp4 *.avi *.mkv *.mov *.wmv);;All Files (*)";
     QString defaultDir = QStandardPaths::writableLocation(QStandardPaths::MoviesLocation);
     if (defaultDir.isEmpty()) defaultDir = QDir::homePath();
     QList<QUrl> videoUrls = QFileDialog::getOpenFileUrls(
         &parent, "Open Video Files", QUrl::fromLocalFile(defaultDir), videoFilter
     );
-    for (const QUrl &url : videoUrls) {
+    for (const QUrl& url: videoUrls) {
         if (url.isValid())
             addVideoPlayer(layout, url, mediaPlayers);
     }
 }
 
-void rearrangeVideoPlayers(QGridLayout& layout, QVector<MediaPlayerBase*>& mediaPlayers) {
+void rearrangeVideoPlayers(QGridLayout& layout, QVector<MediaPlayerBase *>& mediaPlayers) {
     for (int i = layout.count() - 1; i >= 0; --i) {
-        QLayoutItem *item = layout.takeAt(i);
+        QLayoutItem* item = layout.takeAt(i);
         delete item;
     }
     // Calculate (new) grid size
@@ -64,9 +64,9 @@ void rearrangeVideoPlayers(QGridLayout& layout, QVector<MediaPlayerBase*>& media
     }
 }
 
-void addVideoPlayer(QGridLayout& layout, const QUrl& videoUrl, QVector<MediaPlayerBase*>& mediaPlayers) {
+void addVideoPlayer(QGridLayout& layout, const QUrl& videoUrl, QVector<MediaPlayerBase *>& mediaPlayers) {
     qDebug() << "adding video: " << videoUrl;
-    MediaPlayerBase * video_added = PlayerFactory::createPlayer(videoUrl);
+    MediaPlayerBase* video_added = PlayerFactory::createPlayer(videoUrl);
     video_added->play();
     mediaPlayers.append(video_added);
     rearrangeVideoPlayers(layout, mediaPlayers);

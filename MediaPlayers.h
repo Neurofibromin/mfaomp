@@ -24,17 +24,30 @@
 
 struct MediaPlayerBase {
     QUrl videoUrl;
-    explicit MediaPlayerBase(const QUrl& videoUrl) : videoUrl(videoUrl) {}
-    virtual ~MediaPlayerBase() {} // for polymorphism
+
+    explicit MediaPlayerBase(const QUrl& videoUrl) : videoUrl(videoUrl) {
+    }
+
+    virtual ~MediaPlayerBase() {
+    } // for polymorphism
     virtual void play() = 0;
+
     virtual void pause() = 0;
+
     virtual void mute() = 0;
+
     virtual void unmute() = 0;
+
     virtual void clear() = 0;
+
     virtual float speed(float sp = 0.0) = 0;
+
     virtual int64_t time() = 0;
+
     virtual void set_time(int64_t time) = 0;
+
     virtual float duration() = 0;
+
     virtual QWidget* getVideoWidget() = 0;
 };
 

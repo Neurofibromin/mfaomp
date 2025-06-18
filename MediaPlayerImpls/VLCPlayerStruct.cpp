@@ -24,7 +24,7 @@ VLCPlayerStruct::VLCPlayerStruct(const QUrl& videoUrl): MediaPlayerBase(videoUrl
     vlcInstance = new VLC::Instance(0, nullptr);
     // 2. Create Media
     QString path = videoUrl.toLocalFile();
-    VLC::Media *media = new VLC::Media(*vlcInstance, path.toUtf8().constData(), VLC::Media::FromPath);
+    VLC::Media* media = new VLC::Media(*vlcInstance, path.toUtf8().constData(), VLC::Media::FromPath);
     media->addOption(":audio-time-stretch");
     // 3. Create MediaPlayer
     mediaPlayer = new VLC::MediaPlayer(*vlcInstance);
@@ -92,6 +92,6 @@ VLCPlayerStruct::~VLCPlayerStruct() {
     VLCPlayerStruct::clear();
 }
 
-QWidget * VLCPlayerStruct::getVideoWidget() {
+QWidget* VLCPlayerStruct::getVideoWidget() {
     return videoWidget;
 }

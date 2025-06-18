@@ -149,29 +149,29 @@ void MainWindow::makeConnections() {
     });
 
     QObject::connect(pauseAllButton, &QPushButton::clicked, [&]() {
-        for (auto &p : mediaPlayers)
+        for (auto& p: mediaPlayers)
             p->pause();
     });
 
     QObject::connect(unpauseAllButton, &QPushButton::clicked, [&]() {
-        for (auto &p : mediaPlayers)
+        for (auto& p: mediaPlayers)
             p->play();
     });
 
     QObject::connect(muteAllButton, &QPushButton::clicked, [&]() {
-        for (auto &p : mediaPlayers)
+        for (auto& p: mediaPlayers)
             p->mute();
     });
 
     QObject::connect(unmuteAllButton, &QPushButton::clicked, [&]() {
-        for (auto &p : mediaPlayers)
+        for (auto& p: mediaPlayers)
             p->unmute();
     });
 
     QObject::connect(clearAllButton, &QPushButton::clicked, this, &MainWindow::clearAllVideos);
 
     QObject::connect(increaseSpeedButton, &QPushButton::clicked, [&]() {
-        for (auto &p : mediaPlayers) {
+        for (auto& p: mediaPlayers) {
             float currentRate = p->speed();
             float newRate = std::min(currentRate + SPEED_INCREMENT, MAX_PLAYBACK_SPEED);
             p->speed(newRate);
@@ -182,7 +182,7 @@ void MainWindow::makeConnections() {
     });
 
     QObject::connect(decreaseSpeedButton, &QPushButton::clicked, [&]() {
-        for (auto &p : mediaPlayers) {
+        for (auto& p: mediaPlayers) {
             float currentRate = p->speed();
             float newRate = std::max(currentRate - SPEED_INCREMENT, MIN_PLAYBACK_SPEED);
             p->speed(newRate);
@@ -193,7 +193,7 @@ void MainWindow::makeConnections() {
     });
 
     QObject::connect(resetSpeedButton, &QPushButton::clicked, [&]() {
-        for (auto &p : mediaPlayers) {
+        for (auto& p: mediaPlayers) {
             p->speed(1.0f);
         }
         updateSpeedDisplay(1.0f);
@@ -260,20 +260,20 @@ void MainWindow::applyStyles() {
 }
 
 void MainWindow::updateSpeedDisplay(float rate) {
-        speedDisplayLabel->setText(QString("Speed: %1x").arg(rate, 0, 'f', 2));
+    speedDisplayLabel->setText(QString("Speed: %1x").arg(rate, 0, 'f', 2));
 }
 
 void MainWindow::updateSeekSlider(int64_t position, int64_t duration) {
-        if (position <= duration) {
-            int value = static_cast<int>((double(position) / duration) * 1000);
-            seekSlider->blockSignals(true);
-            seekSlider->setValue(value);
-            seekSlider->blockSignals(false);
-        } else {
-            seekSlider->blockSignals(true);
-            seekSlider->setValue(0);
-            seekSlider->blockSignals(false);
-        }
+    if (position <= duration) {
+        int value = static_cast<int>((double(position) / duration) * 1000);
+        seekSlider->blockSignals(true);
+        seekSlider->setValue(value);
+        seekSlider->blockSignals(false);
+    } else {
+        seekSlider->blockSignals(true);
+        seekSlider->setValue(0);
+        seekSlider->blockSignals(false);
+    }
 }
 
 void MainWindow::resetUIOnPlayersCleared() const {
@@ -286,7 +286,7 @@ void MainWindow::resetUIOnPlayersCleared() const {
 void MainWindow::handleSeekSliderReleased() {
     if (!mediaPlayers.isEmpty()) {
         int value = seekSlider->value();
-        for (auto &p : mediaPlayers) {
+        for (auto& p: mediaPlayers) {
             int64_t length = p->duration();
             int64_t seekTo = static_cast<int64_t>((double(value) / 1000.0) * length);
             p->set_time(seekTo);
@@ -296,8 +296,8 @@ void MainWindow::handleSeekSliderReleased() {
 
 void MainWindow::handleBackendChanged(const QString& text) {
     std::cout << "Selected backend: " << text.toStdString() << std::endl;
-    QVector<QPair<QUrl, int64_t>> currently_playing;
-    for (auto &p : mediaPlayers) {
+    QVector<QPair<QUrl, int64_t> > currently_playing;
+    for (auto& p: mediaPlayers) {
         QPair<QUrl, int64_t> cur = {p->videoUrl, p->time()};
         currently_playing.append(cur);
         p->clear();
@@ -309,14 +309,12 @@ void MainWindow::handleBackendChanged(const QString& text) {
     seekSlider->blockSignals(false);
     if (text.contains("vlc", Qt::CaseInsensitive)) {
         CurrentBackEndStatusSingleton::getInstance().setCurrentBackEnd(VLCPlayerBackEnd);
-    }
-    else if (text.contains("QMediaPlayer", Qt::CaseInsensitive)) {
+    } else if (text.contains("QMediaPlayer", Qt::CaseInsensitive)) {
         CurrentBackEndStatusSingleton::getInstance().setCurrentBackEnd(QMediaPlayerBackEnd);
-    }
-    else if (text.contains("QWebEngine", Qt::CaseInsensitive)) {
+    } else if (text.contains("QWebEngine", Qt::CaseInsensitive)) {
         CurrentBackEndStatusSingleton::getInstance().setCurrentBackEnd(QWebEngineBackEnd);
     }
-    for (auto &p : currently_playing) {
+    for (auto& p: currently_playing) {
         addVideoPlayer(*videoLayout, p.first, mediaPlayers);
     }
     for (int i = 0; i < currently_playing.length(); ++i) {
@@ -334,7 +332,7 @@ void MainWindow::openNewVideo() {
 }
 
 void MainWindow::clearAllVideos() {
-    for (auto &p : mediaPlayers) {
+    for (auto& p: mediaPlayers) {
         p->clear();
     }
     mediaPlayers.clear();
@@ -342,7 +340,7 @@ void MainWindow::clearAllVideos() {
 }
 
 void MainWindow::openSettings() {
-    SettingsDialog settingsDialog(SPEED_INCREMENT, MIN_PLAYBACK_SPEED, MAX_PLAYBACK_SPEED,currentStyle,  this);
+    SettingsDialog settingsDialog(SPEED_INCREMENT, MIN_PLAYBACK_SPEED, MAX_PLAYBACK_SPEED, currentStyle, this);
     // Connect the signal emitted by the settings dialog to a slot in MainWindow.
     connect(&settingsDialog, &SettingsDialog::settingsAccepted,
             this, &MainWindow::updatePlaybackSettings);
@@ -356,8 +354,8 @@ void MainWindow::updatePlaybackSettings(float newSpeedIncrement, float newMinSpe
     MIN_PLAYBACK_SPEED = newMinSpeed;
     MAX_PLAYBACK_SPEED = newMaxSpeed;
     qDebug() << "Settings updated: Increment=" << SPEED_INCREMENT
-             << ", Min=" << MIN_PLAYBACK_SPEED
-             << ", Max=" << MAX_PLAYBACK_SPEED;
+            << ", Min=" << MIN_PLAYBACK_SPEED
+            << ", Max=" << MAX_PLAYBACK_SPEED;
 }
 
 

@@ -35,27 +35,31 @@ public:
         static CurrentBackEndStatusSingleton instance;
         return instance;
     }
+
     void setCurrentBackEnd(currentBackEnd backend) {
         currentBackend_ = backend;
     }
+
     currentBackEnd getCurrentBackEnd() const {
         return currentBackend_;
     }
+
 private:
     CurrentBackEndStatusSingleton() : currentBackend_(QMediaPlayerBackEnd) {
         if constexpr (mfaomp::BackendAvailability::isVLCAvailableAtCompileTime()) {
             currentBackend_ = VLCPlayerBackEnd;
             return;
-        }
-        else if constexpr (mfaomp::BackendAvailability::isQtMultimediaAvailableAtCompileTime()) {
+        } else if constexpr (mfaomp::BackendAvailability::isQtMultimediaAvailableAtCompileTime()) {
             currentBackend_ = QMediaPlayerBackEnd;
             return;
-        }
-        else
+        } else
             currentBackend_ = QWebEngineBackEnd;
     }
+
     CurrentBackEndStatusSingleton(const CurrentBackEndStatusSingleton&) = delete;
+
     CurrentBackEndStatusSingleton& operator=(const CurrentBackEndStatusSingleton&) = delete;
+
     currentBackEnd currentBackend_;
 };
 

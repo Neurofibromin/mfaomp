@@ -23,8 +23,8 @@
 class QWebEngineView;
 
 struct QWebEngineStruct : public MediaPlayerBase {
-    QWebEngineView *webView = nullptr;
-    QWidget *videoWidget = nullptr;
+    QWebEngineView* webView = nullptr;
+    QWidget* videoWidget = nullptr;
     float lastKnownDuration = 0.0;
     int64_t lastKnownTime = 0;
     float lastKnownSpeed = 1.0;

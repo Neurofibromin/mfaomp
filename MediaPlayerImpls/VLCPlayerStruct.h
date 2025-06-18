@@ -20,15 +20,17 @@
 #define VLCPLAYERSTRUCT_H
 
 #include "../MediaPlayers.h"
-namespace VLC { //forward decl
+
+namespace VLC {
+    //forward decl
     class Instance;
     class MediaPlayer;
 }
 
 struct VLCPlayerStruct : public MediaPlayerBase {
-    VLC::Instance *vlcInstance = nullptr;
-    VLC::MediaPlayer *mediaPlayer = nullptr;
-    QWidget *videoWidget = nullptr;
+    VLC::Instance* vlcInstance = nullptr;
+    VLC::MediaPlayer* mediaPlayer = nullptr;
+    QWidget* videoWidget = nullptr;
 
     explicit VLCPlayerStruct(const QUrl& videoUrl);
 

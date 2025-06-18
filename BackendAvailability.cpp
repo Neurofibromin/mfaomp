@@ -39,50 +39,41 @@
 #endif
 
 namespace mfaomp::BackendAvailability {
-
     bool isVLCAvailableAtRuntime() {
-
 #ifdef HAVE_LIBVLC
-            libvlc_instance_t* inst = libvlc_new(0, nullptr);
-            if (inst) {
-                libvlc_release(inst);
-                return true;
-            }
+        libvlc_instance_t* inst = libvlc_new(0, nullptr);
+        if (inst) {
+            libvlc_release(inst);
+            return true;
+        }
 #endif
-            return false;
-
+        return false;
     }
 
     bool isQtMultimediaAvailableAtRuntime() {
-
 #ifdef HAVE_QTMULTIMEDIA
-            try {
-                QMediaPlayer player;
-                if (QMediaDevices::audioOutputs().isEmpty()) {
-                    // return false; // if no audio outputs means 'unavailable' this could be false, but it can stay true for now
-                }
-                return true;
-            } catch (...) {
-                return false;
+        try {
+            QMediaPlayer player;
+            if (QMediaDevices::audioOutputs().isEmpty()) {
+                // return false; // if no audio outputs means 'unavailable' this could be false, but it can stay true for now
             }
-#endif
+            return true;
+        } catch (...) {
             return false;
-
+        }
+#endif
+        return false;
     }
 
     bool isQtWebEngineAvailableAtRuntime() {
-
 #ifdef HAVE_QTWEBENGINE
-            try {
-                QWebEngineView view;
-                return true;
-            } catch (...) {
-                return false;
-            }
-#endif
+        try {
+            QWebEngineView view;
+            return true;
+        } catch (...) {
             return false;
-
+        }
+#endif
+        return false;
     }
-
 }
-

@@ -33,23 +33,35 @@ class MainWindow : public QMainWindow {
 
 public:
     explicit MainWindow(QWidget *parent = nullptr);
+
     ~MainWindow() override;
 
 private slots:
     void updateSpeedDisplay(float speed);
+
     void updateSeekSlider(int64_t position, int64_t duration);
+
     void resetUIOnPlayersCleared() const;
+
     void handleSeekSliderReleased();
-    void handleBackendChanged(const QString &text);
+
+    void handleBackendChanged(const QString& text);
+
     void openNewVideo();
+
     void clearAllVideos();
+
     void openSettings();
+
     void exitApplication();
+
     void updatePlaybackSettings(float newSpeedIncrement, float newMinSpeed, float newMaxSpeed);
+
     void updateApplicationStyle(const QString& newStyle);
 
 private:
     void createWidgets();
+
     void makeConnections();
 
     void setupMenuBar();
@@ -72,7 +84,7 @@ private:
     QLabel *speedDisplayLabel = nullptr;
     QSlider *seekSlider = nullptr;
     QComboBox *backendComboBox = nullptr;
-    QVector<MediaPlayerBase*> mediaPlayers;
+    QVector<MediaPlayerBase *> mediaPlayers;
 
     // Menu bar components
     QMenuBar *menuBar;

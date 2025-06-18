@@ -1,4 +1,5 @@
 # mfaomp
+
 Multiple Files At Once Media Player
 
 ## Contents
@@ -17,7 +18,6 @@ Multiple Files At Once Media Player
     * [Signatures, hashes and integrity checks](#signatures-hashes-and-integrity-checks)
     * [Build instructions](#build-instructions)
 
-
 ## Status <a name="status"/>
 
 [![Nightly](https://github.com/Neurofibromin/mfaomp/actions/workflows/nightly.yml/badge.svg)](https://github.com/Neurofibromin/mfaomp/actions/workflows/nightly.yml)
@@ -35,6 +35,7 @@ Multiple Files At Once Media Player
 ## Installation & How to get <a name="installation--how-to-get"/>
 
 Intended platforms:
+
 - Arch
 - openSUSE (Thumbleweed)
 - Fedora (42)
@@ -42,49 +43,57 @@ Intended platforms:
 - Windows (10 22H2)
 
 May work, but untested (and not packaged):
+
 - MacOS
 - BSD
 - Ubuntu (24.04) (the toolchain setup is difficult)
 
 ### Fedora (COPR) <a name="fedora"/>
+
 ```shell
 dnf copr enable neurofibromin/mfaomp
 dnf install mfaomp
 ```
 
 ### Arch (AUR) <a name="arch"/>
+
 ```shell
 yay mfaomp
 ```
 
 ### Standalone releases <a name="standalone-releases"/>
-| Windows        | Linux | OSX (semi-supported)        |
-|----------------|-------|---|
-| | | |
-| | | |
-| | | |
+
+| Windows | Linux | OSX (semi-supported) |
+|---------|-------|----------------------|
+|         |       |                      |
+|         |       |                      |
+|         |       |                      |
 
 ### Additional releases <a name="additional-releases"/>
+
 Linux Installers: <br/>
 
-| package      | x64                                                                                                                                                   | arm64                                                 |
-|--------------|-------------------------------------------------------------------------------------------------------------------------------------------------------|-------------------------------------------------------|
-| Flatpak	    | | |
-| RPM	        | | |
-| DEB	        | | |
-| AppImage	    | | |
-
+| package   | x64 | arm64 |
+|-----------|-----|-------|
+| Flatpak	  |     |       |
+| RPM	      |     |       |
+| DEB	      |     |       |
+| AppImage	 |     |       |
 
 ## Limitations <a name="limitations"/>
 
-VLC does not support embedding in wayland windows, so the app always launches as an Xwindow. This will be fixed when VLC adds support: https://code.videolan.org/videolan/vlc/-/issues/16106
+VLC does not support embedding in wayland windows, so the app always launches as an Xwindow. This will be fixed when VLC
+adds support: https://code.videolan.org/videolan/vlc/-/issues/16106
 
-Backends have differing feature-sets. QMediaPlayer supports rate change, but will not compensate the frequency shift in audio. 
+Backends have differing feature-sets. QMediaPlayer supports rate change, but will not compensate the frequency shift in
+audio.
 
 ## How it works <a name="how-it-works"/>
 
 ## Aims <a name="aims"/>
+
 CI/CD
+
 - [ ] [OpenSuse Build Service](https://build.opensuse.org/package/show/home:Neurofibromin/mfaomp)
 - [x] [Nix](https://github.com/NixOS/nixpkgs/pull/414760)
 - [ ] Flathub
@@ -99,21 +108,21 @@ CI/CD
 - [x] version coherency with a script
 - [ ] add gpg signatures and checksums to CICD pipelines
 - [ ] install wizards
-  - [ ] installshield
-  - [ ] innosetup
-  - [ ] nsis (only this works with CPack)
-  - [ ] wix
+    - [ ] installshield
+    - [ ] innosetup
+    - [ ] nsis (only this works with CPack)
+    - [ ] wix
 
-  
 Features:
-- [x] QMediaPlayer backend 
-- [x] VLC backend 
+
+- [x] QMediaPlayer backend
+- [x] VLC backend
 - [x] QtWebEngine backend
 - [x] drag-and-drop
 - [x] settings + menu + theming
 - [x] testing setup
 - [ ] plugin system for backends
-- [x] compile flags for backends 
+- [x] compile flags for backends
 - [ ] Chromium Embedded Framework (CEF) or
 - [ ] FFmpeg backend
 - [ ] SDL2? backend maybe something like this: https://github.com/fosterseth/sdl2_video_player
@@ -124,9 +133,9 @@ Features:
 - [ ] Add support for subtitles
 - [x] Adding videos via drag-and-drop
 - [ ] Per video controls, overload right click menu
-  - [ ] loop 
-  - [ ] skip 
-  - [ ] playback rate 
+    - [ ] loop
+    - [ ] skip
+    - [ ] playback rate
 
 ### Roadmap
 
@@ -149,23 +158,24 @@ Features:
 - 1.x: reproducible build artifacts (SBOM)
 
 Testing
+
 - [ ] runtime dependencies
 - [ ] integration tests
 - [x] catch2
 
 Bugs:
 
-
 ### Signatures, hashes and integrity checks <a name="signatures-hashes-and-integrity-checks"/>
 
 The following pgp keys are valid:
 
-| Fingerprint | Description |
-| ----------- | ----------- |
-| 9F9BFE94618AD26667BD28214F671AFAD8D4428B | used in git and manually signed packages |
+| Fingerprint                              | Description                                                 |
+|------------------------------------------|-------------------------------------------------------------|
+| 9F9BFE94618AD26667BD28214F671AFAD8D4428B | used in git and manually signed packages                    |
 | 5C85EF4F34E089A04B2063A5833E01FC62E56779 | used in CICD pipelines to autosign packages where supported |
 
 Keyservers:
+
 - https://keys.openpgp.org/
 - https://keyserver.ubuntu.com/
 - http://pgp.mit.edu/
@@ -175,9 +185,12 @@ Public keys are also distributed with the build files.
 SHA256 hashes for the binaries are produced in the GitHub workflow and found in checksum.txt under release assets.
 
 ## Build instructions <a name="build-instructions"/>
-The following dependencies are a bit more than strictly necessary, probably. Only needed for building the project, not for installation or using the program.
+
+The following dependencies are a bit more than strictly necessary, probably. Only needed for building the project, not
+for installation or using the program.
 
 ### Fedora:
+
 ```shell
 sudo dnf install \
 qt6-qtbase \
@@ -229,6 +242,7 @@ vlc-plugin-qt
 ```
 
 ### openSUSE:
+
 ```shell
 sudo zypper in \
 qt6-base-devel \
@@ -244,8 +258,8 @@ vlc-devel
 
 ### Windows:
 
-
 ### Generic:
+
 ```
 git clone -b master https://github.com/Neurofibromin/mfaomp mfaomp
 cd mfaomp

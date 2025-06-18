@@ -26,7 +26,8 @@
 #include <QLabel>
 #include <QStyleFactory>
 
-SettingsDialog::SettingsDialog(float speedIncrement, float minSpeed, float maxSpeed, const QString& currentStyle, QWidget *parent)
+SettingsDialog::SettingsDialog(float speedIncrement, float minSpeed, float maxSpeed, const QString& currentStyle,
+                               QWidget* parent)
     : QDialog(parent) {
     setWindowTitle("Playback Settings");
     setFixedSize(300, 200);
@@ -63,29 +64,29 @@ SettingsDialog::SettingsDialog(float speedIncrement, float minSpeed, float maxSp
     maxPlaybackSpeedSpinBox->setValue(maxSpeed);
     maxPlaybackSpeedSpinBox->setDecimals(2);
 
-    QLabel *speedIncrementLabel = new QLabel("Speed Increment:", this);
-    QLabel *minPlaybackSpeedLabel = new QLabel("Min Playback Speed:", this);
-    QLabel *maxPlaybackSpeedLabel = new QLabel("Max Playback Speed:", this);
-    QLabel *styleLabel = new QLabel("Application Style:", this);
+    QLabel* speedIncrementLabel = new QLabel("Speed Increment:", this);
+    QLabel* minPlaybackSpeedLabel = new QLabel("Min Playback Speed:", this);
+    QLabel* maxPlaybackSpeedLabel = new QLabel("Max Playback Speed:", this);
+    QLabel* styleLabel = new QLabel("Application Style:", this);
 
-    QPushButton *okButton = new QPushButton("OK", this);
+    QPushButton* okButton = new QPushButton("OK", this);
     okButton->setObjectName("okButton");
-    QPushButton *cancelButton = new QPushButton("Cancel", this);
+    QPushButton* cancelButton = new QPushButton("Cancel", this);
     cancelButton->setObjectName("cancelButton");
 
-    QFormLayout *formLayout = new QFormLayout();
+    QFormLayout* formLayout = new QFormLayout();
     formLayout->addRow(speedIncrementLabel, speedIncrementSpinBox);
     formLayout->addRow(minPlaybackSpeedLabel, minPlaybackSpeedSpinBox);
     formLayout->addRow(maxPlaybackSpeedLabel, maxPlaybackSpeedSpinBox);
     formLayout->addRow(styleLabel, styleComboBox);
 
-    QHBoxLayout *buttonLayout = new QHBoxLayout();
+    QHBoxLayout* buttonLayout = new QHBoxLayout();
     buttonLayout->addStretch();
     buttonLayout->addWidget(okButton);
     buttonLayout->addWidget(cancelButton);
     buttonLayout->addStretch();
 
-    QVBoxLayout *mainLayout = new QVBoxLayout(this);
+    QVBoxLayout* mainLayout = new QVBoxLayout(this);
     mainLayout->addLayout(formLayout);
     mainLayout->addStretch();
     mainLayout->addLayout(buttonLayout);
@@ -98,7 +99,8 @@ void SettingsDialog::acceptSettings() {
     float minSpeed = minPlaybackSpeedSpinBox->value();
     float maxSpeed = maxPlaybackSpeedSpinBox->value();
     if (minSpeed > maxSpeed) {
-        QMessageBox::warning(this, "Input Error", "Minimum playback speed cannot be greater than maximum playback speed.");
+        QMessageBox::warning(this, "Input Error",
+                             "Minimum playback speed cannot be greater than maximum playback speed.");
         return;
     }
     emit settingsAccepted(speedIncrementSpinBox->value(), minSpeed, maxSpeed);

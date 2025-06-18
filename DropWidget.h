@@ -26,8 +26,9 @@ mfaomp - Multiple Files At Once Media Player
 
 class DropWidget : public QWidget {
     Q_OBJECT
+
 public:
-    DropWidget(QGridLayout* p_layout, QVector<MediaPlayerBase*>& p_players, QWidget* parent = nullptr)
+    DropWidget(QGridLayout* p_layout, QVector<MediaPlayerBase *>& p_players, QWidget* parent = nullptr)
         : QWidget(parent), video_layout(p_layout), mediaPlayers(p_players) {
         setAcceptDrops(true);
     }
@@ -47,7 +48,7 @@ protected:
 
     void dropEvent(QDropEvent* event) override {
         QList<QUrl> urls = event->mimeData()->urls();
-        for (const QUrl& url : urls) {
+        for (const QUrl& url: urls) {
             if (url.isLocalFile()) {
                 addVideoPlayer(*video_layout, url, mediaPlayers);
             }
@@ -56,7 +57,7 @@ protected:
 
 private:
     QGridLayout* video_layout;
-    QVector<MediaPlayerBase*>& mediaPlayers;
+    QVector<MediaPlayerBase *>& mediaPlayers;
 };
 
 #endif //DROPWIDGET_H

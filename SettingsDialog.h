@@ -27,20 +27,22 @@ class SettingsDialog : public QDialog {
     Q_OBJECT
 
 public:
-    explicit SettingsDialog(float speedIncrement, float minSpeed, float maxSpeed, const QString& currentStyle, QWidget *parent = nullptr);
+    explicit SettingsDialog(float speedIncrement, float minSpeed, float maxSpeed, const QString& currentStyle,
+                            QWidget* parent = nullptr);
 
-    signals:
-        void settingsAccepted(float newSpeedIncrement, float newMinSpeed, float newMaxSpeed);
-        void styleAccepted(const QString& newStyle);
+signals:
+    void settingsAccepted(float newSpeedIncrement, float newMinSpeed, float newMaxSpeed);
+
+    void styleAccepted(const QString& newStyle);
 
 private slots:
     void acceptSettings();
 
 private:
-    QDoubleSpinBox *speedIncrementSpinBox;
-    QDoubleSpinBox *minPlaybackSpeedSpinBox;
-    QDoubleSpinBox *maxPlaybackSpeedSpinBox;
-    QComboBox *styleComboBox;
+    QDoubleSpinBox* speedIncrementSpinBox;
+    QDoubleSpinBox* minPlaybackSpeedSpinBox;
+    QDoubleSpinBox* maxPlaybackSpeedSpinBox;
+    QComboBox* styleComboBox;
 };
 
 #endif // SETTINGSDIALOG_H

@@ -32,7 +32,7 @@ QWebEngineStruct::QWebEngineStruct(const QUrl& videoUrl): MediaPlayerBase(videoU
     videoWidget = webView;
     QString html = generateHtmlContent(videoUrl);
     webView->setHtml(html, QUrl::fromLocalFile(videoUrl.toLocalFile()));
-    QObject::connect(webView, &QWebEngineView::loadFinished,  [this](bool ok) {
+    QObject::connect(webView, &QWebEngineView::loadFinished, [this](bool ok) {
         if (ok) {
             qDebug() << "QWebEngineView load finished.";
             waitForVideoMetadataThenFetchDuration();
@@ -41,7 +41,6 @@ QWebEngineStruct::QWebEngineStruct(const QUrl& videoUrl): MediaPlayerBase(videoU
             qWarning() << "QWebEngineView failed to load page.";
         }
     });
-
 }
 
 void QWebEngineStruct::play() {
@@ -66,7 +65,8 @@ void QWebEngineStruct::clear() {
     qDebug() << "QWebEngineStruct: clear() called";
     if (!webView)
         return;
-    webView->page()->runJavaScript("document.getElementById('mediaPlayerVideo').pause(); document.getElementById('mediaPlayerVideo').src = '';");
+    webView->page()->runJavaScript(
+        "document.getElementById('mediaPlayerVideo').pause(); document.getElementById('mediaPlayerVideo').src = '';");
     webView->setHtml("");
     webView->deleteLater();
     webView = nullptr;
@@ -91,7 +91,8 @@ float QWebEngineStruct::speed(float sp) {
                                                currentSpeed = result.toFloat();
                                                qDebug() << "QWebEngineStruct: Fetched speed:" << currentSpeed;
                                            } else {
-                                               qWarning() << "QWebEngineStruct: Failed to get speed or invalid result:" << result;
+                                               qWarning() << "QWebEngineStruct: Failed to get speed or invalid result:"
+                                                       << result;
                                            }
                                            loop.quit();
                                        });
@@ -115,7 +116,8 @@ int64_t QWebEngineStruct::time() {
                                            currentTimeMs = static_cast<int64_t>(result.toDouble() * 1000);
                                            qDebug() << "QWebEngineStruct: Fetched time (ms):" << currentTimeMs;
                                        } else {
-                                           qWarning() << "QWebEngineStruct: Failed to get time or invalid result:" << result;
+                                           qWarning() << "QWebEngineStruct: Failed to get time or invalid result:" <<
+                                                   result;
                                        }
                                        loop.quit();
                                    });
@@ -151,7 +153,7 @@ void QWebEngineStruct::set_time(int64_t time_ms) {
             })();
         )").arg(time_s);
     // maybe not loaded, in which case must wait for the loadFinished signal, but if loaded already, then just execute it as is.
-    QObject::connect(webView, &QWebEngineView::loadFinished,  [this, script, time_ms](bool ok) {
+    QObject::connect(webView, &QWebEngineView::loadFinished, [this, script, time_ms](bool ok) {
         if (ok) {
             qDebug() << "QWebEngineView load finished.";
             webView->page()->runJavaScript(script);
@@ -174,12 +176,14 @@ void QWebEngineStruct::waitForVideoMetadataThenFetchDuration() {
                                            if (result.isValid() && result.canConvert<double>()) {
                                                double durationVal = result.toDouble();
                                                if (durationVal > 0 && std::isfinite(durationVal)) {
-                                                   qDebug() << "QWebEngineStruct: Video duration is now available: " << durationVal << " seconds";
+                                                   qDebug() << "QWebEngineStruct: Video duration is now available: " <<
+                                                           durationVal << " seconds";
                                                    lastKnownDuration = static_cast<float>(durationVal * 1000);
                                                    pollTimer->stop();
                                                    pollTimer->deleteLater();
                                                } else {
-                                                   qDebug() << "QWebEngineStruct: Duration still invalid, polling again.";
+                                                   qDebug() <<
+                                                           "QWebEngineStruct: Duration still invalid, polling again.";
                                                }
                                            }
                                        });
@@ -200,7 +204,8 @@ float QWebEngineStruct::duration() {
                                            currentDuration = result.toFloat() * 1000;
                                            qDebug() << "QWebEngineStruct: Fetched duration:" << currentDuration;
                                        } else {
-                                           qWarning() << "QWebEngineStruct: Failed to get duration or invalid result:" << result;
+                                           qWarning() << "QWebEngineStruct: Failed to get duration or invalid result:"
+                                                   << result;
                                        }
                                        loop.quit();
                                    });
@@ -216,7 +221,7 @@ QWebEngineStruct::~QWebEngineStruct() {
     QWebEngineStruct::clear();
 }
 
-QWidget * QWebEngineStruct::getVideoWidget() {
+QWidget* QWebEngineStruct::getVideoWidget() {
     return webView;
 }
 

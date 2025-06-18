@@ -71,11 +71,12 @@ void QMediaPlayerStruct::set_time(int64_t time) {
         mediaPlayer->mediaStatus() == QMediaPlayer::LoadedMedia) {
         mediaPlayer->setPosition(time);
     } else {
-        QObject::connect(mediaPlayer, &QMediaPlayer::mediaStatusChanged, [this, time](QMediaPlayer::MediaStatus status) {
-            if (status == QMediaPlayer::BufferedMedia || status == QMediaPlayer::LoadedMedia) {
-                mediaPlayer->setPosition(time);
-            }
-        });
+        QObject::connect(mediaPlayer, &QMediaPlayer::mediaStatusChanged,
+                         [this, time](QMediaPlayer::MediaStatus status) {
+                             if (status == QMediaPlayer::BufferedMedia || status == QMediaPlayer::LoadedMedia) {
+                                 mediaPlayer->setPosition(time);
+                             }
+                         });
     }
 }
 
@@ -87,6 +88,6 @@ QMediaPlayerStruct::~QMediaPlayerStruct() {
     QMediaPlayerStruct::clear();
 }
 
-QWidget * QMediaPlayerStruct::getVideoWidget() {
+QWidget* QMediaPlayerStruct::getVideoWidget() {
     return videoWidget;
 }

@@ -27,7 +27,7 @@
 #endif
 #include "MainWindow.h"
 
-int main(int argc, char *argv[]) {
+int main(int argc, char* argv[]) {
     for (int i = 1; i < argc; ++i) {
         std::string arg = argv[i];
         if (arg == "--version" || arg == "-v") {
@@ -50,7 +50,7 @@ int main(int argc, char *argv[]) {
 #endif
 #ifdef HAVE_QTWEBENGINE
     QWebEngineProfile::defaultProfile()->settings()->setAttribute(
-            QWebEngineSettings::PlaybackRequiresUserGesture, false);
+        QWebEngineSettings::PlaybackRequiresUserGesture, false);
 #endif
     w.show();
     return a.exec();
