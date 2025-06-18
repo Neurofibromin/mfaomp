@@ -1,14 +1,32 @@
+/*
+    mfaomp - Multiple Files At Once Media Player
+    Copyright (C) 2025  Neurofibromin
+
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ */
+
 #ifndef MAINWINDOW_H
 #define MAINWINDOW_H
 
-#include <QAction>
+#include <QLabel>
+#include <QMainWindow>
 #include <QMenuBar>
-#include <QVector>
 #include <QTimer>
-#include <QPair>
-#include <QMenu>
+#include <QVector>
 #include "DropWidget.h"
 #include "MediaPlayers.h"
+#include "SettingsDialog.h"
 
 class MainWindow : public QMainWindow {
     Q_OBJECT
@@ -27,6 +45,8 @@ private slots:
     void clearAllVideos();
     void openSettings();
     void exitApplication();
+    void updatePlaybackSettings(float newSpeedIncrement, float newMinSpeed, float newMaxSpeed);
+    void updateApplicationStyle(const QString& newStyle);
 
 private:
     void createWidgets();
@@ -57,16 +77,17 @@ private:
     // Menu bar components
     QMenuBar *menuBar;
     QMenu *fileMenu;
-    QMenu *editMenu; // Consider adding for "Clear" or a separate "Media" menu
-    QMenu *optionsMenu; // Consider adding for "Settings"
+    QMenu *editMenu;
+    QMenu *optionsMenu;
     QAction *openNewVideoAction;
     QAction *clearAction;
     QAction *settingsAction;
     QAction *exitAction;
+    QString currentStyle;
 
-    const float SPEED_INCREMENT = 0.25f;
-    const float MIN_PLAYBACK_SPEED = 0.25f;
-    const float MAX_PLAYBACK_SPEED = 2.0f;
+    float SPEED_INCREMENT = 0.25f;
+    float MIN_PLAYBACK_SPEED = 0.25f;
+    float MAX_PLAYBACK_SPEED = 2.0f;
 };
 
 #endif // MAINWINDOW_H

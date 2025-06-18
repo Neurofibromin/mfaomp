@@ -13,11 +13,11 @@ jobs:
           fetch-depth: 0
 
       - name: Install Qt
-        uses: jurplel/install-qt-action@v2
+        uses: jurplel/install-qt-action@v4
         with:
           host:         windows
           target:       desktop
-          modules:      qtwebengine
+          modules:      qtwebengine, addons.qtmultimedia
 
       - name: "List all files"
         run: |

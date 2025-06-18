@@ -1,5 +1,24 @@
+/*
+    mfaomp - Multiple Files At Once Media Player
+    Copyright (C) 2025  Neurofibromin
+
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ */
+
 #include "MainWindow.h"
 #include <iostream>
+#include <QApplication>
 #include <QComboBox>
 #include <QDebug>
 #include <QFont>
@@ -7,12 +26,16 @@
 #include <QGridLayout>
 #include <QHBoxLayout>
 #include <QLabel>
+#include <QMessageBox>
 #include <QPushButton>
 #include <QSlider>
-#include <QWebEngineProfile>
-#include <QMessageBox>
-#include <QApplication>
+#include <QStandardItemModel>
+#include <QStyleFactory>
+#include <QWidget>
 #include "AddVideo.h"
+
+#include "BackendAvailability.h"
+#include "CurrentBackEndStatusSingleton.h"
 
 MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), mediaPlayers() {
     createWidgets();
@@ -51,10 +74,38 @@ void MainWindow::createWidgets() {
     seekSlider->setPageStep(10);
     seekSlider->setTracking(true);
 
+    //=============
     backendComboBox = new QComboBox(centralWidget);
-    backendComboBox->addItem("VLC Backend");
-    backendComboBox->addItem("QMediaPlayer Backend");
-    backendComboBox->addItem("QWebEngine Backend");
+    // backendComboBox->addItem("VLC Backend");
+    // backendComboBox->addItem("QMediaPlayer Backend");
+    // backendComboBox->addItem("QWebEngine Backend");
+    // Create a QStandardItemModel to manage the items
+    QStandardItemModel *model = new QStandardItemModel();
+
+    // Add "VLC Backend" item
+    QStandardItem *vlcItem = new QStandardItem("VLC Backend");
+    vlcItem->setEnabled(true);
+    if (not mfaomp::BackendAvailability::isVLCAvailableAtRuntime())
+        vlcItem->setEnabled(false);
+    model->appendRow(vlcItem);
+
+    // Add "QMediaPlayer Backend" item
+    QStandardItem *qMediaPlayerItem = new QStandardItem("QMediaPlayer Backend");
+    if (not mfaomp::BackendAvailability::isQtMultimediaAvailableAtRuntime())
+        qMediaPlayerItem->setEnabled(false);
+
+    model->appendRow(qMediaPlayerItem);
+
+    // Add "QWebEngine Backend" item
+    QStandardItem *qWebEngineItem = new QStandardItem("QWebEngine Backend");
+    if (not mfaomp::BackendAvailability::isQtWebEngineAvailableAtRuntime())
+        qWebEngineItem->setEnabled(false);
+    model->appendRow(qWebEngineItem);
+
+    // Set the model to the QComboBox
+    backendComboBox->setModel(model);
+
+    //============
 
     QWidget *buttonContainer = new QWidget(centralWidget);
     QHBoxLayout *buttonLayout = new QHBoxLayout(buttonContainer);
@@ -117,13 +168,6 @@ void MainWindow::makeConnections() {
             p->unmute();
     });
 
-    // QObject::connect(clearAllButton, &QPushButton::clicked, [&]() {
-    //     for (auto &p : mediaPlayers) {
-    //         p->clear();
-    //     }
-    //     mediaPlayers.clear();
-    //     resetUIOnPlayersCleared();
-    // });
     QObject::connect(clearAllButton, &QPushButton::clicked, this, &MainWindow::clearAllVideos);
 
     QObject::connect(increaseSpeedButton, &QPushButton::clicked, [&]() {
@@ -285,7 +329,6 @@ void MainWindow::handleBackendChanged(const QString& text) {
     }
 }
 
-
 void MainWindow::openNewVideo() {
     openAndAddVideo(*this, *videoLayout, mediaPlayers);
 }
@@ -299,8 +342,31 @@ void MainWindow::clearAllVideos() {
 }
 
 void MainWindow::openSettings() {
-    QMessageBox::information(this, "Settings", "TODO");
+    SettingsDialog settingsDialog(SPEED_INCREMENT, MIN_PLAYBACK_SPEED, MAX_PLAYBACK_SPEED,currentStyle,  this);
+    // Connect the signal emitted by the settings dialog to a slot in MainWindow.
+    connect(&settingsDialog, &SettingsDialog::settingsAccepted,
+            this, &MainWindow::updatePlaybackSettings);
+    connect(&settingsDialog, &SettingsDialog::styleAccepted,
+            this, &MainWindow::updateApplicationStyle);
+    settingsDialog.exec();
 }
+
+void MainWindow::updatePlaybackSettings(float newSpeedIncrement, float newMinSpeed, float newMaxSpeed) {
+    SPEED_INCREMENT = newSpeedIncrement;
+    MIN_PLAYBACK_SPEED = newMinSpeed;
+    MAX_PLAYBACK_SPEED = newMaxSpeed;
+    qDebug() << "Settings updated: Increment=" << SPEED_INCREMENT
+             << ", Min=" << MIN_PLAYBACK_SPEED
+             << ", Max=" << MAX_PLAYBACK_SPEED;
+}
+
+
+void MainWindow::updateApplicationStyle(const QString& newStyle) {
+    currentStyle = newStyle;
+    QApplication::setStyle(QStyleFactory::create(newStyle)); // Apply the new style
+    qDebug() << "Application style updated to: " << newStyle;
+}
+
 
 void MainWindow::exitApplication() {
     QMessageBox::StandardButton reply;

@@ -16,13 +16,31 @@
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#ifndef ADDVIDEO_H
-#define ADDVIDEO_H
-#include "MediaPlayers.h"
-#include <QGridLayout>
+#ifndef SETTINGSDIALOG_H
+#define SETTINGSDIALOG_H
 
-void openAndAddVideo(QWidget& parent, QGridLayout& layout, QVector<MediaPlayerBase*>& mediaPlayers);
-void rearrangeVideoPlayers(QGridLayout& layout, QVector<MediaPlayerBase*>& mediaPlayers);
-void addVideoPlayer(QGridLayout& layout, const QUrl& videoUrl, QVector<MediaPlayerBase*>& mediaPlayers);
+#include <QComboBox>
+#include <QDialog>
+#include <QDoubleSpinBox>
 
-#endif //ADDVIDEO_H
+class SettingsDialog : public QDialog {
+    Q_OBJECT
+
+public:
+    explicit SettingsDialog(float speedIncrement, float minSpeed, float maxSpeed, const QString& currentStyle, QWidget *parent = nullptr);
+
+    signals:
+        void settingsAccepted(float newSpeedIncrement, float newMinSpeed, float newMaxSpeed);
+        void styleAccepted(const QString& newStyle);
+
+private slots:
+    void acceptSettings();
+
+private:
+    QDoubleSpinBox *speedIncrementSpinBox;
+    QDoubleSpinBox *minPlaybackSpeedSpinBox;
+    QDoubleSpinBox *maxPlaybackSpeedSpinBox;
+    QComboBox *styleComboBox;
+};
+
+#endif // SETTINGSDIALOG_H

@@ -16,13 +16,13 @@
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#ifndef ADDVIDEO_H
-#define ADDVIDEO_H
+#ifndef PLAYERFACTORY_H
+#define PLAYERFACTORY_H
+
 #include "MediaPlayers.h"
-#include <QGridLayout>
 
-void openAndAddVideo(QWidget& parent, QGridLayout& layout, QVector<MediaPlayerBase*>& mediaPlayers);
-void rearrangeVideoPlayers(QGridLayout& layout, QVector<MediaPlayerBase*>& mediaPlayers);
-void addVideoPlayer(QGridLayout& layout, const QUrl& videoUrl, QVector<MediaPlayerBase*>& mediaPlayers);
+namespace PlayerFactory {
+    MediaPlayerBase* createPlayer(const QUrl& videoUrl);
+}
 
-#endif //ADDVIDEO_H
+#endif // PLAYERFACTORY_H

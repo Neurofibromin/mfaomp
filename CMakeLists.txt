@@ -35,121 +35,204 @@ set(CMAKE_AUTOMOC ON)
 set(CMAKE_AUTORCC ON)
 set(CMAKE_AUTOUIC ON)
 
-configure_file(
-        "${CMAKE_CURRENT_SOURCE_DIR}/version.h.in"
-        "${CMAKE_CURRENT_BINARY_DIR}/version.h"
-        @ONLY
-)
+option(ENABLE_QTMULTIMEDIA "Enable Qt Multimedia backend" ON)
+option(ENABLE_LIBVLC "Enable VLC backend" ON)
+option(ENABLE_QTWEBENGINE "Enable Qt WebEngine backend" ON)
+option(ENABLE_CATCH "Enable Catch testing" ON)
+option(USE_VCPKG "Enable vcpkg for qt (not system libraries)" OFF)
+option(USE_PREDOWNLOADED_LIBVLCPP "Use predownloaded libvlcpp (disable FetchContent)" OFF) # needed because Fedora disables build time fetching of dependencies, all sources must be downloaded beforehand
+option(USE_SYSTEM_PROVIDED_LIBVLCPP "Use libvlcpp system package (disable FetchContent, used on NixOS)" OFF) # libvlcpp is available as a package for NixOS
+option(USE_FETCHED_LIBVLCPP "Fetch libvlcpp (enable FetchContent, used by default)" ON)
+set(HAVE_QTMULTIMEDIA FALSE)
+set(HAVE_LIBVLC FALSE)
+set(HAVE_QTWEBENGINE FALSE)
 
-# VCPKG
 # cmake -B build -S . -DCMAKE_TOOLCHAIN_FILE=<path_to_vcpkg>/scripts/buildsystems/vcpkg.cmake
-if (WIN32)
-    option(USE_VCPKG "Enable vcpkg for qt (not system libraries)" ON)
-    if (NOT DEFINED VCPKG_ROOT)
+if (WIN32 AND USE_VCPKG AND NOT DEFINED VCPKG_ROOT AND NOT DEFINED CMAKE_TOOLCHAIN_FILE)
         set(VCPKG_ROOT "C:/vcpkg")
-    endif ()
-else ()
-    option(USE_VCPKG "Enable vcpkg for qt (not system libraries)" OFF)
 endif()
 if (USE_VCPKG)
-    message(STATUS "Enable vcpkg for Qt")
+    message(STATUS "Enabling vcpkg")
     if (DEFINED CMAKE_TOOLCHAIN_FILE)
     elseif (DEFINED ENV{VCPKG_ROOT})
         set(CMAKE_TOOLCHAIN_FILE "$ENV{VCPKG_ROOT}/scripts/buildsystems/vcpkg.cmake")
+    elseif (DEFINED VCPKG_ROOT)
+        set(CMAKE_TOOLCHAIN_FILE "${VCPKG_ROOT}/scripts/buildsystems/vcpkg.cmake")
     else()
         set(VCPKG_ROOT "$ENV{HOME}/.vcpkg")
         set(CMAKE_TOOLCHAIN_FILE "$ENV{VCPKG_ROOT}/scripts/buildsystems/vcpkg.cmake")
     endif()
-else()
-    message(STATUS "Using system provided Qt")
 endif()
-
-
+#set(CMAKE_FIND_DEBUG_MODE 1)
 find_package(Qt6 REQUIRED COMPONENTS
         Core
         Gui
         Widgets
+        OPTIONAL_COMPONENTS
         Multimedia
         MultimediaWidgets
         WebEngineWidgets
-        OPTIONAL_COMPONENTS Test
+        Test
 )
+#set(CMAKE_FIND_DEBUG_MODE 0)
+# VLC
+if (ENABLE_LIBVLC)
+    find_package(PkgConfig REQUIRED)
+    pkg_check_modules(LIBVLC libvlc)
+    if (LIBVLC_FOUND)
+        message(STATUS "libVLC backend enabled")
+        set(HAVE_LIBVLC TRUE)
+    else()
+        message(WARNING "libVLC not found; disabling backend")
+        set(HAVE_LIBVLC FALSE)
+    endif()
+    if(USE_SYSTEM_PROVIDED_LIBVLCPP)
+        pkg_check_modules(LIBVLCPP libvlcpp QUIET)
+        if (LIBVLCPP_FOUND)
+            message(STATUS "libvlcpp system package found")
+        else()
+            message(FATAL_ERROR "System provided libvlcpp package not found")
+        endif()
+    endif ()
+endif()
 
-find_package(PkgConfig REQUIRED)
-pkg_check_modules(LIBVLC REQUIRED libvlc)
-pkg_check_modules(LIBVLCPP libvlcpp QUIET) # try to find libvlcpp system package
+# Qt Multimedia
+if (ENABLE_QTMULTIMEDIA)
+    if (Qt6Multimedia_FOUND AND Qt6MultimediaWidgets_FOUND)
+        message(STATUS "QtMultimedia backend enabled")
+        set(HAVE_QTMULTIMEDIA TRUE)
+    else()
+        message(WARNING "QtMultimedia not found; disabling backend")
+        set(HAVE_QTMULTIMEDIA FALSE)
+    endif()
+endif()
 
-add_executable(mfaomp main.cpp
+# WebEngine
+if (ENABLE_QTWEBENGINE)
+    if (Qt6WebEngineWidgets_FOUND)
+        message(STATUS "QtWebEngine backend enabled")
+        set(HAVE_QTWEBENGINE TRUE)
+    else()
+        message(WARNING "QtWebEngineWidgets not found; disabling backend")
+        set(HAVE_QTWEBENGINE FALSE)
+    endif()
+endif()
+
+if(POLICY CMP0167)
+    cmake_policy(SET CMP0167 NEW)
+endif()
+find_package(Boost 1.80 COMPONENTS system filesystem REQUIRED)
+if (Boost_FOUND)
+    message(STATUS "Boost found: ${Boost_VERSION}")
+    message(STATUS "Boost include directories: ${Boost_INCLUDE_DIRS}")
+    message(STATUS "Boost libraries: ${Boost_LIBRARIES}")
+else()
+    message(FATAL_ERROR "Boost not found. Please install Boost development libraries.")
+endif()
+
+set(MFAOMP_SOURCES
         AddVideo.cpp
         AddVideo.h
-        MediaPlayers.h
+        BackendAvailability.cpp
+        BackendAvailability.h
         DropWidget.h
         MainWindow.cpp
-        MainWindow.h)
+        MainWindow.h
+        MediaPlayers.h
+        SettingsDialog.cpp
+        SettingsDialog.h
+        MediaPlayerImpls/PlayerFactory.cpp
+        MediaPlayerImpls/PlayerFactory.h
+        MediaPlayerImpls/CurrentBackEndStatusSingleton.h
+)
 
-target_include_directories(mfaomp PRIVATE "${CMAKE_CURRENT_BINARY_DIR}") #needed for version.h inclusion
-
-# needed because Fedora disables build time fetching of dependencies, all sources must be downloaded beforehand
-option(USE_PREDOWNLOADED_LIBVLCPP "Use predownloaded libvlcpp (disable FetchContent)" OFF)
-# libvlcpp is available as a package for NixOS
-option(USE_SYSTEM_PROVIDED_LIBVLCPP "Use libvlcpp system package (disable FetchContent, used on NixOS)" ${LIBVLCPP_FOUND})
-option(USE_FETCHED_LIBVLCPP "Fetch libvlcpp (enable FetchContent, used by default)" ON)
-
-set(LIBVLCPP_SOURCE_COUNT 0)
-if (USE_PREDOWNLOADED_LIBVLCPP)
-    math(EXPR LIBVLCPP_SOURCE_COUNT "${LIBVLCPP_SOURCE_COUNT} + 1")
+if (HAVE_LIBVLC)
+    list(APPEND MFAOMP_SOURCES MediaPlayerImpls/VLCPlayerStruct.h)
+    list(APPEND MFAOMP_SOURCES MediaPlayerImpls/VLCPlayerStruct.cpp)
 endif()
-if (USE_SYSTEM_PROVIDED_LIBVLCPP)
-    math(EXPR LIBVLCPP_SOURCE_COUNT "${LIBVLCPP_SOURCE_COUNT} + 1")
+if (HAVE_QTMULTIMEDIA)
+    list(APPEND MFAOMP_SOURCES MediaPlayerImpls/QMediaPlayerStruct.h)
+    list(APPEND MFAOMP_SOURCES MediaPlayerImpls/QMediaPlayerStruct.cpp)
 endif()
-if (USE_FETCHED_LIBVLCPP)
-    math(EXPR LIBVLCPP_SOURCE_COUNT "${LIBVLCPP_SOURCE_COUNT} + 1")
-endif()
-
-if (LIBVLCPP_SOURCE_COUNT GREATER 1)
-    message(SEND_ERROR "Please select only one source for libvlcpp (USE_PREDOWNLOADED_LIBVLCPP, USE_SYSTEM_PROVIDED_LIBVLCPP, or USE_FETCHED_LIBVLCPP).")
-elseif (LIBVLCPP_SOURCE_COUNT EQUAL 0)
-    message(SEND_ERROR "No source for libvlcpp selected. Please enable one of USE_PREDOWNLOADED_LIBVLCPP, USE_SYSTEM_PROVIDED_LIBVLCPP, or USE_FETCHED_LIBVLCPP.")
+if (HAVE_QTWEBENGINE)
+    list(APPEND MFAOMP_SOURCES MediaPlayerImpls/QWebEngineStruct.h)
+    list(APPEND MFAOMP_SOURCES MediaPlayerImpls/QWebEngineStruct.cpp)
 endif()
 
-if (USE_PREDOWNLOADED_LIBVLCPP)
-    message(STATUS "Using predownloaded libvlcpp, FetchContent disabled")
-    target_include_directories(mfaomp PRIVATE
-            ${LIBVLC_INCLUDE_DIRS}
-            ${CMAKE_CURRENT_SOURCE_DIR}/third_party/libvlcpp/vlcpp
-    )
-elseif (USE_SYSTEM_PROVIDED_LIBVLCPP)
-    message(STATUS "Using system-provided libvlcpp, FetchContent disabled")
-    target_include_directories(mfaomp PRIVATE
-            ${LIBVLC_INCLUDE_DIRS}
-            ${LIBVLCPP_INCLUDE_DIRS}/vlcpp
-    )
-elseif (USE_FETCHED_LIBVLCPP)
-    message(STATUS "Fetching libvlcpp with FetchContent")
-    include(FetchContent)
-    FetchContent_Declare(
-            libvlcpp #libvlcpp has no cmakelists, but it's header only so only including from the fetched repo
-            GIT_REPOSITORY https://github.com/videolan/libvlcpp.git
-            GIT_TAG master
-    )
-    FetchContent_MakeAvailable(libvlcpp)
-    target_include_directories(mfaomp PRIVATE
-            ${LIBVLC_INCLUDE_DIRS}
-            ${libvlcpp_SOURCE_DIR}/vlcpp
-    )
-else ()
-    message(SEND_ERROR "No source of libvlcpp provided!" )
-endif()
+add_executable(mfaomp ${MFAOMP_SOURCES} main.cpp)
 
-target_link_libraries(mfaomp
+target_include_directories(mfaomp PRIVATE
+        "${CMAKE_CURRENT_BINARY_DIR}" #needed for version.h inclusion
+        "${CMAKE_CURRENT_SOURCE_DIR}"
+        "MediaPlayerImpls"
+        ${Boost_INCLUDE_DIRS}
+)
+if (HAVE_LIBVLC)
+    set(LIBVLCPP_SOURCE_COUNT 0)
+    if (USE_PREDOWNLOADED_LIBVLCPP)
+        math(EXPR LIBVLCPP_SOURCE_COUNT "${LIBVLCPP_SOURCE_COUNT} + 1")
+    endif()
+    if (USE_SYSTEM_PROVIDED_LIBVLCPP)
+        math(EXPR LIBVLCPP_SOURCE_COUNT "${LIBVLCPP_SOURCE_COUNT} + 1")
+    endif()
+    if (USE_FETCHED_LIBVLCPP)
+        math(EXPR LIBVLCPP_SOURCE_COUNT "${LIBVLCPP_SOURCE_COUNT} + 1")
+    endif()
+
+    if (LIBVLCPP_SOURCE_COUNT GREATER 1)
+        message(SEND_ERROR "Please select only one source for libvlcpp (USE_PREDOWNLOADED_LIBVLCPP, USE_SYSTEM_PROVIDED_LIBVLCPP, or USE_FETCHED_LIBVLCPP).")
+    elseif (LIBVLCPP_SOURCE_COUNT EQUAL 0)
+        message(SEND_ERROR "No source for libvlcpp selected. Please enable one of USE_PREDOWNLOADED_LIBVLCPP, USE_SYSTEM_PROVIDED_LIBVLCPP, or USE_FETCHED_LIBVLCPP.")
+    endif()
+
+    if (USE_PREDOWNLOADED_LIBVLCPP)
+        message(STATUS "Using predownloaded libvlcpp, FetchContent disabled")
+        target_include_directories(mfaomp PRIVATE
+                ${LIBVLC_INCLUDE_DIRS}
+                ${CMAKE_CURRENT_SOURCE_DIR}/third_party/libvlcpp/vlcpp
+        )
+    elseif (USE_SYSTEM_PROVIDED_LIBVLCPP)
+        message(STATUS "Using system-provided libvlcpp, FetchContent disabled")
+        target_include_directories(mfaomp PRIVATE
+                ${LIBVLC_INCLUDE_DIRS}
+                ${LIBVLCPP_INCLUDE_DIRS}/vlcpp
+        )
+    elseif (USE_FETCHED_LIBVLCPP)
+        message(STATUS "Fetching libvlcpp with FetchContent")
+        include(FetchContent)
+        FetchContent_Declare(
+                libvlcpp #libvlcpp has no cmakelists, but it's header only so only including from the fetched repo
+                GIT_REPOSITORY https://github.com/videolan/libvlcpp.git
+                GIT_TAG master
+        )
+        FetchContent_MakeAvailable(libvlcpp)
+        target_include_directories(mfaomp PRIVATE
+                ${LIBVLC_INCLUDE_DIRS}
+                ${libvlcpp_SOURCE_DIR}/vlcpp
+        )
+    else ()
+        message(SEND_ERROR "No source of libvlcpp provided!" )
+    endif()
+endif()
+set(MFAOMP_LIBRARIES
         Qt::Core
         Qt::Gui
         Qt::Widgets
-        Qt::Multimedia
-        Qt::MultimediaWidgets
-        Qt::WebEngineWidgets
-        ${LIBVLC_LIBRARIES}
+        ${Boost_LIBRARIES}
 )
+
+# Conditionally add backend-specific Qt libraries and VLC library
+if (HAVE_QTMULTIMEDIA)
+    list(APPEND MFAOMP_LIBRARIES Qt::Multimedia Qt::MultimediaWidgets)
+endif()
+if (HAVE_QTWEBENGINE)
+    list(APPEND MFAOMP_LIBRARIES Qt::WebEngineWidgets)
+endif()
+if (HAVE_LIBVLC)
+    list(APPEND MFAOMP_LIBRARIES ${LIBVLC_LIBRARIES})
+endif()
+
+target_link_libraries(mfaomp ${MFAOMP_LIBRARIES})
 
 install(TARGETS mfaomp
         RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
@@ -163,14 +246,25 @@ install(FILES "${PROJECT_LICENSE_FILE}"
 
 install(FILES mfaomp.desktop DESTINATION ${CMAKE_INSTALL_DATADIR}/applications)
 
-if (Qt6Test_FOUND)
+if (Qt6Test_FOUND AND HAVE_QTMULTIMEDIA AND HAVE_QTWEBENGINE AND HAVE_LIBVLC)
     get_target_property(_qt_test_exists Qt6::Test IMPORTED)
     message(STATUS "Qt6::Test target exists: ${_qt_test_exists}")
     message(STATUS "Qt6 Test found, enabling 'tests' subdirectory.")
     add_subdirectory(tests)
 else ()
-    message(STATUS "Qt6 Test not found, skipping 'tests' subdirectory.")
+    message(STATUS "Qt6 Test not found or backends missing, skipping 'tests' subdirectory.")
 endif ()
+
+if (HAVE_QTMULTIMEDIA AND HAVE_QTWEBENGINE AND HAVE_LIBVLC AND ENABLE_CATCH)
+    message(STATUS "Catch enabled, enabling 'catchtests' subdirectory.")
+    add_subdirectory(catchtests)
+endif ()
+
+configure_file(
+        "${CMAKE_CURRENT_SOURCE_DIR}/config.h.in"
+        "${CMAKE_CURRENT_BINARY_DIR}/config.h"
+        @ONLY
+)
 
 include(CPack)
 set(CPACK_PACKAGE_VENDOR "${PROJECT_COPYRIGHT_HOLDER}")
