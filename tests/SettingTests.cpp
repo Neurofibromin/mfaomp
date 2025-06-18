@@ -1,30 +1,48 @@
+//SettingTests.cpp
+#define CATCH_CONFIG_EXTERNAL_INTERFACES
 #include "AddVideo.h"
 #include "MainWindow.h"
-#include <QApplication>
+#include "SettingsDialog.h"
 #include <QApplication>
 #include <QMessageBox>
 #include <QObject>
 #include <QPushButton>
 #include <QSignalSpy>
 #include <QTest>
-#include <QtTest/QTest>
+#include <catch2/catch_session.hpp>
 #include <catch2/catch_test_macros.hpp>
-
-#include "SettingsDialog.h"
 #include <catch2/matchers/catch_matchers.hpp>
 #include <catch2/matchers/catch_matchers_floating_point.hpp>
+#include <catch2/reporters/catch_reporter_event_listener.hpp>
+#include <catch2/reporters/catch_reporter_registrars.hpp>
+
+static int g_test_argc = 1;
+static char app_name_str[] = "mfaomp_tests_executable";
+static char* g_test_argv[] = {app_name_str, nullptr};
 
 namespace {
-    struct TestApp {
-        TestApp() : app(argc, argv) {}
-    private:
-        int argc = 0;
-        char* argv[1] = { nullptr };
-        QApplication app;
+    class QtAppManagerListener : public Catch::EventListenerBase {
+    public:
+        using Catch::EventListenerBase::EventListenerBase;
+
+        QApplication* currentApp = nullptr;
+
+        void testRunStarting(Catch::TestRunInfo const& /*testRunInfo*/) override {
+            if (!QApplication::instance()) {
+                currentApp = new QApplication(g_test_argc, g_test_argv);
+            }
+        }
+
+        void testRunEnded(Catch::TestRunStats const& /*testRunStats*/) override {
+            if (currentApp) {
+                delete currentApp;
+                currentApp = nullptr;
+            }
+        }
     };
 }
 
-auto const testApp = TestApp{};
+CATCH_REGISTER_LISTENER(QtAppManagerListener)
 
 TEST_CASE("SettingsDialog - Initialization emits correct initial values on accept", "[gui][SettingsDialog]") {
     float initialSpeedIncrement = 0.25f;
@@ -38,10 +56,7 @@ TEST_CASE("SettingsDialog - Initialization emits correct initial values on accep
 
     auto* okButton = dialog.findChild<QPushButton *>("okButton");
     REQUIRE(okButton);
-
-
     QTest::mouseClick(okButton, Qt::LeftButton);
-
 
     REQUIRE(settingsSpy.count() == 1);
     QList<QVariant> settingsArgs = settingsSpy.takeFirst();

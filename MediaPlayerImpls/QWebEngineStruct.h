@@ -1,3 +1,4 @@
+//QWebEngineStruct.h
 /*
     mfaomp - Multiple Files At Once Media Player
     Copyright (C) 2025  Neurofibromin

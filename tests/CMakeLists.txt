@@ -29,8 +29,9 @@ find_package(Qt6 REQUIRED COMPONENTS
 set(target_sources ${MFAOMP_SOURCES})
 list(TRANSFORM target_sources PREPEND "../")
 add_executable(mfaomp_tests
-               test_main.cpp
+#               SettingTests.cpp
                ${target_sources}
+               AddVideoTests.cpp
 )
 
 target_include_directories(mfaomp_tests PRIVATE

@@ -1,3 +1,4 @@
+#root CMakeLists.txt
 #[[
 mfaomp - Multiple Files At Once Media Player
 Copyright (C) 2025  Neurofibromin
@@ -76,7 +77,7 @@ find_package(Qt6 REQUIRED COMPONENTS
 )
 #set(CMAKE_FIND_DEBUG_MODE 0)
 # VLC
-if (ENABLE_LIBVLC)
+if (ENABLE_LIBVLC AND NOT WIN32) #TODO: solve libvlc for windows without pkgconfig
     find_package(PkgConfig REQUIRED)
     pkg_check_modules(LIBVLC libvlc)
     if (LIBVLC_FOUND)
@@ -94,6 +95,9 @@ if (ENABLE_LIBVLC)
             message(FATAL_ERROR "System provided libvlcpp package not found")
         endif ()
     endif ()
+elseif ()
+    message(WARNING "libVLC not supported on windows; disabling backend")
+    set(HAVE_LIBVLC FALSE)
 endif ()
 
 # Qt Multimedia

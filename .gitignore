@@ -58,6 +58,8 @@ $tf/
 *.mdf
 *.meta
 *.mm.*
+*.mp4
+*.mov
 *.msi
 *.msix
 *.msm

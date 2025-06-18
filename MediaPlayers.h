@@ -1,3 +1,4 @@
+//MediaPlayers.h
 /*
     mfaomp - Multiple Files At Once Media Player
     Copyright (C) 2025  Neurofibromin
@@ -28,8 +29,7 @@ struct MediaPlayerBase {
     explicit MediaPlayerBase(const QUrl& videoUrl) : videoUrl(videoUrl) {
     }
 
-    virtual ~MediaPlayerBase() {
-    } // for polymorphism
+    virtual ~MediaPlayerBase() {} // for polymorphism
     virtual void play() = 0;
 
     virtual void pause() = 0;
