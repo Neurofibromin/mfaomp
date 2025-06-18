@@ -1,72 +1,140 @@
-#include <QtTest/QTest>
-#include <QObject>
-#include <catch2/catch_test_macros.hpp>
-#include <QApplication>
-#include "MainWindow.h"
 #include "AddVideo.h"
-#include <catch2/catch_test_macros.hpp>
+#include "MainWindow.h"
 #include <QApplication>
-#include <QTest> // Core testing library
-#include <QSignalSpy> // For checking signal emissions
+#include <QApplication>
+#include <QMessageBox>
+#include <QObject>
+#include <QPushButton>
+#include <QSignalSpy>
+#include <QTest>
+#include <QtTest/QTest>
+#include <catch2/catch_test_macros.hpp>
 
 #include "SettingsDialog.h"
+#include <catch2/matchers/catch_matchers.hpp>
+#include <catch2/matchers/catch_matchers_floating_point.hpp>
 
-// class TestMfaomp : public QObject
-// {
-//     Q_OBJECT
-//
-// private slots:
-//     void initTestCase()
-//     {
-//         qDebug() << "Initializing test case...";
-//     }
-//
-//     void cleanupTestCase()
-//     {
-//         qDebug() << "Cleaning up test case...";
-//     }
-//
-//     void init()
-//     {
-//         qDebug() << "Initializing test...";
-//     }
-//
-//     void cleanup()
-//     {
-//         qDebug() << "Cleaning up test...";
-//     }
-//
-//     void testMainWindow()
-//     {
-//         MainWindow mainWindow;
-//         QCOMPARE(mainWindow.windowTitle(), QString("mfaomp"));
-//     }
-//
-//     void testMath()
-//     {
-//         int a = 1;
-//         int b = 1;
-//         QCOMPARE(a + b, 2);
-//     }
-// };
-
-
-TEST_CASE("Example Test", "[example]") {
-    REQUIRE(1 == 1);
+namespace {
+    struct TestApp {
+        TestApp() : app(argc, argv) {}
+    private:
+        int argc = 0;
+        char* argv[1] = { nullptr };
+        QApplication app;
+    };
 }
 
-TEST_CASE("Example Test 2", "[example]") {
-    int x = 2;
-    int y = 2;
-    REQUIRE(x == y);
+auto const testApp = TestApp{};
+
+TEST_CASE("SettingsDialog - Initialization emits correct initial values on accept", "[gui][SettingsDialog]") {
+
+    float initialSpeedIncrement = 0.25f;
+    float initialMinSpeed = 0.5f;
+    float initialMaxSpeed = 4.0f;
+    QString initialStyle = "Fusion";
+
+    SettingsDialog dialog(initialSpeedIncrement, initialMinSpeed, initialMaxSpeed, initialStyle);
+    QSignalSpy settingsSpy(&dialog, &SettingsDialog::settingsAccepted);
+    QSignalSpy styleSpy(&dialog, &SettingsDialog::styleAccepted);
+
+    auto* okButton = dialog.findChild<QPushButton*>("okButton");
+    REQUIRE(okButton);
+
+
+    QTest::mouseClick(okButton, Qt::LeftButton);
+
+
+    REQUIRE(settingsSpy.count() == 1);
+    QList<QVariant> settingsArgs = settingsSpy.takeFirst();
+    REQUIRE(settingsArgs.at(0).toFloat() == initialSpeedIncrement);
+    REQUIRE(settingsArgs.at(1).toFloat() == initialMinSpeed);
+    REQUIRE(settingsArgs.at(2).toFloat() == initialMaxSpeed);
+
+    REQUIRE(styleSpy.count() == 1);
+    QList<QVariant> styleArgs = styleSpy.takeFirst();
+    REQUIRE(styleArgs.at(0).toString() == initialStyle);
 }
 
-TEST_CASE("Gui Test example 1", "[gui]") {
-    int argc = 0;
-    char* argv[] = { nullptr };
-    QApplication app(argc, argv);
+TEST_CASE("SettingsDialog - Accept with valid input (private members)", "[gui][SettingsDialog]") {
+
+    SettingsDialog dialog(0.1f, 0.5f, 2.0f, "Fusion");
+    QSignalSpy settingsSpy(&dialog, &SettingsDialog::settingsAccepted);
+
+
+    auto* speedSpinBox = dialog.findChild<QDoubleSpinBox*>("speedIncrementSpinBox");
+    auto* minSpeedSpinBox = dialog.findChild<QDoubleSpinBox*>("minPlaybackSpeedSpinBox");
+    auto* maxSpeedSpinBox = dialog.findChild<QDoubleSpinBox*>("maxPlaybackSpeedSpinBox");
+    auto* okButton = dialog.findChild<QPushButton*>("okButton");
+
+    REQUIRE(speedSpinBox);
+    REQUIRE(minSpeedSpinBox);
+    REQUIRE(maxSpeedSpinBox);
+    REQUIRE(okButton);
+
+    double newSpeedIncrement = 0.3;
+    double newMinSpeed = 0.6;
+    double newMaxSpeed = 2.5;
+
+    speedSpinBox->setValue(newSpeedIncrement);
+    minSpeedSpinBox->setValue(newMinSpeed);
+    maxSpeedSpinBox->setValue(newMaxSpeed);
+
+
+    QTest::mouseClick(okButton, Qt::LeftButton);
+
+    REQUIRE(dialog.result() == QDialog::Accepted);
+    REQUIRE(settingsSpy.count() == 1);
+    QList<QVariant> arguments = settingsSpy.takeFirst();
+    REQUIRE_THAT(arguments.at(0).toDouble(), Catch::Matchers::WithinRel(newSpeedIncrement,0.001));
+    REQUIRE_THAT(arguments.at(1).toDouble(), Catch::Matchers::WithinRel(newMinSpeed,0.001));
+    REQUIRE_THAT(arguments.at(2).toDouble(), Catch::Matchers::WithinRel(newMaxSpeed,0.001));
 }
 
-// QTEST_MAIN(TestMfaomp)
+TEST_CASE("SettingsDialog - Reject with invalid speed range", "[gui][SettingsDialog]") {
+    SettingsDialog dialog(0.1f, 0.5f, 2.0f, "Fusion");
+    dialog.show();
+    QTest::qWait(50);
+    QSignalSpy settingsSpy(&dialog, &SettingsDialog::settingsAccepted);
 
-#include "test_main.moc"
+    auto* speedSpinBox = dialog.findChild<QDoubleSpinBox*>("speedIncrementSpinBox");
+    auto* minSpeedSpinBox = dialog.findChild<QDoubleSpinBox*>("minPlaybackSpeedSpinBox");
+    auto* maxSpeedSpinBox = dialog.findChild<QDoubleSpinBox*>("maxPlaybackSpeedSpinBox");
+    auto* okButton = dialog.findChild<QPushButton*>("okButton");
+
+    REQUIRE(speedSpinBox);
+    REQUIRE(minSpeedSpinBox);
+    REQUIRE(maxSpeedSpinBox);
+    REQUIRE(okButton);
+
+    minSpeedSpinBox->setValue(3.0);
+    maxSpeedSpinBox->setValue(2.0);
+
+    QTimer::singleShot(100, []() {
+        QApplication::processEvents();
+        QWidget* activeModal = QApplication::activeModalWidget();
+        QMessageBox* messageBox = qobject_cast<QMessageBox*>(activeModal);
+        if (messageBox) {
+            messageBox->accept();
+        } else {
+            FAIL("No QMessageBox appeared after clicking OK on SettingsDialog.");
+        }
+    });
+
+    QTest::mouseClick(okButton, Qt::LeftButton);
+    REQUIRE(dialog.result() == QDialog::Rejected);
+    REQUIRE(dialog.isVisible());
+    REQUIRE(settingsSpy.count() == 0);
+}
+
+TEST_CASE("SettingsDialog - Cancel button", "[gui][SettingsDialog]") {
+    SettingsDialog dialog(0.1f, 0.5f, 2.0f, "Fusion");
+    QSignalSpy settingsSpy(&dialog, &SettingsDialog::settingsAccepted);
+    QSignalSpy styleSpy(&dialog, &SettingsDialog::styleAccepted);
+    auto* cancelButton = dialog.findChild<QPushButton*>("cancelButton");
+    REQUIRE(cancelButton);
+    REQUIRE(cancelButton->text() == "Cancel");
+    QTest::mouseClick(cancelButton, Qt::LeftButton);
+    REQUIRE(dialog.result() == QDialog::Rejected);
+    REQUIRE(settingsSpy.count() == 0);
+    REQUIRE(styleSpy.count() == 0);
+}

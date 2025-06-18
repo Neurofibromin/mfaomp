@@ -32,9 +32,13 @@ SettingsDialog::SettingsDialog(float speedIncrement, float minSpeed, float maxSp
     setFixedSize(300, 200);
 
     speedIncrementSpinBox = new QDoubleSpinBox(this);
+    speedIncrementSpinBox->setObjectName("speedIncrementSpinBox"); // Add this
     minPlaybackSpeedSpinBox = new QDoubleSpinBox(this);
+    minPlaybackSpeedSpinBox->setObjectName("minPlaybackSpeedSpinBox"); // Add this
     maxPlaybackSpeedSpinBox = new QDoubleSpinBox(this);
+    maxPlaybackSpeedSpinBox->setObjectName("maxPlaybackSpeedSpinBox"); // Add this
     styleComboBox = new QComboBox(this);
+    styleComboBox->setObjectName("styleComboBox"); // Add this
 
     // QStringList availableStyles = QApplication::styleFactory()->keys();
     QStringList availableStyles = QStyleFactory::keys();
@@ -65,7 +69,9 @@ SettingsDialog::SettingsDialog(float speedIncrement, float minSpeed, float maxSp
     QLabel *styleLabel = new QLabel("Application Style:", this);
 
     QPushButton *okButton = new QPushButton("OK", this);
+    okButton->setObjectName("okButton");
     QPushButton *cancelButton = new QPushButton("Cancel", this);
+    cancelButton->setObjectName("cancelButton");
 
     QFormLayout *formLayout = new QFormLayout();
     formLayout->addRow(speedIncrementLabel, speedIncrementSpinBox);
