@@ -11,7 +11,7 @@
 
 stdenv.mkDerivation (finalAttrs: {
   pname = "mfaomp";
-  version = "0.4.3";
+  version = "0.6.5";
 
   src = fetchFromGitHub {
     owner = "Neurofibromin";

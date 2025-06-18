@@ -6,6 +6,7 @@
 # mfaomp-obs.spec
 # package.nix
 # ../CMakeLists.txt
+# ../vcpkg.json
 
 # Check if the correct number of arguments is provided
 if [ "$#" -ne 1 ]; then
@@ -21,6 +22,7 @@ SPEC_FILE1=./mfaomp-copr.spec
 SPEC_FILE2=./mfaomp-obs.spec
 NIX_FILE=./package.nix
 CMAKELISTS_FILE=../CMakeLists.txt
+VCPKG_FILE=../vcpkg.json
 
 # Validate the PKGBUILD file exists
 if [ ! -f "$PKGBUILD_FILE" ]; then
@@ -87,3 +89,12 @@ fi
 # Replace the VERSION value in the project command
 sed -i -E "s/(VERSION )[0-9]+\.[0-9]+\.[0-9]+/\1${NEW_VERSION}/" "$CMAKELISTS_FILE"
 echo "Version updated to $NEW_VERSION in $CMAKELISTS_FILE."
+
+# Validate the vcpkg.json file exists
+if [ ! -f "$VCPKG_FILE" ]; then
+    echo "Error: File '$VCPKG_FILE' not found."
+    exit 1
+fi
+# Replace the version in vcpkg.json
+sed -i -E "s/\"version\": \"[0-9]+\.[0-9]+\.[0-9]+\"/\"version\": \"${NEW_VERSION}\"/" "$VCPKG_FILE"
+echo "Version updated to $NEW_VERSION in $VCPKG_FILE."

@@ -1,7 +1,7 @@
 # Maintainer: Neurofibromin <125222560+Neurofibromin@users.noreply.github.com>
 # Contributor: Neurofibromin <125222560+Neurofibromin@users.noreply.github.com>
 pkgname=mfaomp
-pkgver=0.4.3
+pkgver=0.6.5
 pkgrel=1
 pkgdesc="Multiple Files At Once Media Player"
 arch=('x86_64')

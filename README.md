@@ -209,17 +209,23 @@ use packaging/package.nix
 
 ```shell
 sudo apt install \
-qt6-base-dev \
+build-essential \
+cmake \
+libboost-all-dev \
 libqt6multimedia6 \
 libqt6multimediawidgets6 \
-qt6-tools-dev \
-libqt6webenginewidgets6 \
-libqt6webview6 \
+libqt6webchannel6 \
 libqt6webenginecore6 \
 libqt6webenginewidgets6 \
+libqt6webenginewidgets6 \
+libqt6webview6 \
+libvlc-dev \
+pkg-config \
+qt6-base-dev \
+qt6-multimedia-dev \
+qt6-tools-dev \
 qt6-webengine-dev \
-libqt6webchannel6 \
-libvlc-dev
+vlc-plugin-qt
 ```
 
 ### openSUSE:
