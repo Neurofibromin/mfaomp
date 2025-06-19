@@ -28,7 +28,7 @@
 #include "DropWidget.h"
 #include "MediaPlayers.h"
 #include "SettingsDialog.h"
-#include "CurrentBackEndStatusSingleton.h"
+#include "BackEndEnum.h"
 
 class MainWindow : public QMainWindow {
     Q_OBJECT

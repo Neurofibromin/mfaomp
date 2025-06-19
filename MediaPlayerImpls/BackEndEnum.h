@@ -16,17 +16,13 @@
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#ifndef PLAYERFACTORY_H
-#define PLAYERFACTORY_H
+#ifndef BACKENDENUM_H
+#define BACKENDENUM_H
 
-#include "BackEndEnum.h"
-#include "MediaPlayers.h"
-
-using CreatePlayerFuncPtrType = MediaPlayerBase* (*)(const QUrl&);
-
-class PlayerFactory {
-public:
-    static CreatePlayerFuncPtrType ProduceChosenFactory(currentBackEnd backend);
+enum currentBackEnd {
+    QMediaPlayerBackEnd,
+    VLCPlayerBackEnd,
+    QWebEngineBackEnd
 };
 
-#endif // PLAYERFACTORY_H
+#endif //BACKENDENUM_H

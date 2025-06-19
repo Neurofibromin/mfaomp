@@ -27,7 +27,6 @@
 #include <QStandardPaths>
 #include <QtGlobal>
 #include <QUrl>
-#include "PlayerFactory.h"
 
 //allow for dependency injection of getUrlsFunc
 void openAndAddVideo(QWidget& parent,

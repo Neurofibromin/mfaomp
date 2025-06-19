@@ -147,7 +147,7 @@ set(MFAOMP_SOURCES
     SettingsDialog.h
     MediaPlayerImpls/PlayerFactory.cpp
     MediaPlayerImpls/PlayerFactory.h
-    MediaPlayerImpls/CurrentBackEndStatusSingleton.h
+    MediaPlayerImpls/BackEndEnum.h
 )
 
 if (HAVE_LIBVLC)

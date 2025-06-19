@@ -17,8 +17,11 @@
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+#include "AddVideo.h"
+#include "BackEndEnum.h"
+#include "BackendAvailability.h"
 #include "MainWindow.h"
-#include <iostream>
+#include "PlayerFactory.h"
 #include <QApplication>
 #include <QComboBox>
 #include <QDebug>
@@ -33,10 +36,6 @@
 #include <QStandardItemModel>
 #include <QStyleFactory>
 #include <QWidget>
-#include "AddVideo.h"
-
-#include "BackendAvailability.h"
-#include "CurrentBackEndStatusSingleton.h"
 
 MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), mediaPlayers() {
     createWidgets();
@@ -298,7 +297,7 @@ void MainWindow::handleSeekSliderReleased() {
 }
 
 void MainWindow::handleBackendChanged(const QString& text) {
-    std::cout << "Selected backend: " << text.toStdString() << std::endl;
+    qDebug() << "Selected backend: " << text.toStdString();
     QVector<QPair<QUrl, int64_t> > currently_playing;
     for (auto& p: mediaPlayers) {
         QPair<QUrl, int64_t> cur = {p->videoUrl, p->time()};
@@ -319,10 +318,9 @@ void MainWindow::handleBackendChanged(const QString& text) {
         newBackendType = QWebEngineBackEnd;
     } else {
         qCritical() << "Unknown backend selected:" << text;
-        return; // Or fallback
+        return;
     }
     setActivePlayerCreator(newBackendType);
-    // CurrentBackEndStatusSingleton::getInstance().setCurrentBackEnd(newBackendType);
     for (auto& p: currently_playing) {
         addVideoPlayer(*videoLayout, p.first, mediaPlayers, activePlayerCreator);
     }
@@ -331,7 +329,7 @@ void MainWindow::handleBackendChanged(const QString& text) {
     }
     for (int i = 0; i < currently_playing.length(); ++i) {
         mediaPlayers.at(i)->play();
-        std::cout << "setting time to: " << currently_playing[i].second << std::endl;
+        qDebug() << "setting time to: " << currently_playing[i].second;
         mediaPlayers.at(i)->set_time(currently_playing[i].second);
     }
 }

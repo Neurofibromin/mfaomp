@@ -33,15 +33,14 @@ SettingsDialog::SettingsDialog(float speedIncrement, float minSpeed, float maxSp
     setFixedSize(300, 200);
 
     speedIncrementSpinBox = new QDoubleSpinBox(this);
-    speedIncrementSpinBox->setObjectName("speedIncrementSpinBox"); // Add this
+    speedIncrementSpinBox->setObjectName("speedIncrementSpinBox");
     minPlaybackSpeedSpinBox = new QDoubleSpinBox(this);
-    minPlaybackSpeedSpinBox->setObjectName("minPlaybackSpeedSpinBox"); // Add this
+    minPlaybackSpeedSpinBox->setObjectName("minPlaybackSpeedSpinBox");
     maxPlaybackSpeedSpinBox = new QDoubleSpinBox(this);
-    maxPlaybackSpeedSpinBox->setObjectName("maxPlaybackSpeedSpinBox"); // Add this
+    maxPlaybackSpeedSpinBox->setObjectName("maxPlaybackSpeedSpinBox");
     styleComboBox = new QComboBox(this);
-    styleComboBox->setObjectName("styleComboBox"); // Add this
+    styleComboBox->setObjectName("styleComboBox");
 
-    // QStringList availableStyles = QApplication::styleFactory()->keys();
     QStringList availableStyles = QStyleFactory::keys();
     styleComboBox->addItems(availableStyles);
     int currentIndex = styleComboBox->findText(currentStyle);

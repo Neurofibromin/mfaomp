@@ -52,13 +52,7 @@ protected:
 
     void dropEvent(QDropEvent* event) override {
         QList<QUrl> urls = event->mimeData()->urls();
-        // QList<QUrl> urls = event->mimeData()->urls();
         if (!urls.isEmpty()) emit filesDropped(urls);
-        // for (const QUrl& url: urls) {
-        //     if (url.isLocalFile()) {
-        //         addVideoPlayer(*video_layout, url, mediaPlayers);
-        //     }
-        // }
     }
 
 private:

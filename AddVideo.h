@@ -22,7 +22,8 @@
 #include <QGridLayout>
 #include <functional>
 #include <QFileDialog>
-#include "PlayerFactory.h"
+
+using CreatePlayerFuncPtrType = MediaPlayerBase* (*)(const QUrl&);
 
 // Signature for the file dialog function
 using GetOpenFileUrlsFuncType = std::function<QList<QUrl>(
@@ -38,11 +39,11 @@ using GetOpenFileUrlsFuncType = std::function<QList<QUrl>(
 void openAndAddVideo(QWidget& parentWidget,
                      QGridLayout& layout,
                      QVector<MediaPlayerBase*>& mediaPlayers,
-                     CreatePlayerFuncPtrType createPlayerFunc /*= PlayerFactory::createPlayer*/,
+                     CreatePlayerFuncPtrType createPlayerFunc,
                      GetOpenFileUrlsFuncType getUrlsFunc = QFileDialog::getOpenFileUrls);
 
 void rearrangeVideoPlayers(QGridLayout& layout, QVector<MediaPlayerBase *>& mediaPlayers);
 
-void addVideoPlayer(QGridLayout& layout, const QUrl& videoUrl, QVector<MediaPlayerBase *>& mediaPlayers, CreatePlayerFuncPtrType createPlayerFunc /*= PlayerFactory::createPlayer*/);
+void addVideoPlayer(QGridLayout& layout, const QUrl& videoUrl, QVector<MediaPlayerBase *>& mediaPlayers, CreatePlayerFuncPtrType createPlayerFunc);
 
 #endif //ADDVIDEO_H

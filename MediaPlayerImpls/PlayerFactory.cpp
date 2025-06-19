@@ -21,43 +21,8 @@
 #include "VLCPlayerStruct.h"
 #include "QMediaPlayerStruct.h"
 #include "QWebEngineStruct.h"
-#include "CurrentBackEndStatusSingleton.h"
+#include "BackEndEnum.h"
 #include "config.h"
-
-// MediaPlayerBase* PlayerFactory::defaultRealCreatePlayer(const QUrl& videoUrl) {
-//     qDebug() << "PlayerFactory (Real): Creating player for" << videoUrl.toString();
-//     switch (CurrentBackEndStatusSingleton::getInstance().getCurrentBackEnd()) {
-// #ifdef HAVE_LIBVLC
-//         case VLCPlayerBackEnd:
-//             qDebug() << "Creating VLCPlayerStruct for:" << videoUrl;
-//             return new VLCPlayerStruct(videoUrl);
-// #endif
-// #ifdef HAVE_QTMULTIMEDIA
-//         case QMediaPlayerBackEnd:
-//             qDebug() << "Creating QMediaPlayerStruct for:" << videoUrl;
-//             return new QMediaPlayerStruct(videoUrl);
-// #endif
-// #ifdef HAVE_QTWEBENGINE
-//         case QWebEngineBackEnd:
-//             qDebug() << "Creating QWebEngineStruct for:" << videoUrl;
-//             return new QWebEngineStruct(videoUrl);
-// #endif
-//         default:
-//             qWarning() << "No valid media player backend selected for URL:" << videoUrl;
-//             return nullptr;
-//     }
-// }
-
-// Initialize the static function pointer to point to the default real implementation
-// CreatePlayerFuncPtrType PlayerFactory::CreatorInstance = &PlayerFactory::defaultRealCreatePlayer;
-
-// MediaPlayerBase* PlayerFactory::createPlayer(const QUrl& url) {
-//     if (CreatorInstance) {
-//         return CreatorInstance(url);
-//     }
-//     qWarning() << "PlayerFactory::CreatorInstance is null! Cannot create player for " << url.toString();
-//     return nullptr;
-// }
 
 CreatePlayerFuncPtrType PlayerFactory::ProduceChosenFactory(currentBackEnd backend) {
     CreatePlayerFuncPtrType createdFactoryFunction;

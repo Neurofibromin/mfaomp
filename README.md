@@ -216,7 +216,10 @@ vlc-devel
 
 ### NixOS:
 
-use packaging/package.nix
+Use the provided flake.nix in project root:
+```shell
+nix develop
+```
 
 ### Ubuntu:
 
