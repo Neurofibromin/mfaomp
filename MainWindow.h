@@ -1,3 +1,4 @@
+//MainWindow.h
 /*
     mfaomp - Multiple Files At Once Media Player
     Copyright (C) 2025  Neurofibromin
@@ -27,6 +28,7 @@
 #include "DropWidget.h"
 #include "MediaPlayers.h"
 #include "SettingsDialog.h"
+#include "CurrentBackEndStatusSingleton.h"
 
 class MainWindow : public QMainWindow {
     Q_OBJECT
@@ -58,6 +60,8 @@ private slots:
     void updatePlaybackSettings(float newSpeedIncrement, float newMinSpeed, float newMaxSpeed);
 
     void updateApplicationStyle(const QString& newStyle);
+
+    void handleFilesDropped(const QList<QUrl>& urls);
 
 private:
     void createWidgets();
@@ -100,6 +104,10 @@ private:
     float SPEED_INCREMENT = 0.25f;
     float MIN_PLAYBACK_SPEED = 0.25f;
     float MAX_PLAYBACK_SPEED = 2.0f;
+
+    CreatePlayerFuncPtrType activePlayerCreator;
+    currentBackEnd activeBackendType;
+    void setActivePlayerCreator(currentBackEnd backendType);
 };
 
 #endif // MAINWINDOW_H

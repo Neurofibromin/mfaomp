@@ -161,8 +161,8 @@ TEST_CASE("openAndAddVideo - No video files selected", "[AddVideo]") {
     }
 
     openAndAddVideo(parentWidget, layout, mediaPlayers,
-                    &replacementGetOpenFileUrls,
-                    &createMockPlayer);
+                    &createMockPlayer,
+                    &replacementGetOpenFileUrls);
 
     SECTION("After calling") {
         REQUIRE(mediaPlayers.empty());
@@ -206,8 +206,7 @@ TEST_CASE("openAndAddVideo - Single valid video file selected", "[AddVideo]") {
         REQUIRE(layout.count() == 0);
     }
     openAndAddVideo(parentWidget, layout, mediaPlayers,
-                    &replacementGetOpenFileUrls,
-                    &createMockPlayer);
+                    &createMockPlayer,&replacementGetOpenFileUrls);
     SECTION("After calling") {
         REQUIRE(mediaPlayers.size() == 1);
         REQUIRE(mediaPlayers.first()->videoUrl == testUrl);
@@ -264,8 +263,7 @@ TEST_CASE("openAndAddVideo - Multiple valid video files selected", "[AddVideo]")
 
 
     openAndAddVideo(parentWidget, layout, mediaPlayers,
-                    &replacementGetOpenFileUrls,
-                    &createMockPlayer);
+                    &createMockPlayer, &replacementGetOpenFileUrls);
 
     SECTION("After calling") {
         REQUIRE(mediaPlayers.size() == 2);
@@ -344,8 +342,7 @@ TEST_CASE("addVideoPlayer - Adds player and rearranges layout", "[AddVideo]") {
 
 
     openAndAddVideo(parentWidget, layout, mediaPlayers,
-                    &replacementGetOpenFileUrls,
-                    &createMockPlayer);
+                    &createMockPlayer, &replacementGetOpenFileUrls);
 
     SECTION("After adding one player") {
         REQUIRE(mediaPlayers.size() == 1);
@@ -362,8 +359,7 @@ TEST_CASE("addVideoPlayer - Adds player and rearranges layout", "[AddVideo]") {
     mockSelectedUrls = {testUrl2};
 
     openAndAddVideo(parentWidget, layout, mediaPlayers,
-                    &replacementGetOpenFileUrls,
-                    &createMockPlayer);
+                    &createMockPlayer, &replacementGetOpenFileUrls);
 
     SECTION("After adding a second player") {
         REQUIRE(mediaPlayers.size() == 2);

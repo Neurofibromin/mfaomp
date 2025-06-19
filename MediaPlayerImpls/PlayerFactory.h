@@ -19,16 +19,18 @@
 #ifndef PLAYERFACTORY_H
 #define PLAYERFACTORY_H
 
+#include "CurrentBackEndStatusSingleton.h"
 #include "MediaPlayers.h"
 
 using CreatePlayerFuncPtrType = MediaPlayerBase* (*)(const QUrl&);
 
 class PlayerFactory {
 public:
-    static CreatePlayerFuncPtrType CreatorInstance;
-    static MediaPlayerBase* createPlayer(const QUrl& videoUrl);
+    // static CreatePlayerFuncPtrType CreatorInstance;
+    // static MediaPlayerBase* createPlayer(const QUrl& videoUrl);
+    static CreatePlayerFuncPtrType ProduceChosenFactory(currentBackEnd backend);
 private:
-    static MediaPlayerBase* defaultRealCreatePlayer(const QUrl& url);
+    // static MediaPlayerBase* defaultRealCreatePlayer(const QUrl& url);
 };
 
 #endif // PLAYERFACTORY_H

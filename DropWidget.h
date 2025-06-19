@@ -33,6 +33,10 @@ public:
         setAcceptDrops(true);
     }
 
+signals:
+    void filesDropped(const QList<QUrl>& urls);
+
+
 protected:
     void dragEnterEvent(QDragEnterEvent* event) override {
         //TODO: be more granular here
@@ -48,11 +52,13 @@ protected:
 
     void dropEvent(QDropEvent* event) override {
         QList<QUrl> urls = event->mimeData()->urls();
-        for (const QUrl& url: urls) {
-            if (url.isLocalFile()) {
-                addVideoPlayer(*video_layout, url, mediaPlayers);
-            }
-        }
+        // QList<QUrl> urls = event->mimeData()->urls();
+        if (!urls.isEmpty()) emit filesDropped(urls);
+        // for (const QUrl& url: urls) {
+        //     if (url.isLocalFile()) {
+        //         addVideoPlayer(*video_layout, url, mediaPlayers);
+        //     }
+        // }
     }
 
 private:

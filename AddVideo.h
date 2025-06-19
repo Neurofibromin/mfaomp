@@ -38,11 +38,11 @@ using GetOpenFileUrlsFuncType = std::function<QList<QUrl>(
 void openAndAddVideo(QWidget& parentWidget,
                      QGridLayout& layout,
                      QVector<MediaPlayerBase*>& mediaPlayers,
-                     GetOpenFileUrlsFuncType getUrlsFunc = QFileDialog::getOpenFileUrls,
-                     CreatePlayerFuncPtrType createPlayerFunc = PlayerFactory::createPlayer);
+                     CreatePlayerFuncPtrType createPlayerFunc /*= PlayerFactory::createPlayer*/,
+                     GetOpenFileUrlsFuncType getUrlsFunc = QFileDialog::getOpenFileUrls);
 
 void rearrangeVideoPlayers(QGridLayout& layout, QVector<MediaPlayerBase *>& mediaPlayers);
 
-void addVideoPlayer(QGridLayout& layout, const QUrl& videoUrl, QVector<MediaPlayerBase *>& mediaPlayers, CreatePlayerFuncPtrType createPlayerFunc = PlayerFactory::createPlayer);
+void addVideoPlayer(QGridLayout& layout, const QUrl& videoUrl, QVector<MediaPlayerBase *>& mediaPlayers, CreatePlayerFuncPtrType createPlayerFunc /*= PlayerFactory::createPlayer*/);
 
 #endif //ADDVIDEO_H

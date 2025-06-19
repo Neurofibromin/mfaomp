@@ -1,3 +1,4 @@
+//MainWindow.cpp
 /*
     mfaomp - Multiple Files At Once Media Player
     Copyright (C) 2025  Neurofibromin
@@ -74,38 +75,35 @@ void MainWindow::createWidgets() {
     seekSlider->setPageStep(10);
     seekSlider->setTracking(true);
 
-    //=============
     backendComboBox = new QComboBox(centralWidget);
-    // backendComboBox->addItem("VLC Backend");
-    // backendComboBox->addItem("QMediaPlayer Backend");
-    // backendComboBox->addItem("QWebEngine Backend");
-    // Create a QStandardItemModel to manage the items
     QStandardItemModel *model = new QStandardItemModel();
-
-    // Add "VLC Backend" item
-    QStandardItem *vlcItem = new QStandardItem("VLC Backend");
-    vlcItem->setEnabled(true);
-    if (not mfaomp::BackendAvailability::isVLCAvailableAtRuntime())
-        vlcItem->setEnabled(false);
-    model->appendRow(vlcItem);
-
-    // Add "QMediaPlayer Backend" item
-    QStandardItem *qMediaPlayerItem = new QStandardItem("QMediaPlayer Backend");
-    if (not mfaomp::BackendAvailability::isQtMultimediaAvailableAtRuntime())
-        qMediaPlayerItem->setEnabled(false);
-
-    model->appendRow(qMediaPlayerItem);
-
-    // Add "QWebEngine Backend" item
     QStandardItem *qWebEngineItem = new QStandardItem("QWebEngine Backend");
     if (not mfaomp::BackendAvailability::isQtWebEngineAvailableAtRuntime())
         qWebEngineItem->setEnabled(false);
+    QStandardItem *qMediaPlayerItem = new QStandardItem("QMediaPlayer Backend");
+    if (not mfaomp::BackendAvailability::isQtMultimediaAvailableAtRuntime())
+        qMediaPlayerItem->setEnabled(false);
+    QStandardItem *vlcItem = new QStandardItem("VLC Backend");
+    if (not mfaomp::BackendAvailability::isVLCAvailableAtRuntime())
+        vlcItem->setEnabled(false);
+    model->appendRow(vlcItem);
+    model->appendRow(qMediaPlayerItem);
     model->appendRow(qWebEngineItem);
-
-    // Set the model to the QComboBox
     backendComboBox->setModel(model);
 
-    //============
+    if (mfaomp::BackendAvailability::isVLCAvailableAtRuntime()) {
+        setActivePlayerCreator(VLCPlayerBackEnd);
+        backendComboBox->setCurrentText("VLC Backend");
+    } else if (mfaomp::BackendAvailability::isQtMultimediaAvailableAtRuntime()) {
+        setActivePlayerCreator(QMediaPlayerBackEnd);
+        backendComboBox->setCurrentText("QMediaPlayer Backend");
+    } else if (mfaomp::BackendAvailability::isQtWebEngineAvailableAtRuntime()) {
+        setActivePlayerCreator(QWebEngineBackEnd);
+        backendComboBox->setCurrentText("QWebEngine Backend");
+    } else {
+        setActivePlayerCreator(QMediaPlayerBackEnd);
+        qCritical() << "No media backends available!";
+    }
 
     QWidget *buttonContainer = new QWidget(centralWidget);
     QHBoxLayout *buttonLayout = new QHBoxLayout(buttonContainer);
@@ -144,9 +142,7 @@ void MainWindow::createWidgets() {
 }
 
 void MainWindow::makeConnections() {
-    QObject::connect(addButton, &QPushButton::clicked, [&]() {
-        openAndAddVideo(*this, *videoLayout, mediaPlayers);
-    });
+    QObject::connect(addButton, &QPushButton::clicked, this, &MainWindow::openNewVideo);
 
     QObject::connect(pauseAllButton, &QPushButton::clicked, [&]() {
         for (auto& p: mediaPlayers)
@@ -218,6 +214,8 @@ void MainWindow::makeConnections() {
         }
     });
     sliderUpdateTimer->start();
+
+    connect(centralWidget, &DropWidget::filesDropped, this, &MainWindow::handleFilesDropped);
 }
 
 void MainWindow::setupMenuBar() {
@@ -257,6 +255,11 @@ void MainWindow::applyStyles() {
     decreaseSpeedButton->setFont(font);
     resetSpeedButton->setFont(font);
     backendComboBox->setFont(font);
+}
+
+void MainWindow::setActivePlayerCreator(currentBackEnd backendType) {
+    activePlayerCreator = PlayerFactory::ProduceChosenFactory(backendType);
+    activeBackendType = backendType;
 }
 
 void MainWindow::updateSpeedDisplay(float rate) {
@@ -307,15 +310,21 @@ void MainWindow::handleBackendChanged(const QString& text) {
     seekSlider->blockSignals(true);
     seekSlider->setValue(0);
     seekSlider->blockSignals(false);
+    currentBackEnd newBackendType;
     if (text.contains("vlc", Qt::CaseInsensitive)) {
-        CurrentBackEndStatusSingleton::getInstance().setCurrentBackEnd(VLCPlayerBackEnd);
+        newBackendType = VLCPlayerBackEnd;
     } else if (text.contains("QMediaPlayer", Qt::CaseInsensitive)) {
-        CurrentBackEndStatusSingleton::getInstance().setCurrentBackEnd(QMediaPlayerBackEnd);
+        newBackendType = QMediaPlayerBackEnd;
     } else if (text.contains("QWebEngine", Qt::CaseInsensitive)) {
-        CurrentBackEndStatusSingleton::getInstance().setCurrentBackEnd(QWebEngineBackEnd);
+        newBackendType = QWebEngineBackEnd;
+    } else {
+        qCritical() << "Unknown backend selected:" << text;
+        return; // Or fallback
     }
+    setActivePlayerCreator(newBackendType);
+    // CurrentBackEndStatusSingleton::getInstance().setCurrentBackEnd(newBackendType);
     for (auto& p: currently_playing) {
-        addVideoPlayer(*videoLayout, p.first, mediaPlayers);
+        addVideoPlayer(*videoLayout, p.first, mediaPlayers, activePlayerCreator);
     }
     for (int i = 0; i < currently_playing.length(); ++i) {
         mediaPlayers.at(i)->pause();
@@ -328,7 +337,7 @@ void MainWindow::handleBackendChanged(const QString& text) {
 }
 
 void MainWindow::openNewVideo() {
-    openAndAddVideo(*this, *videoLayout, mediaPlayers);
+    openAndAddVideo(*this, *videoLayout, mediaPlayers, activePlayerCreator);
 }
 
 void MainWindow::clearAllVideos() {
@@ -363,6 +372,14 @@ void MainWindow::updateApplicationStyle(const QString& newStyle) {
     currentStyle = newStyle;
     QApplication::setStyle(QStyleFactory::create(newStyle)); // Apply the new style
     qDebug() << "Application style updated to: " << newStyle;
+}
+
+void MainWindow::handleFilesDropped(const QList<QUrl>& urls) {
+    for (const QUrl& url : urls) {
+        if (url.isLocalFile()) {
+            addVideoPlayer(*videoLayout, url, mediaPlayers, activePlayerCreator);
+        }
+    }
 }
 
 

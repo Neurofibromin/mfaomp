@@ -33,8 +33,8 @@
 void openAndAddVideo(QWidget& parent,
                      QGridLayout& layout,
                      QVector<MediaPlayerBase*>& mediaPlayers,
-                     GetOpenFileUrlsFuncType getUrlsFunc,
-                     CreatePlayerFuncPtrType createPlayerFunc) {
+                     CreatePlayerFuncPtrType createPlayerFunc,
+                     GetOpenFileUrlsFuncType getUrlsFunc) {
     QString videoFilter = "Video Files (*.mp4 *.avi *.mkv *.mov *.wmv);;All Files (*)";
     QString defaultDir = QStandardPaths::writableLocation(QStandardPaths::MoviesLocation);
     if (defaultDir.isEmpty()) defaultDir = QDir::homePath();
