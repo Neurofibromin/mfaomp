@@ -126,7 +126,7 @@ Features:
 - [ ] Chromium Embedded Framework (CEF) or
 - [ ] FFmpeg backend
 - [ ] SDL2? backend maybe something like this: https://github.com/fosterseth/sdl2_video_player
-- [ ] Use Strategy Pattern for handling backends (maybe)
+- [x] Use Strategy Pattern for handling backends (maybe)
 - [ ] Use Visitor Pattern for handling backends (maybe)
 - [x] Use Factory Pattern for handling backends (maybe)
 - [ ] Add support for multiple backends at once

@@ -75,7 +75,7 @@ void MainWindow::createWidgets() {
     seekSlider->setTracking(true);
 
     backendComboBox = new QComboBox(centralWidget);
-    QStandardItemModel *model = new QStandardItemModel();
+    QStandardItemModel *model = new QStandardItemModel(this);
     QStandardItem *qWebEngineItem = new QStandardItem("QWebEngine Backend");
     if (not mfaomp::BackendAvailability::isQtWebEngineAvailableAtRuntime())
         qWebEngineItem->setEnabled(false);
@@ -123,7 +123,7 @@ void MainWindow::createWidgets() {
 
     QVBoxLayout *mainLayout = new QVBoxLayout(centralWidget);
     mainLayout->addWidget(videoContainer);
-    QFrame *line = new QFrame(this);
+    QFrame *line = new QFrame(centralWidget);
     line->setFrameShape(QFrame::HLine);
     line->setFrameShadow(QFrame::Sunken);
     mainLayout->addWidget(line);
