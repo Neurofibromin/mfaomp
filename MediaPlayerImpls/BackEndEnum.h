@@ -121,8 +121,8 @@ public:
     };
 
     static constexpr std::array<BackEnd, 3> AllBackEnds = {
-        BackEnd::QMediaPlayer,
         BackEnd::VLCPlayer,
+        BackEnd::QMediaPlayer,
         BackEnd::QWebEngine
     };
 

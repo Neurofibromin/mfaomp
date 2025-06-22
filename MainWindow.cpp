@@ -61,19 +61,19 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent) {
     if (BackEndManager::isBackendAvailableCompiletime(BackEndManager::BackEnd::VLCPlayer)) {
         setActivePlayerCreator(BackEndManager::BackEnd::VLCPlayer);
         std::string name = BackEndManager::toString(BackEndManager::BackEnd::VLCPlayer);
-        name = name + " Backend";
+        // name = name + " Backend";
         QString label_text = QString::fromStdString(name);
         m_backendComboBox->setCurrentText(label_text);
     } else if (BackEndManager::isBackendAvailableCompiletime(BackEndManager::BackEnd::QMediaPlayer)) {
         setActivePlayerCreator(BackEndManager::BackEnd::QMediaPlayer);
         std::string name = BackEndManager::toString(BackEndManager::BackEnd::QMediaPlayer);
-        name = name + " Backend";
+        // name = name + " Backend";
         QString label_text = QString::fromStdString(name);
         m_backendComboBox->setCurrentText(label_text);
     } else if (BackEndManager::isBackendAvailableCompiletime(BackEndManager::BackEnd::QWebEngine)) {
         setActivePlayerCreator(BackEndManager::BackEnd::QWebEngine);
         std::string name = BackEndManager::toString(BackEndManager::BackEnd::QWebEngine);
-        name = name + " Backend";
+        // name = name + " Backend";
         QString label_text = QString::fromStdString(name);
         m_backendComboBox->setCurrentText(label_text);
     } else {
@@ -162,8 +162,8 @@ void MainWindow::populateBackendComboBox() {
     QStandardItemModel *model = new QStandardItemModel(m_backendComboBox);
     auto enumvalues = BackEndManager::AllBackEnds;
     for (auto enumvalue: enumvalues) {
-        QStandardItem *item = new QStandardItem(QString::fromStdString(BackEndManager::toString(enumvalue) + " Backend"));
-        if (BackEndManager::isBackendAvailableRuntime(enumvalue)) {
+        QStandardItem *item = new QStandardItem(QString::fromStdString(BackEndManager::toString(enumvalue) /*+ " Backend"*/));
+        if (!BackEndManager::isBackendAvailableRuntime(enumvalue)) {
             item->setEnabled(false);
         }
         model->appendRow(item);
@@ -258,7 +258,7 @@ void MainWindow::applyStyles() {
 void MainWindow::setActivePlayerCreator(BackEndManager::BackEnd backendType) {
     m_activePlayerCreator = PlayerFactory::ProduceChosenFactory(backendType);
     m_activeBackendType = backendType;
-    qDebug() << "Active player creator set for backend type:" << static_cast<int>(backendType);
+    qDebug() << "Active player creator set for backend type: " << BackEndManager::toString(backendType);
 }
 
 
@@ -365,7 +365,7 @@ void MainWindow::handleSeekSliderReleased() {
 }
 
 void MainWindow::handleBackendChanged(const QString& text) {
-    qDebug() << "Selected backend: " << text;
+    qCritical() << "Selected backend: " << text;
     QVector<QPair<QUrl, int64_t>> currentlyPlayingInfo;
     for (MediaPlayerBase* player : m_mediaPlayers) {
         if (player) {
