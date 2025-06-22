@@ -16,98 +16,148 @@
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-
 #ifndef MAINWINDOW_H
 #define MAINWINDOW_H
 
-#include <QLabel>
 #include <QMainWindow>
-#include <QMenuBar>
-#include <QTimer>
 #include <QVector>
-#include "DropWidget.h"
-#include "MediaPlayers.h"
-#include "SettingsDialog.h"
+#include <QTimer>
+#include <functional>
 #include "BackEndEnum.h"
+#include "PlayerFactory.h"
+
+// Forward declarations
+class QAction;
+class QComboBox;
+class QGridLayout;
+class QLabel;
+class QMenu;
+class QMenuBar;
+class QPushButton;
+class QSlider;
+class QVBoxLayout;
+class DropWidget;
+class SettingsDialog;
 
 class MainWindow : public QMainWindow {
     Q_OBJECT
 
 public:
-    explicit MainWindow(QWidget *parent = nullptr);
+    explicit MainWindow(QWidget* parent = nullptr);
 
     ~MainWindow() override;
 
 private slots:
+    // UI Update Slots
     void updateSpeedDisplay(float speed);
 
-    void updateSeekSlider(int64_t position, int64_t duration);
+    void updateSeekSliderDisplay(int64_t position, int64_t duration);
 
-    void resetUIOnPlayersCleared() const;
+    void resetPlaybackControls();
+
+    // Action Slots
+    void openNewVideo();
+
+    void clearAllVideos();
+
+    void openSettingsDialog();
+
+    void exitApplication();
+
+    void handleFilesDropped(const QList<QUrl>& urls);
 
     void handleSeekSliderReleased();
 
     void handleBackendChanged(const QString& text);
 
-    void openNewVideo();
-
-    void clearAllVideos();
-
-    void openSettings();
-
-    void exitApplication();
-
+    // Settings Update Slots
     void updatePlaybackSettings(float newSpeedIncrement, float newMinSpeed, float newMaxSpeed);
 
     void updateApplicationStyle(const QString& newStyle);
 
-    void handleFilesDropped(const QList<QUrl>& urls);
+    // Player Control Slots
+    void pauseAllPlayers();
+
+    void playAllPlayers();
+
+    void muteAllPlayers();
+
+    void unmuteAllPlayers();
+
+    void changeAllPlayersSpeed(float delta);
+
+    void resetAllPlayersSpeed();
+
+    void updateSeekSliderFromFirstPlayer();
 
 private:
-    void createWidgets();
-
-    void makeConnections();
+    // UI Initialization
+    void initializeUI();
 
     void setupMenuBar();
 
+    QWidget* setupControlsPanel();
+
+    void setupBottomBar(QVBoxLayout* mainLayout, QWidget* controlsPanel);
+
     void applyStyles();
 
-    DropWidget *centralWidget = nullptr;
-    QWidget *videoContainer = nullptr;
-    QGridLayout *videoLayout = nullptr;
+    // Connections
+    void initializeConnections();
 
-    QPushButton *addButton = nullptr;
-    QPushButton *pauseAllButton = nullptr;
-    QPushButton *unpauseAllButton = nullptr;
-    QPushButton *muteAllButton = nullptr;
-    QPushButton *unmuteAllButton = nullptr;
-    QPushButton *clearAllButton = nullptr;
-    QPushButton *increaseSpeedButton = nullptr;
-    QPushButton *decreaseSpeedButton = nullptr;
-    QPushButton *resetSpeedButton = nullptr;
-    QLabel *speedDisplayLabel = nullptr;
-    QSlider *seekSlider = nullptr;
-    QComboBox *backendComboBox = nullptr;
-    QVector<MediaPlayerBase *> mediaPlayers;
+    void connectMenuItems();
+
+    void connectPlayerControlButtons();
+
+    void connectOtherControls();
+
+    // Backend Management
+    void setActivePlayerCreator(BackEndManager::BackEnd backendType);
+
+    void populateBackendComboBox();
+
+    // UI Elements
+    DropWidget* m_dropWidget = nullptr;
+    QWidget* m_videoContainer = nullptr;
+    QGridLayout* m_videoLayout = nullptr;
+
+    QPushButton* m_addButton = nullptr;
+    QPushButton* m_pauseAllButton = nullptr;
+    QPushButton* m_unpauseAllButton = nullptr;
+    QPushButton* m_muteAllButton = nullptr;
+    QPushButton* m_unmuteAllButton = nullptr;
+    QPushButton* m_clearAllButton = nullptr;
+    QPushButton* m_increaseSpeedButton = nullptr;
+    QPushButton* m_decreaseSpeedButton = nullptr;
+    QPushButton* m_resetSpeedButton = nullptr;
+    QLabel* m_speedDisplayLabel = nullptr;
+    QSlider* m_seekSlider = nullptr;
+    QComboBox* m_backendComboBox = nullptr;
+
+    QVector<MediaPlayerBase *> m_mediaPlayers = QVector<MediaPlayerBase *>();
 
     // Menu bar components
-    QMenuBar *menuBar;
-    QMenu *fileMenu;
-    QMenu *editMenu;
-    QMenu *optionsMenu;
-    QAction *openNewVideoAction;
-    QAction *clearAction;
-    QAction *settingsAction;
-    QAction *exitAction;
-    QString currentStyle;
+    QMenuBar* m_menuBar = nullptr;
+    QMenu* m_fileMenu = nullptr;
+    QMenu* m_editMenu = nullptr;
+    QMenu* m_optionsMenu = nullptr;
+    QAction* m_openNewVideoAction = nullptr;
+    QAction* m_clearAction = nullptr;
+    QAction* m_settingsAction = nullptr;
+    QAction* m_exitAction = nullptr;
+    QString m_currentStyle;
 
+    // Playback settings
     float SPEED_INCREMENT = 0.25f;
     float MIN_PLAYBACK_SPEED = 0.25f;
     float MAX_PLAYBACK_SPEED = 2.0f;
 
-    CreatePlayerFuncPtrType activePlayerCreator;
-    currentBackEnd activeBackendType;
-    void setActivePlayerCreator(currentBackEnd backendType);
+    CreatePlayerFuncPtrType m_activePlayerCreator = nullptr;
+    BackEndManager::BackEnd m_activeBackendType = BackEndManager::BackEnd::QMediaPlayer;
+
+    // Constants
+    const int SEEK_SLIDER_MAX_VALUE = 1000;
+    const int SLIDER_UPDATE_INTERVAL_MS = 500;
 };
 
 #endif // MAINWINDOW_H

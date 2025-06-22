@@ -26,7 +26,7 @@ using CreatePlayerFuncPtrType = MediaPlayerBase* (*)(const QUrl&);
 
 class PlayerFactory {
 public:
-    static CreatePlayerFuncPtrType ProduceChosenFactory(currentBackEnd backend);
+    static CreatePlayerFuncPtrType ProduceChosenFactory(BackEndManager::BackEnd backend);
 };
 
 #endif // PLAYERFACTORY_H

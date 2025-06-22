@@ -24,26 +24,26 @@
 #include "BackEndEnum.h"
 #include "config.h"
 
-CreatePlayerFuncPtrType PlayerFactory::ProduceChosenFactory(currentBackEnd backend) {
+CreatePlayerFuncPtrType PlayerFactory::ProduceChosenFactory(BackEndManager::BackEnd backend) {
     CreatePlayerFuncPtrType createdFactoryFunction;
     switch (backend) {
 #ifdef HAVE_LIBVLC
-        case VLCPlayerBackEnd:
+        case BackEndManager::BackEnd::VLCPlayer:
             createdFactoryFunction = [](const QUrl& url) -> MediaPlayerBase* { return new VLCPlayerStruct(url); };
             break;
 #endif
 #ifdef HAVE_QTMULTIMEDIA
-        case QMediaPlayerBackEnd:
+        case BackEndManager::BackEnd::QMediaPlayer:
             createdFactoryFunction = [](const QUrl& url) -> MediaPlayerBase* { return new QMediaPlayerStruct(url); };
             break;
 #endif
 #ifdef HAVE_QTWEBENGINE
-        case QWebEngineBackEnd:
+        case BackEndManager::BackEnd::QWebEngine:
             createdFactoryFunction = [](const QUrl& url) -> MediaPlayerBase* { return new QWebEngineStruct(url); };
             break;
 #endif
         default:
-            qWarning() << "No valid factory function for backend type: " << backend;
+            qWarning() << "No valid factory function for backend type: " << BackEndManager::toString(backend);
             return nullptr;
     }
     return createdFactoryFunction;

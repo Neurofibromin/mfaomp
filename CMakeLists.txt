@@ -137,8 +137,6 @@ endif ()
 set(MFAOMP_SOURCES
     AddVideo.cpp
     AddVideo.h
-    BackendAvailability.cpp
-    BackendAvailability.h
     DropWidget.h
     MainWindow.cpp
     MainWindow.h
@@ -148,6 +146,7 @@ set(MFAOMP_SOURCES
     MediaPlayerImpls/PlayerFactory.cpp
     MediaPlayerImpls/PlayerFactory.h
     MediaPlayerImpls/BackEndEnum.h
+#    MediaPlayerImpls/BackEndEnum.cpp
 )
 
 if (HAVE_LIBVLC)
