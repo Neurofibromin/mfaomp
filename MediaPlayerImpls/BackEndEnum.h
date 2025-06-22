@@ -7,6 +7,9 @@
 #include <string>
 #include <vector>
 #include <map>
+#include <stdexcept>
+#include <type_traits>
+#include <algorithm>
 #include <optional>
 #include <array>
 #include <algorithm>
@@ -53,14 +56,14 @@ namespace { //anon namespace to hide structs
 #endif
                 return false;
             }
-            static constexpr bool isAvailableCompiletime() {
+            static consteval bool isAvailableCompiletime() {
 #ifdef HAVE_QTMULTIMEDIA
                 return true;
 #else
                 return false;
 #endif
             }
-            static constexpr const char* name = "QMediaPlayerBackEnd";
+            static constexpr const char* name = "QMediaPlayer";
         };
 
         struct VLCPlayer {
@@ -74,14 +77,14 @@ namespace { //anon namespace to hide structs
 #endif
                 return false;
             }
-            static constexpr bool isAvailableCompiletime() {
+            static consteval bool isAvailableCompiletime() {
 #ifdef HAVE_LIBVLC
                 return true;
 #else
                 return false;
 #endif
             }
-            static constexpr const char* name = "VLCPlayerBackEnd";
+            static constexpr const char* name = "VLCPlayer";
         };
 
         struct QWebEngine {
@@ -96,14 +99,14 @@ namespace { //anon namespace to hide structs
 #endif
                 return false;
             }
-            static constexpr bool isAvailableCompiletime() {
+            static consteval bool isAvailableCompiletime() {
 #ifdef HAVE_QTWEBENGINE
                 return true;
 #else
                 return false;
 #endif
             }
-            static constexpr const char* name = "QWebEngineBackEnd";
+            static constexpr const char* name = "QWebEngine";
         };
     }
 }
@@ -128,24 +131,24 @@ private:
         using AvailabilityChecker = bool (*)();
         using NameGetter = const char* (*)();
 
-        BackEndMetaData(AvailabilityChecker runt, AvailabilityChecker compt, NameGetter nameGetter) :
+        BackEndMetaData(AvailabilityChecker runt, /*AvailabilityChecker compt,*/ NameGetter nameGetter) :
             isRunTimeAvailable(runt),
-            isCompileTimeAvailable(compt),
+            // isCompileTimeAvailable(compt),
             getName(nameGetter) {}
 
         AvailabilityChecker isRunTimeAvailable;
-        AvailabilityChecker isCompileTimeAvailable;
+        // AvailabilityChecker isCompileTimeAvailable;
         NameGetter getName;
     };
 
-    static const constexpr std::map<BackEnd, BackEndMetaData> &  getBackEndMetaDataMap() {
+    static const std::map<BackEnd, BackEndMetaData> &  getBackEndMetaDataMap() {
         static const auto qmpName = []() { return BackEndTypes::QMediaPlayer::name; };
         static const auto vlcName = []() { return BackEndTypes::VLCPlayer::name; };
         static const auto qweName = []() { return BackEndTypes::QWebEngine::name; };
         static const std::map<BackEnd, BackEndMetaData> metaDataMap = {
-            {BackEnd::QMediaPlayer, {&BackEndTypes::QMediaPlayer::isAvailableRuntime, &BackEndTypes::QMediaPlayer::isAvailableCompiletime, qmpName}},
-            {BackEnd::VLCPlayer,   {&BackEndTypes::VLCPlayer::isAvailableRuntime, &BackEndTypes::VLCPlayer::isAvailableCompiletime,   vlcName}},
-            {BackEnd::QWebEngine,  {&BackEndTypes::QWebEngine::isAvailableRuntime, &BackEndTypes::QWebEngine::isAvailableCompiletime,  qweName}}
+            {BackEnd::QMediaPlayer, {&BackEndTypes::QMediaPlayer::isAvailableRuntime, qmpName}},
+            {BackEnd::VLCPlayer,   {&BackEndTypes::VLCPlayer::isAvailableRuntime, vlcName}},
+            {BackEnd::QWebEngine,  {&BackEndTypes::QWebEngine::isAvailableRuntime, qweName}}
         };
         return metaDataMap;
     }
@@ -163,26 +166,34 @@ private:
     }
 
 public:
-    static std::string toString(BackEnd backend) {
+    static std::string constexpr toString(BackEnd backend) {
         return dispatchToType(backend, []<typename T>() { // C++20 lambda template
             return std::string(T::name);
         });
     }
 
-    static bool constexpr isBackendAvailable(BackEnd backend) {
-        if (std::is_constant_evaluated()) {
-            return dispatchToType(backend, []<typename T>() {
-                return T::isAvailableCompiletime();
-            });
-        }
-        else {
-            return dispatchToType(backend, []<typename T>() {
-                return T::isAvailableRuntime();
-            });
-        }
+    static bool constexpr isBackendAvailableCompiletime(BackEnd backend) {
+        return dispatchToType(backend, []<typename T>() {
+            return T::isAvailableCompiletime();
+        });
+    }
+    static bool isBackendAvailableRuntime(BackEnd backend) {
+        return dispatchToType(backend, []<typename T>() {
+            return T::isAvailableRuntime();
+        });
     }
 
-    static std::optional<BackEnd> constexpr fromString(const std::string& str) {
+    static std::optional<BackEnd> consteval fromStringComptime(const std::string& str) {
+        auto arr = AllBackEnds;
+        for (const auto& bc : arr) {
+            if (toString(bc) == str) {
+                return bc;
+            }
+        }
+        return std::nullopt;
+    }
+
+    static std::optional<BackEnd> fromString(const std::string& str) {
         const auto& map = getBackEndMetaDataMap();
         for (const auto& pair : map) {
             if (pair.second.getName() == str) {
@@ -192,10 +203,36 @@ public:
         return std::nullopt;
     }
 
-    static std::vector<BackEnd> constexpr getAvailableBackEnds() {
+
+    static consteval auto getAvailableCompiletimeBackEnds() {
+        constexpr  int count = std::count_if(AllBackEnds.begin(), AllBackEnds.end(),
+            [](BackEnd be){ return isBackendAvailableCompiletime(be); });
+        // consteval int count = []() {
+        //     int available_count = 0;
+        //     for (BackEnd backend : AllBackEnds) {
+        //         if (isBackendAvailableCompiletime(backend)) {
+        //             available_count++;
+        //         }
+        //     }
+        //     return available_count;
+        // }();
+        std::array<BackEnd, count> available{};
+
+        if constexpr (count > 0) {
+            int current_idx = 0;
+            for (BackEnd backend : AllBackEnds) {
+                if (isBackendAvailableCompiletime(backend)) {
+                    available[current_idx++] = backend;
+                }
+            }
+        }
+        return available;
+    }
+
+    static std::vector<BackEnd> getAvailableRuntimeBackEnds() {
         std::vector<BackEnd> available;
         std::ranges::for_each(AllBackEnds, [&available](BackEnd backend) -> void {
-            if (isBackendAvailable(backend)) {
+            if (isBackendAvailableRuntime(backend)) {
                 available.push_back(backend);
             }
         } );

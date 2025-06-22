@@ -58,19 +58,19 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent) {
     resize(800, 600);
 
     // Set initial backend (must be after m_backendComboBox is created)
-    if (BackEndManager::isBackendAvailable(BackEndManager::BackEnd::VLCPlayer)) {
+    if (BackEndManager::isBackendAvailableCompiletime(BackEndManager::BackEnd::VLCPlayer)) {
         setActivePlayerCreator(BackEndManager::BackEnd::VLCPlayer);
         std::string name = BackEndManager::toString(BackEndManager::BackEnd::VLCPlayer);
         name = name + " Backend";
         QString label_text = QString::fromStdString(name);
         m_backendComboBox->setCurrentText(label_text);
-    } else if (BackEndManager::isBackendAvailable(BackEndManager::BackEnd::QMediaPlayer)) {
+    } else if (BackEndManager::isBackendAvailableCompiletime(BackEndManager::BackEnd::QMediaPlayer)) {
         setActivePlayerCreator(BackEndManager::BackEnd::QMediaPlayer);
         std::string name = BackEndManager::toString(BackEndManager::BackEnd::QMediaPlayer);
         name = name + " Backend";
         QString label_text = QString::fromStdString(name);
         m_backendComboBox->setCurrentText(label_text);
-    } else if (BackEndManager::isBackendAvailable(BackEndManager::BackEnd::QWebEngine)) {
+    } else if (BackEndManager::isBackendAvailableCompiletime(BackEndManager::BackEnd::QWebEngine)) {
         setActivePlayerCreator(BackEndManager::BackEnd::QWebEngine);
         std::string name = BackEndManager::toString(BackEndManager::BackEnd::QWebEngine);
         name = name + " Backend";
@@ -163,7 +163,7 @@ void MainWindow::populateBackendComboBox() {
     auto enumvalues = BackEndManager::AllBackEnds;
     for (auto enumvalue: enumvalues) {
         QStandardItem *item = new QStandardItem(QString::fromStdString(BackEndManager::toString(enumvalue) + " Backend"));
-        if (BackEndManager::isBackendAvailable(enumvalue)) {
+        if (BackEndManager::isBackendAvailableRuntime(enumvalue)) {
             item->setEnabled(false);
         }
         model->appendRow(item);
