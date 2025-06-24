@@ -38,6 +38,10 @@
 #include <QWebEngineProfile>
 #endif
 
+#ifdef HAVE_SDL2
+#include <SDL2/SDL.h>
+#endif
+
 
 namespace { //anon namespace to hide structs
     namespace BackEndTypes {
@@ -108,6 +112,23 @@ namespace { //anon namespace to hide structs
             }
             static constexpr const char* name = "QWebEngine";
         };
+
+        struct SDL2Player {
+            static bool isAvailableRuntime() {
+#ifdef HAVE_SDL2
+                return true; //TODO: add real check here
+#endif
+                return false;
+            }
+            static consteval bool isAvailableCompiletime() {
+#ifdef HAVE_SDL2
+                return true;
+#else
+                return false;
+#endif
+            }
+            static constexpr const char* name = "SDL2";
+        };
     }
 }
 
@@ -117,13 +138,15 @@ public:
     enum class BackEnd {
         QMediaPlayer,
         VLCPlayer,
-        QWebEngine
+        QWebEngine,
+        SDL2
     };
 
-    static constexpr std::array<BackEnd, 3> AllBackEnds = {
+    static constexpr std::array<BackEnd, 4> AllBackEnds = {
         BackEnd::VLCPlayer,
         BackEnd::QMediaPlayer,
-        BackEnd::QWebEngine
+        BackEnd::QWebEngine,
+        BackEnd::SDL2
     };
 
 private:
@@ -145,10 +168,12 @@ private:
         static const auto qmpName = []() { return BackEndTypes::QMediaPlayer::name; };
         static const auto vlcName = []() { return BackEndTypes::VLCPlayer::name; };
         static const auto qweName = []() { return BackEndTypes::QWebEngine::name; };
+        static const auto sdlName = []() { return BackEndTypes::SDL2Player::name; };
         static const std::map<BackEnd, BackEndMetaData> metaDataMap = {
             {BackEnd::QMediaPlayer, {&BackEndTypes::QMediaPlayer::isAvailableRuntime, qmpName}},
             {BackEnd::VLCPlayer,   {&BackEndTypes::VLCPlayer::isAvailableRuntime, vlcName}},
-            {BackEnd::QWebEngine,  {&BackEndTypes::QWebEngine::isAvailableRuntime, qweName}}
+            {BackEnd::QWebEngine,  {&BackEndTypes::QWebEngine::isAvailableRuntime, qweName}},
+            {BackEnd::SDL2,  {&BackEndTypes::SDL2Player::isAvailableRuntime, sdlName}}
         };
         return metaDataMap;
     }
@@ -162,6 +187,8 @@ private:
                 return std::forward<Func>(func).template operator()<BackEndTypes::VLCPlayer>();
             case BackEnd::QWebEngine:
                 return std::forward<Func>(func).template operator()<BackEndTypes::QWebEngine>();
+            case BackEnd::SDL2:
+                return std::forward<Func>(func).template operator()<BackEndTypes::SDL2Player>();
         }
     }
 

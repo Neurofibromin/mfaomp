@@ -147,9 +147,9 @@ Features:
 - [x] 0.6: theming, ui-ux design
 - [x] 0.6: add Windows support
 - [x] 0.6: add compile flags for enabling backends
-- 0.6: add plugin system for runtime backend detection
 - 0.7: sdl-ffmpeg backend
 - 0.8: CEF backend
+- 0.x: add plugin system for runtime backend detection
 - 0.x: multithreaded approach
 - 0.x: other graphics backends (opengl vulcan directx)
 - 0.x: add c++ modules support

@@ -26,6 +26,7 @@
 #include <QWebEngineProfile>
 #endif
 #include "MainWindow.h"
+#include <SDL2/SDL.h>
 
 int main(int argc, char* argv[]) {
     for (int i = 1; i < argc; ++i) {
@@ -41,9 +42,16 @@ int main(int argc, char* argv[]) {
     // Must be used until VLC supports embedding in native wayland windows: https://code.videolan.org/videolan/vlc/-/issues/16106
 #ifdef linux
     qputenv("QT_QPA_PLATFORM", "xcb");
+    qputenv("SDL_VIDEODRIVER", "x11"); //SDL2 with Qt only works on x11, otherwise segfault?
 #endif
     QApplication a(argc, argv);
     // a.setStyle("windows"); //https://forum.qt.io/topic/127907/where-can-i-find-win95-win2000-stylesheet/4
+
+    if (SDL_Init(SDL_INIT_VIDEO) < 0) {
+        qCritical("Failed to initialize SDL_INIT_VIDEO: %s", SDL_GetError());
+        return -1;
+    }
+
     MainWindow w;
 #ifdef linux
     // QCoreApplication::setAttribute(Qt::AA_ShareOpenGLContexts);
@@ -53,5 +61,7 @@ int main(int argc, char* argv[]) {
         QWebEngineSettings::PlaybackRequiresUserGesture, false);
 #endif
     w.show();
-    return a.exec();
+    int ret = a.exec();
+    SDL_Quit();
+    return ret;
 }

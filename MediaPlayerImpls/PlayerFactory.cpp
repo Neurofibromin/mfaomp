@@ -23,6 +23,7 @@
 #include "QWebEngineStruct.h"
 #include "BackEndEnum.h"
 #include "config.h"
+#include "SDL2Struct.h"
 
 CreatePlayerFuncPtrType PlayerFactory::ProduceChosenFactory(BackEndManager::BackEnd backend) {
     CreatePlayerFuncPtrType createdFactoryFunction;
@@ -40,6 +41,11 @@ CreatePlayerFuncPtrType PlayerFactory::ProduceChosenFactory(BackEndManager::Back
 #ifdef HAVE_QTWEBENGINE
         case BackEndManager::BackEnd::QWebEngine:
             createdFactoryFunction = [](const QUrl& url) -> MediaPlayerBase* { return new QWebEngineStruct(url); };
+            break;
+#endif
+#ifdef HAVE_SDL2
+        case BackEndManager::BackEnd::SDL2:
+            createdFactoryFunction = [](const QUrl& url) -> MediaPlayerBase* { return new SDL2Struct(url); };
             break;
 #endif
         default:
