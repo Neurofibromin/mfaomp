@@ -193,23 +193,14 @@ for installation or using the program.
 
 ```shell
 sudo dnf install \
-qt6-qtbase \
-qt6-qtbase-common \
 qt6-qtbase-devel \
-qt6-qtbase-examples \
-qt6-qtbase-gui \
-qt6-qtbase-ibase \
-qt6-qtbase-mysql \
-qt6-qtbase-odbc \
-qt6-qtbase-postgresql  \
-qt6-qtbase-private-devel \
-qt6-qtbase-static \
-qt6-qtdeclarative-devel \
 qt6-qtmultimedia-devel \
-qt6-qttools-devel \
-qt6-qtwebengine-devel \
-boost-devel \
-vlc-devel
+qt6-qtwebengine-devel
+
+sudo dnf install boost-devel 
+sudo dnf install vlc-devel      
+sudo dnf install ffmpeg-devel 
+sudo dnf install SDL2-devel
 ```
 
 ### Arch:
@@ -272,3 +263,7 @@ cmake ..
 make
 make install
 ```
+
+TODO:
+spin off Qt-SDL to separate example repo
+spin off SDL2-ffmpeg to separate repo (C/C++)

@@ -266,31 +266,5 @@ QString QWebEngineStruct::generateHtmlContent(const QUrl& videoUrl) {
                 </script>
             </body>
             </html>
-        )").arg(videoUrl.toString()); // Use url.toString() to embed it in HTML
-
-    /*
-        QString(R"(
-            <html>
-            <body style="margin:0; background-color:black;">
-                <video id="mediaPlayerVideo" width="100%" height="100%" controls>
-                    <source src="%1" type="video/mp4">
-                </video>
-                <script>
-                    function playVideo() {
-                        document.getElementById('mediaPlayerVideo').play();
-                    }
-                    function pauseVideo() {
-                        document.getElementById('mediaPlayerVideo').pause();
-                    }
-                    function setSpeed(rate) {
-                        document.getElementById('mediaPlayerVideo').playbackRate = rate;
-                    }
-                    function setTime(t) {
-                        document.getElementById('mediaPlayerVideo').currentTime = t / 1000.0;
-                    }
-                </script>
-            </body>
-            </html>
         )").arg(videoUrl.toString());
-         */
 }
