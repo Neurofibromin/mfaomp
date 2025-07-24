@@ -234,15 +234,6 @@ public:
     static consteval auto getAvailableCompiletimeBackEnds() {
         constexpr  int count = std::count_if(AllBackEnds.begin(), AllBackEnds.end(),
             [](BackEnd be){ return isBackendAvailableCompiletime(be); });
-        // consteval int count = []() {
-        //     int available_count = 0;
-        //     for (BackEnd backend : AllBackEnds) {
-        //         if (isBackendAvailableCompiletime(backend)) {
-        //             available_count++;
-        //         }
-        //     }
-        //     return available_count;
-        // }();
         std::array<BackEnd, count> available{};
 
         if constexpr (count > 0) {

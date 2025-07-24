@@ -90,6 +90,9 @@ TEST_CASE("BackEndManager - getAvailableCompiletimeBackEnds", "[BackEndManager]"
 #ifdef HAVE_QTWEBENGINE
     expectedNames.push_back("QWebEngine");
 #endif
+#ifdef HAVE_SDL2
+    expectedNames.push_back("SDL2");
+#endif
     std::sort(expectedNames.begin(), expectedNames.end());
 
     REQUIRE_THAT(backendsToStrings(compileTimeAvailable), Catch::Matchers::Equals(expectedNames));
@@ -137,6 +140,9 @@ TEST_CASE("BackEndManager - getAvailableRuntimeBackEnds", "[BackEndManager][Runt
     }
     if (BackEndTypes::QWebEngine::isAvailableRuntime()) {
         expectedRuntimeNames.push_back("QWebEngine");
+    }
+    if (BackEndTypes::SDL2Player::isAvailableRuntime()) {
+        expectedRuntimeNames.push_back("SDL2");
     }
     std::sort(expectedRuntimeNames.begin(), expectedRuntimeNames.end());
 
