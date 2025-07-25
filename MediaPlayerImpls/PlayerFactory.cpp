@@ -26,7 +26,7 @@
 #include "SDL2Struct.h"
 
 CreatePlayerFuncPtrType PlayerFactory::ProduceChosenFactory(BackEndManager::BackEnd backend) {
-    CreatePlayerFuncPtrType createdFactoryFunction;
+    CreatePlayerFuncPtrType createdFactoryFunction = nullptr;
     switch (backend) {
 #ifdef HAVE_LIBVLC
         case BackEndManager::BackEnd::VLCPlayer:

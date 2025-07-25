@@ -129,6 +129,16 @@ namespace { //anon namespace to hide structs
             }
             static constexpr const char* name = "SDL2";
         };
+
+        struct InvalidBackEndType {
+            static bool isAvailableRuntime() {
+                return false;
+            }
+            static consteval bool isAvailableCompiletime() {
+                return false;
+            }
+            static constexpr const char* name = "";
+        };
     }
 }
 
@@ -139,7 +149,8 @@ public:
         QMediaPlayer,
         VLCPlayer,
         QWebEngine,
-        SDL2
+        SDL2,
+        invalid
     };
 
     static constexpr std::array<BackEnd, 4> AllBackEnds = {
@@ -154,13 +165,11 @@ private:
         using AvailabilityChecker = bool (*)();
         using NameGetter = const char* (*)();
 
-        BackEndMetaData(AvailabilityChecker runt, /*AvailabilityChecker compt,*/ NameGetter nameGetter) :
+        BackEndMetaData(AvailabilityChecker runt, NameGetter nameGetter) :
             isRunTimeAvailable(runt),
-            // isCompileTimeAvailable(compt),
             getName(nameGetter) {}
 
         AvailabilityChecker isRunTimeAvailable;
-        // AvailabilityChecker isCompileTimeAvailable;
         NameGetter getName;
     };
 
@@ -189,6 +198,8 @@ private:
                 return std::forward<Func>(func).template operator()<BackEndTypes::QWebEngine>();
             case BackEnd::SDL2:
                 return std::forward<Func>(func).template operator()<BackEndTypes::SDL2Player>();
+            default:
+                return std::forward<Func>(func).template operator()<BackEndTypes::InvalidBackEndType>();
         }
     }
 

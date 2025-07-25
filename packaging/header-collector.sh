@@ -41,4 +41,4 @@ else
     echo "Skipping copyright removal, headers.txt is empty."
 fi
 
-tree -L 3 .. > headers.txt
+tree -L 3 .. >> headers.txt
