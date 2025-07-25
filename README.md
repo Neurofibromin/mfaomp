@@ -92,7 +92,7 @@ audio.
 
 ## Aims <a name="aims"/>
 
-CI/CD
+### CI/CD
 
 - [ ] [OpenSuse Build Service](https://build.opensuse.org/package/show/home:Neurofibromin/mfaomp)
 - [x] [Nix](https://github.com/NixOS/nixpkgs/pull/414760)
@@ -113,7 +113,7 @@ CI/CD
     - [ ] nsis (only this works with CPack)
     - [ ] wix
 
-Features:
+### Features:
 
 - [x] QMediaPlayer backend
 - [x] VLC backend
@@ -127,11 +127,12 @@ Features:
 - [ ] FFmpeg backend
 - [ ] SDL2? backend maybe something like this: https://github.com/fosterseth/sdl2_video_player
 - [x] Use Strategy Pattern for handling backends (maybe)
-- [ ] Use Visitor Pattern for handling backends (maybe)
+- [x] Use Visitor Pattern for handling backends (maybe)
 - [x] Use Factory Pattern for handling backends (maybe)
 - [ ] Add support for multiple backends at once
 - [ ] Add support for subtitles
 - [x] Adding videos via drag-and-drop
+- [x] No exceptions in the codebase
 - [ ] Per video controls, overload right click menu
     - [ ] loop
     - [ ] skip
@@ -157,13 +158,15 @@ Features:
 - 1.x: self-contained build artifacts
 - 1.x: reproducible build artifacts (SBOM)
 
-Testing
+### Testing
+
+Tests are meant to be run in debug mode (if NDEBUG is defined tests are meant to segfault).
 
 - [ ] runtime dependencies
 - [ ] integration tests
 - [x] catch2
 
-Bugs:
+### Bugs:
 
 ### Signatures, hashes and integrity checks <a name="signatures-hashes-and-integrity-checks"/>
 
@@ -224,7 +227,6 @@ libqt6multimediawidgets6 \
 libqt6webchannel6 \
 libqt6webenginecore6 \
 libqt6webenginewidgets6 \
-libqt6webenginewidgets6 \
 libqt6webview6 \
 libvlc-dev \
 pkg-config \
@@ -254,7 +256,7 @@ vlc-devel
 
 ### Generic:
 
-```
+```shell
 git clone -b master https://github.com/Neurofibromin/mfaomp mfaomp
 cd mfaomp
 mkdir build
@@ -265,5 +267,5 @@ make install
 ```
 
 TODO:
-spin off Qt-SDL to separate example repo
-spin off SDL2-ffmpeg to separate repo (C/C++)
+- [x] spin off Qt-SDL to [separate example repo](https://github.com/Neurofibromin/Qt-SDL)
+- [ ] spin off SDL2-ffmpeg to separate repo (C/C++)

@@ -20,6 +20,9 @@
 #include <QDebug>
 #include "config.h"
 #include <type_traits>
+#include <utility>
+#include <cassert>
+#include <stdexcept>
 
 #ifdef HAVE_LIBVLC
 #include <vlc/vlc.h>
@@ -45,6 +48,8 @@
 
 namespace { //anon namespace to hide structs
     namespace BackEndTypes {
+        //TODO Make these template classes that can retun the type they were formed from,
+        // eg. the type VLCPlayerStruct (from the VLC implementation) should be available from here
         struct QMediaPlayer {
             static bool isAvailableRuntime() {
 #ifdef HAVE_QTMULTIMEDIA
@@ -130,15 +135,14 @@ namespace { //anon namespace to hide structs
             static constexpr const char* name = "SDL2";
         };
 
+#ifndef NDEBUG
+        // Only for debug builds and tests to provide a graceful fallback.
         struct InvalidBackEndType {
-            static bool isAvailableRuntime() {
-                return false;
-            }
-            static consteval bool isAvailableCompiletime() {
-                return false;
-            }
-            static constexpr const char* name = "";
+            static bool isAvailableRuntime() { return false; }
+            static consteval bool isAvailableCompiletime() { return false; }
+            static constexpr const char* name = "Invalid";
         };
+#endif
     }
 }
 
@@ -198,9 +202,13 @@ private:
                 return std::forward<Func>(func).template operator()<BackEndTypes::QWebEngine>();
             case BackEnd::SDL2:
                 return std::forward<Func>(func).template operator()<BackEndTypes::SDL2Player>();
+#ifndef NDEBUG
             default:
+                qWarning() << "dispatchToType called with an invalid BackEnd enum value.";
                 return std::forward<Func>(func).template operator()<BackEndTypes::InvalidBackEndType>();
+#endif
         }
+        std::unreachable(); //only reached if in a non-testing/debug environment the dispatchtotype is called with invalid backend value
     }
 
 public:
