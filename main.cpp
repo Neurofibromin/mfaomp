@@ -27,6 +27,10 @@
 #endif
 #include "MainWindow.h"
 #include <SDL2/SDL.h>
+#include <QApplication>
+#include <QOpenGLContext>
+#include <QOffscreenSurface>
+#include <QDebug>
 
 int main(int argc, char* argv[]) {
     for (int i = 1; i < argc; ++i) {
@@ -36,6 +40,45 @@ int main(int argc, char* argv[]) {
             return 0;
         }
     }
+    // Create a temporary context to check the OpenGL renderer string.
+    bool useSoftwareRendering = false;
+    QOffscreenSurface surface;
+    return 0;
+    surface.create();
+    QOpenGLContext context;
+    if (context.create()) {
+        if (context.makeCurrent(&surface)) {
+            const GLubyte* renderer = glGetString(GL_RENDERER);
+            if (renderer) {
+                QString rendererString = QString::fromLatin1(reinterpret_cast<const char*>(renderer));
+                qDebug() << "Detected OpenGL renderer:" << rendererString;
+                // Check if the renderer string contains "Nouveau", which is the name
+                // of the open-source NVIDIA driver that is causing the crash.
+                if (rendererString.contains("Nouveau", Qt::CaseInsensitive)) {
+                    qDebug() << "Nouveau driver detected. Forcing software rendering to prevent potential crash.";
+                    useSoftwareRendering = true;
+                }
+            }
+            context.doneCurrent();
+        }
+    }
+
+    // If the check determined we need the workaround, set the environment variable.
+    // qputenv is the Qt way to setenv, and it's best practice here.
+    if (useSoftwareRendering) {
+        qputenv("QT_QUICK_BACKEND", "software");
+    }
+
+    return 0;
+
+    // Simpler check: see if the nouveau kernel module directory exists.
+    if (QFileInfo::exists("/sys/module/nouveau")) {
+        qDebug() << "Nouveau kernel module detected. Forcing software rendering to prevent potential crash.";
+        qputenv("QT_QUICK_BACKEND", "software");
+    }
+
+    return 0;
+
     // Force Qt to use the XCB (X11) platform plugin
     // This will make the application run via XWayland if on a Wayland session.
     // This must be set before QApplication is constructed.

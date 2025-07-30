@@ -273,7 +273,8 @@ void MainWindow::applyStyles() {
 void MainWindow::setActivePlayerCreator(BackEndManager::BackEnd backendType) {
     m_activePlayerCreator = PlayerFactory::ProduceChosenFactory(backendType);
     m_activeBackendType = backendType;
-    qDebug() << "Active player creator set for backend type: " << BackEndManager::toString(backendType);
+    // qDebug() << "Active player creator set for backend type: " << BackEndManager::toString(backendType);
+    qDebug() << "Active player creator set for backend type: " << QString::fromStdString(BackEndManager::toString(backendType));
 }
 
 

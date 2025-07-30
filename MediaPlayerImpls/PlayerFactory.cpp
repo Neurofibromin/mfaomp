@@ -49,7 +49,7 @@ CreatePlayerFuncPtrType PlayerFactory::ProduceChosenFactory(BackEndManager::Back
             break;
 #endif
         default:
-            qWarning() << "No valid factory function for backend type: " << BackEndManager::toString(backend);
+            qWarning() << "No valid factory function for backend type: " << QString::fromStdString(BackEndManager::toString(backend));
             return nullptr;
     }
     return createdFactoryFunction;

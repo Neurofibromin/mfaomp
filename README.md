@@ -41,12 +41,13 @@ Intended platforms:
 - Fedora (42)
 - NixOS (25.05)
 - Windows (10 22H2)
+- Ubuntu (24.04)
 
 May work, but untested (and not packaged):
 
 - MacOS
 - BSD
-- Ubuntu (24.04) (the toolchain setup is difficult)
+- Windows (other than version 10)
 
 ### Fedora (COPR) <a name="fedora"/>
 
@@ -201,41 +202,68 @@ qt6-qtmultimedia-devel \
 qt6-qtwebengine-devel
 
 sudo dnf install boost-devel 
-sudo dnf install vlc-devel      
-sudo dnf install ffmpeg-devel 
+sudo dnf install vlc vlc-devel      
 sudo dnf install SDL2-devel
+
+#software rendering
+export QT_QUICK_BACKEND=software
+
+#for rpm fusion 
+# sudo dnf install https://download1.rpmfusion.org/free/fedora/rpmfusion-free-release-$(rpm -E %fedora).noarch.rpm
+# sudo dnf install https://download1.rpmfusion.org/nonfree/fedora/rpmfusion-nonfree-release-$(rpm -E %fedora).noarch.rpm
+# sudo dnf install ffmpeg-devel --allowerasing
+#without rpm fusion, not all codecs are suppported
+sudo dnf install ffmpeg-free-devel 
 ```
 
 ### Arch:
 
-### NixOS:
-
-Use the provided flake.nix in project root:
 ```shell
-nix develop
+sudo pacman -S base-devel cmake
+
+sudo pacman -S qt6-base \
+qt6-webengine \
+qt6-multimedia
+
+sudo pacman -S boost
+sudo pacman -S vlc-plugins-all # https://wiki.archlinux.org/title/VLC_media_player#VLC_could_not_decode_the_format_%22[format]%22
+sudo pacman -S ffmpeg
+sudo pacman -S sdl2-compat
+
+sudo pacman -S boost vlc ffmpeg sdl2-compat
 ```
 
 ### Ubuntu:
 
 ```shell
-sudo apt install \
-build-essential \
-cmake \
+sudo apt install build-essential cmake \
 libboost-all-dev \
-libqt6multimedia6 \
-libqt6multimediawidgets6 \
-libqt6webchannel6 \
-libqt6webenginecore6 \
-libqt6webenginewidgets6 \
-libqt6webview6 \
+vlc \
 libvlc-dev \
 pkg-config \
-qt6-base-dev \
+ffmpeg \
+libsdl2-dev
+
+sudo apt install qt6-base-dev \
 qt6-multimedia-dev \
-qt6-tools-dev \
-qt6-webengine-dev \
-vlc-plugin-qt
+qt6-webengine-dev
+
+# as qtmediaplayer-ffmpeg is not available on ubuntu, the gstreamer backend has to be installed
+sudo apt install gstreamer1.0-plugins-good gstreamer1.0-plugins-bad gstreamer1.0-plugins-ugly gstreamer1.0-libav gstreamer1.0-qt6 
 ```
+
+### NixOS:
+
+[//]: # (maybe??)
+[//]: # (Use the provided flake.nix in project root:)
+
+[//]: # (```shell)
+
+[//]: # (nix develop)
+
+[//]: # (```)
+
+
 
 ### openSUSE:
 
@@ -269,3 +297,8 @@ make install
 TODO:
 - [x] spin off Qt-SDL to [separate example repo](https://github.com/Neurofibromin/Qt-SDL)
 - [ ] spin off SDL2-ffmpeg to separate repo (C/C++)
+- [x] vlc does not work in fedora container (is found at build but not at runtime?)
+- [x] vlc does not work in arch container (codec not supported message, so probably vlc issue and not mfaomp)
+- [ ] qwebengine crashes on fedora (but works fine on arch)
+- [ ] qwebengine crashes on ubuntu (but works fine on arch)
+- [x] qmediaplayer cannot find codecs on ubuntu (but works fine on arch and fedora)

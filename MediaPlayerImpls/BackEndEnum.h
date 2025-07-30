@@ -49,7 +49,7 @@
 namespace { //anon namespace to hide structs
     namespace BackEndTypes {
         //TODO Make these template classes that can retun the type they were formed from,
-        // eg. the type VLCPlayerStruct (from the VLC implementation) should be available from here
+        // eg. the type VLCPlayerStruct (from the VLC implementation) should be available from here (like type traits?)
         struct QMediaPlayer {
             static bool isAvailableRuntime() {
 #ifdef HAVE_QTMULTIMEDIA
