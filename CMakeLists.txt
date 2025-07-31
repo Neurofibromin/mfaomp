@@ -19,7 +19,7 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 cmake_minimum_required(VERSION 3.28)
 project(mfaomp
-        VERSION 0.7.0
+        VERSION 0.7.1
         DESCRIPTION "Multiple Files At Once Media Player"
         HOMEPAGE_URL "https://github.com/Neurofibromin/mfaomp"
 )
