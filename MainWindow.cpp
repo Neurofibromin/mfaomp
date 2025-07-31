@@ -53,10 +53,24 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent) {
     initializeConnections();
     setupMenuBar();
     applyStyles();
+    // setWindowTitle("mfaomp");
 
     setCentralWidget(m_dropWidget);
     resize(800, 600);
 
+    auto availableBackends = BackEndManager::getAvailableRuntimeBackEnds();
+    if (availableBackends.empty()) {
+        qCritical() << "No available backends found";
+        qApp->quit();
+    }
+    auto defaultbackend = availableBackends.front();
+    setActivePlayerCreator(defaultbackend);
+    std::string name = BackEndManager::toString(defaultbackend);
+    QString label_text = QString::fromStdString(name);
+    qDebug() << label_text << " is the default backend";
+    m_backendComboBox->setCurrentText(label_text);
+
+    /*
     // Set initial backend (must be after m_backendComboBox is created)
     if (BackEndManager::isBackendAvailableCompiletime(BackEndManager::BackEnd::VLCPlayer)) {
         setActivePlayerCreator(BackEndManager::BackEnd::VLCPlayer);
@@ -80,6 +94,7 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent) {
         qCritical() << "No media backends available!";
         qApp->quit();
     }
+    */
 }
 
 MainWindow::~MainWindow() = default;
@@ -258,7 +273,8 @@ void MainWindow::applyStyles() {
 void MainWindow::setActivePlayerCreator(BackEndManager::BackEnd backendType) {
     m_activePlayerCreator = PlayerFactory::ProduceChosenFactory(backendType);
     m_activeBackendType = backendType;
-    qDebug() << "Active player creator set for backend type: " << BackEndManager::toString(backendType);
+    // qDebug() << "Active player creator set for backend type: " << BackEndManager::toString(backendType);
+    qDebug() << "Active player creator set for backend type: " << QString::fromStdString(BackEndManager::toString(backendType));
 }
 
 

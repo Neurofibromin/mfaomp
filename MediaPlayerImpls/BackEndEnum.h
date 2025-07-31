@@ -20,6 +20,9 @@
 #include <QDebug>
 #include "config.h"
 #include <type_traits>
+#include <utility>
+#include <cassert>
+#include <stdexcept>
 
 #ifdef HAVE_LIBVLC
 #include <vlc/vlc.h>
@@ -38,9 +41,15 @@
 #include <QWebEngineProfile>
 #endif
 
+#ifdef HAVE_SDL2
+#include <SDL2/SDL.h>
+#endif
+
 
 namespace { //anon namespace to hide structs
     namespace BackEndTypes {
+        //TODO Make these template classes that can retun the type they were formed from,
+        // eg. the type VLCPlayerStruct (from the VLC implementation) should be available from here (like type traits?)
         struct QMediaPlayer {
             static bool isAvailableRuntime() {
 #ifdef HAVE_QTMULTIMEDIA
@@ -108,6 +117,32 @@ namespace { //anon namespace to hide structs
             }
             static constexpr const char* name = "QWebEngine";
         };
+
+        struct SDL2Player {
+            static bool isAvailableRuntime() {
+#ifdef HAVE_SDL2
+                return true; //TODO: add real check here
+#endif
+                return false;
+            }
+            static consteval bool isAvailableCompiletime() {
+#ifdef HAVE_SDL2
+                return true;
+#else
+                return false;
+#endif
+            }
+            static constexpr const char* name = "SDL2";
+        };
+
+#ifndef NDEBUG
+        // Only for debug builds and tests to provide a graceful fallback.
+        struct InvalidBackEndType {
+            static bool isAvailableRuntime() { return false; }
+            static consteval bool isAvailableCompiletime() { return false; }
+            static constexpr const char* name = "Invalid";
+        };
+#endif
     }
 }
 
@@ -117,13 +152,16 @@ public:
     enum class BackEnd {
         QMediaPlayer,
         VLCPlayer,
-        QWebEngine
+        QWebEngine,
+        SDL2,
+        invalid
     };
 
-    static constexpr std::array<BackEnd, 3> AllBackEnds = {
+    static constexpr std::array<BackEnd, 4> AllBackEnds = {
         BackEnd::VLCPlayer,
         BackEnd::QMediaPlayer,
-        BackEnd::QWebEngine
+        BackEnd::QWebEngine,
+        BackEnd::SDL2
     };
 
 private:
@@ -131,13 +169,11 @@ private:
         using AvailabilityChecker = bool (*)();
         using NameGetter = const char* (*)();
 
-        BackEndMetaData(AvailabilityChecker runt, /*AvailabilityChecker compt,*/ NameGetter nameGetter) :
+        BackEndMetaData(AvailabilityChecker runt, NameGetter nameGetter) :
             isRunTimeAvailable(runt),
-            // isCompileTimeAvailable(compt),
             getName(nameGetter) {}
 
         AvailabilityChecker isRunTimeAvailable;
-        // AvailabilityChecker isCompileTimeAvailable;
         NameGetter getName;
     };
 
@@ -145,10 +181,12 @@ private:
         static const auto qmpName = []() { return BackEndTypes::QMediaPlayer::name; };
         static const auto vlcName = []() { return BackEndTypes::VLCPlayer::name; };
         static const auto qweName = []() { return BackEndTypes::QWebEngine::name; };
+        static const auto sdlName = []() { return BackEndTypes::SDL2Player::name; };
         static const std::map<BackEnd, BackEndMetaData> metaDataMap = {
             {BackEnd::QMediaPlayer, {&BackEndTypes::QMediaPlayer::isAvailableRuntime, qmpName}},
             {BackEnd::VLCPlayer,   {&BackEndTypes::VLCPlayer::isAvailableRuntime, vlcName}},
-            {BackEnd::QWebEngine,  {&BackEndTypes::QWebEngine::isAvailableRuntime, qweName}}
+            {BackEnd::QWebEngine,  {&BackEndTypes::QWebEngine::isAvailableRuntime, qweName}},
+            {BackEnd::SDL2,  {&BackEndTypes::SDL2Player::isAvailableRuntime, sdlName}}
         };
         return metaDataMap;
     }
@@ -162,7 +200,15 @@ private:
                 return std::forward<Func>(func).template operator()<BackEndTypes::VLCPlayer>();
             case BackEnd::QWebEngine:
                 return std::forward<Func>(func).template operator()<BackEndTypes::QWebEngine>();
+            case BackEnd::SDL2:
+                return std::forward<Func>(func).template operator()<BackEndTypes::SDL2Player>();
+#ifndef NDEBUG
+            default:
+                qWarning() << "dispatchToType called with an invalid BackEnd enum value.";
+                return std::forward<Func>(func).template operator()<BackEndTypes::InvalidBackEndType>();
+#endif
         }
+        std::unreachable(); //only reached if in a non-testing/debug environment the dispatchtotype is called with invalid backend value
     }
 
 public:
@@ -207,15 +253,6 @@ public:
     static consteval auto getAvailableCompiletimeBackEnds() {
         constexpr  int count = std::count_if(AllBackEnds.begin(), AllBackEnds.end(),
             [](BackEnd be){ return isBackendAvailableCompiletime(be); });
-        // consteval int count = []() {
-        //     int available_count = 0;
-        //     for (BackEnd backend : AllBackEnds) {
-        //         if (isBackendAvailableCompiletime(backend)) {
-        //             available_count++;
-        //         }
-        //     }
-        //     return available_count;
-        // }();
         std::array<BackEnd, count> available{};
 
         if constexpr (count > 0) {

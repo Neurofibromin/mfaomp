@@ -23,9 +23,10 @@
 #include "QWebEngineStruct.h"
 #include "BackEndEnum.h"
 #include "config.h"
+#include "SDL2Struct.h"
 
 CreatePlayerFuncPtrType PlayerFactory::ProduceChosenFactory(BackEndManager::BackEnd backend) {
-    CreatePlayerFuncPtrType createdFactoryFunction;
+    CreatePlayerFuncPtrType createdFactoryFunction = nullptr;
     switch (backend) {
 #ifdef HAVE_LIBVLC
         case BackEndManager::BackEnd::VLCPlayer:
@@ -42,8 +43,13 @@ CreatePlayerFuncPtrType PlayerFactory::ProduceChosenFactory(BackEndManager::Back
             createdFactoryFunction = [](const QUrl& url) -> MediaPlayerBase* { return new QWebEngineStruct(url); };
             break;
 #endif
+#ifdef HAVE_SDL2
+        case BackEndManager::BackEnd::SDL2:
+            createdFactoryFunction = [](const QUrl& url) -> MediaPlayerBase* { return new SDL2Struct(url); };
+            break;
+#endif
         default:
-            qWarning() << "No valid factory function for backend type: " << BackEndManager::toString(backend);
+            qWarning() << "No valid factory function for backend type: " << QString::fromStdString(BackEndManager::toString(backend));
             return nullptr;
     }
     return createdFactoryFunction;

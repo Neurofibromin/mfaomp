@@ -82,13 +82,16 @@ TEST_CASE("BackEndManager - getAvailableCompiletimeBackEnds", "[BackEndManager]"
     std::vector<std::string> expectedNames;
 
 #ifdef HAVE_QTMULTIMEDIA
-    expectedNames.push_back("QMediaPlayer");
+    expectedNames.emplace_back("QMediaPlayer");
 #endif
 #ifdef HAVE_LIBVLC
-    expectedNames.push_back("VLCPlayer");
+    expectedNames.emplace_back("VLCPlayer");
 #endif
 #ifdef HAVE_QTWEBENGINE
-    expectedNames.push_back("QWebEngine");
+    expectedNames.emplace_back("QWebEngine");
+#endif
+#ifdef HAVE_SDL2
+    expectedNames.emplace_back("SDL2");
 #endif
     std::sort(expectedNames.begin(), expectedNames.end());
 
@@ -130,13 +133,16 @@ TEST_CASE("BackEndManager - getAvailableRuntimeBackEnds", "[BackEndManager][Runt
     std::vector<std::string> expectedRuntimeNames;
 
     if (BackEndTypes::QMediaPlayer::isAvailableRuntime()) {
-        expectedRuntimeNames.push_back("QMediaPlayer");
+        expectedRuntimeNames.emplace_back("QMediaPlayer");
     }
     if (BackEndTypes::VLCPlayer::isAvailableRuntime()) {
-        expectedRuntimeNames.push_back("VLCPlayer");
+        expectedRuntimeNames.emplace_back("VLCPlayer");
     }
     if (BackEndTypes::QWebEngine::isAvailableRuntime()) {
-        expectedRuntimeNames.push_back("QWebEngine");
+        expectedRuntimeNames.emplace_back("QWebEngine");
+    }
+    if (BackEndTypes::SDL2Player::isAvailableRuntime()) {
+        expectedRuntimeNames.emplace_back("SDL2");
     }
     std::sort(expectedRuntimeNames.begin(), expectedRuntimeNames.end());
 

@@ -41,12 +41,13 @@ Intended platforms:
 - Fedora (42)
 - NixOS (25.05)
 - Windows (10 22H2)
+- Ubuntu (24.04)
 
 May work, but untested (and not packaged):
 
 - MacOS
 - BSD
-- Ubuntu (24.04) (the toolchain setup is difficult)
+- Windows (other than version 10)
 
 ### Fedora (COPR) <a name="fedora"/>
 
@@ -92,7 +93,7 @@ audio.
 
 ## Aims <a name="aims"/>
 
-CI/CD
+### CI/CD
 
 - [ ] [OpenSuse Build Service](https://build.opensuse.org/package/show/home:Neurofibromin/mfaomp)
 - [x] [Nix](https://github.com/NixOS/nixpkgs/pull/414760)
@@ -113,7 +114,7 @@ CI/CD
     - [ ] nsis (only this works with CPack)
     - [ ] wix
 
-Features:
+### Features:
 
 - [x] QMediaPlayer backend
 - [x] VLC backend
@@ -127,11 +128,12 @@ Features:
 - [ ] FFmpeg backend
 - [ ] SDL2? backend maybe something like this: https://github.com/fosterseth/sdl2_video_player
 - [x] Use Strategy Pattern for handling backends (maybe)
-- [ ] Use Visitor Pattern for handling backends (maybe)
+- [x] Use Visitor Pattern for handling backends (maybe)
 - [x] Use Factory Pattern for handling backends (maybe)
 - [ ] Add support for multiple backends at once
 - [ ] Add support for subtitles
 - [x] Adding videos via drag-and-drop
+- [x] No exceptions in the codebase
 - [ ] Per video controls, overload right click menu
     - [ ] loop
     - [ ] skip
@@ -147,23 +149,25 @@ Features:
 - [x] 0.6: theming, ui-ux design
 - [x] 0.6: add Windows support
 - [x] 0.6: add compile flags for enabling backends
-- 0.6: add plugin system for runtime backend detection
-- 0.7: sdl-ffmpeg backend
-- 0.8: CEF backend
-- 0.x: multithreaded approach
-- 0.x: other graphics backends (opengl vulcan directx)
-- 0.x: add c++ modules support
-- 1.x: work on performance
-- 1.x: self-contained build artifacts
-- 1.x: reproducible build artifacts (SBOM)
+- [ ] 0.7: sdl-ffmpeg backend
+- [ ] 0.8: CEF backend
+- [ ] 0.x: add plugin system for runtime backend detection
+- [ ] 0.x: multithreaded approach
+- [ ] 0.x: other graphics backends (opengl vulcan directx)
+- [ ] 0.x: add c++ modules support
+- [ ] 1.x: work on performance
+- [ ] 1.x: self-contained build artifacts
+- [ ] 1.x: reproducible build artifacts (SBOM)
 
-Testing
+### Testing
+
+Tests are meant to be run in debug mode (if NDEBUG is defined tests are meant to segfault).
 
 - [ ] runtime dependencies
 - [ ] integration tests
 - [x] catch2
 
-Bugs:
+### Bugs:
 
 ### Signatures, hashes and integrity checks <a name="signatures-hashes-and-integrity-checks"/>
 
@@ -193,77 +197,101 @@ for installation or using the program.
 
 ```shell
 sudo dnf install \
-qt6-qtbase \
-qt6-qtbase-common \
 qt6-qtbase-devel \
-qt6-qtbase-examples \
-qt6-qtbase-gui \
-qt6-qtbase-ibase \
-qt6-qtbase-mysql \
-qt6-qtbase-odbc \
-qt6-qtbase-postgresql  \
-qt6-qtbase-private-devel \
-qt6-qtbase-static \
-qt6-qtdeclarative-devel \
 qt6-qtmultimedia-devel \
-qt6-qttools-devel \
-qt6-qtwebengine-devel \
-boost-devel \
-vlc-devel
+qt6-qtwebengine-devel
+
+sudo dnf install boost-devel 
+sudo dnf install vlc vlc-devel      
+sudo dnf install SDL2-devel
+
+#for rpm fusion 
+# sudo dnf install https://download1.rpmfusion.org/free/fedora/rpmfusion-free-release-$(rpm -E %fedora).noarch.rpm
+# sudo dnf install https://download1.rpmfusion.org/nonfree/fedora/rpmfusion-nonfree-release-$(rpm -E %fedora).noarch.rpm
+# sudo dnf install ffmpeg-devel --allowerasing
+#without rpm fusion, not all codecs are suppported
+sudo dnf install ffmpeg-free-devel 
 ```
 
 ### Arch:
 
-### NixOS:
-
-Use the provided flake.nix in project root:
 ```shell
-nix develop
+sudo pacman -S base-devel cmake
+
+sudo pacman -S qt6-base \
+qt6-webengine \
+qt6-multimedia
+
+sudo pacman -S boost
+sudo pacman -S vlc-plugins-all # https://wiki.archlinux.org/title/VLC_media_player#VLC_could_not_decode_the_format_%22[format]%22
+sudo pacman -S ffmpeg
+sudo pacman -S sdl2-compat
 ```
 
 ### Ubuntu:
 
 ```shell
-sudo apt install \
-build-essential \
-cmake \
+sudo apt install build-essential cmake \
 libboost-all-dev \
-libqt6multimedia6 \
-libqt6multimediawidgets6 \
-libqt6webchannel6 \
-libqt6webenginecore6 \
-libqt6webenginewidgets6 \
-libqt6webenginewidgets6 \
-libqt6webview6 \
+vlc \
 libvlc-dev \
 pkg-config \
-qt6-base-dev \
+ffmpeg \
+libsdl2-dev
+
+sudo apt install qt6-base-dev \
 qt6-multimedia-dev \
-qt6-tools-dev \
-qt6-webengine-dev \
-vlc-plugin-qt
+qt6-webengine-dev
+
+# as qtmediaplayer-ffmpeg is not available on ubuntu, the gstreamer backend has to be installed
+sudo apt install gstreamer1.0-plugins-good gstreamer1.0-plugins-bad gstreamer1.0-plugins-ugly gstreamer1.0-libav gstreamer1.0-qt6 
 ```
+
+### NixOS:
+
+Use the provided flake.nix in project root:
+
+```shell
+nix develop
+```
+
+
 
 ### openSUSE:
 
+For some reason the vlc backend crashes the desktop environment on openSUSE. 
+
 ```shell
+sudo zypper install opi
+opi codecs
+sudo zypper in -t pattern devel_C_C++
+
 sudo zypper in \
 qt6-base-devel \
-qt6-tools \
-qt6-webview \
 qt6-webengine \
 qt6-multimediawidgets-devel \
 qt6-multimedia-devel \
-qt6-webenginewidgets-devel \
-qt6-webchannel-devel \ 
-vlc-devel
+qt6-webenginewidgets-devel  
+
+sudo zypper in \
+sdl2-compat-devel \
+ffmpeg \
+ffmpeg-devel \
+boost-devel \
+libboost_system-devel \
+libboost_filesystem-devel \
+vlc-devel \
+vlc
 ```
 
 ### Windows:
 
+[//]: # (TODO: test this)
+Install vlc and use vcpkg for the other dependencies.
+
 ### Generic:
 
-```
+```shell
 git clone -b master https://github.com/Neurofibromin/mfaomp mfaomp
 cd mfaomp
 mkdir build
@@ -272,3 +300,7 @@ cmake ..
 make
 make install
 ```
+
+TODO:
+- [x] spin off Qt-SDL to [separate example repo](https://github.com/Neurofibromin/Qt-SDL)
+- [ ] spin off SDL2-ffmpeg to separate repo (C/C++)

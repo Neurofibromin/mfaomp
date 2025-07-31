@@ -33,6 +33,8 @@ add_executable(mfaomp_tests
                ${target_sources}
                AddVideoTests.cpp
                BackEndManagerTests.cpp
+               VLCTests.cpp
+               PlayerFactoryTests.cpp
 )
 
 target_include_directories(mfaomp_tests PRIVATE

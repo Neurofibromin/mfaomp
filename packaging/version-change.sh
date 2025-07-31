@@ -19,7 +19,6 @@ NEW_DATE=$(date +'%Y. %m. %d')
 PKGBUILD_FILE=./PKGBUILD
 README_FILE=../README.md
 SPEC_FILE1=./mfaomp-copr.spec
-SPEC_FILE2=./mfaomp-obs.spec
 NIX_FILE=./package.nix
 CMAKELISTS_FILE=../CMakeLists.txt
 VCPKG_FILE=../vcpkg.json
@@ -61,15 +60,6 @@ fi
 # Replace the Version value
 sed -i -E "s/^Version:        [0-9]+\.[0-9]+\.[0-9]+/Version:        ${NEW_VERSION}/" "$SPEC_FILE1"
 echo "Version updated to $NEW_VERSION in $SPEC_FILE1."
-
-# Validate the obs spec file exists
-if [ ! -f "$SPEC_FILE2" ]; then
-    echo "Error: File '$SPEC_FILE2' not found."
-    exit 1
-fi
-# Replace the Version value
-sed -i -E "s/^Version:        [0-9]+\.[0-9]+\.[0-9]+/Version:        ${NEW_VERSION}/" "$SPEC_FILE2"
-echo "Version updated to $NEW_VERSION in $SPEC_FILE2."
 
 # Validate the nix file exists
 if [ ! -f "$NIX_FILE" ]; then

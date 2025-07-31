@@ -26,6 +26,11 @@
 #include <QWebEngineProfile>
 #endif
 #include "MainWindow.h"
+#include <SDL2/SDL.h>
+#include <QApplication>
+#include <QOpenGLContext>
+#include <QOffscreenSurface>
+#include <QDebug>
 
 int main(int argc, char* argv[]) {
     for (int i = 1; i < argc; ++i) {
@@ -35,23 +40,65 @@ int main(int argc, char* argv[]) {
             return 0;
         }
     }
+    // Create a temporary context to check the OpenGL renderer string.
+#ifdef linux
+    qputenv("QT_QPA_PLATFORM", "xcb");
+    qputenv("SDL_VIDEODRIVER", "x11"); //SDL2 with Qt only works on x11, otherwise segfault?
+    QCoreApplication::setAttribute(Qt::AA_ShareOpenGLContexts);
+#endif
+    bool useSoftwareRendering = false;
+    { //in scope so the QGuiApplication gets cleaned up before QApplication starts
+        QGuiApplication tempApp(argc, argv); // Minimal QGuiApplication to allow OpenGL initialization
+        QOffscreenSurface surface;
+        surface.create();
+        QOpenGLContext context;
+        context.create();
+        if (context.makeCurrent(&surface)) {
+            if (const GLubyte* renderer = glGetString(GL_RENDERER)) {
+                QString rendererString = QString::fromLatin1(reinterpret_cast<const char*>(renderer));
+                std::cout << "Detected OpenGL renderer:" << rendererString.toStdString() << '\n';
+                if (rendererString.startsWith("NV", Qt::CaseInsensitive)) { //https://nouveau.freedesktop.org/CodeNames.html
+                    std::cout << "Nouveau driver detected. Forcing software rendering." << '\n';
+                    useSoftwareRendering = true;
+                }
+            }
+            context.doneCurrent();
+        }
+        surface.destroy();
+    }
+    if (useSoftwareRendering)
+        qputenv("QT_QUICK_BACKEND", "software");
+    // Simpler check
+    if (!useSoftwareRendering && QFileInfo::exists("/sys/module/nouveau")) {
+        std::cout << "Nouveau kernel module detected. Forcing software rendering to prevent potential crash." << '\n';
+        qputenv("QT_QUICK_BACKEND", "software");
+    }
+
     // Force Qt to use the XCB (X11) platform plugin
     // This will make the application run via XWayland if on a Wayland session.
     // This must be set before QApplication is constructed.
     // Must be used until VLC supports embedding in native wayland windows: https://code.videolan.org/videolan/vlc/-/issues/16106
 #ifdef linux
     qputenv("QT_QPA_PLATFORM", "xcb");
+    qputenv("SDL_VIDEODRIVER", "x11"); //SDL2 with Qt only works on x11, otherwise segfault?
+    QCoreApplication::setAttribute(Qt::AA_ShareOpenGLContexts);
 #endif
     QApplication a(argc, argv);
     // a.setStyle("windows"); //https://forum.qt.io/topic/127907/where-can-i-find-win95-win2000-stylesheet/4
+
+    if (SDL_Init(SDL_INIT_VIDEO) < 0) {
+        qCritical("Failed to initialize SDL_INIT_VIDEO: %s", SDL_GetError());
+        return -1;
+    }
+
     MainWindow w;
-#ifdef linux
-    // QCoreApplication::setAttribute(Qt::AA_ShareOpenGLContexts);
-#endif
+
 #ifdef HAVE_QTWEBENGINE
     QWebEngineProfile::defaultProfile()->settings()->setAttribute(
         QWebEngineSettings::PlaybackRequiresUserGesture, false);
 #endif
     w.show();
-    return a.exec();
+    int ret = a.exec();
+    SDL_Quit();
+    return ret;
 }

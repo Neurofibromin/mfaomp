@@ -227,7 +227,7 @@ project.lock.json
 publish/
 rcf/
 releases.txt
-test_data_files
+test_data_files/
 x64/
 x86/
 ~$*

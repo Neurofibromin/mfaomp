@@ -19,7 +19,7 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 cmake_minimum_required(VERSION 3.28)
 project(mfaomp
-        VERSION 0.6.6
+        VERSION 0.7.1
         DESCRIPTION "Multiple Files At Once Media Player"
         HOMEPAGE_URL "https://github.com/Neurofibromin/mfaomp"
 )
@@ -31,7 +31,14 @@ set(PROJECT_LICENSE_FILE "${CMAKE_CURRENT_SOURCE_DIR}/LICENSE")
 
 set(CMAKE_CXX_STANDARD 23)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
-#set(CMAKE_CXX_SCAN_FOR_MODULES OFF)
+set(CMAKE_CXX_SCAN_FOR_MODULES OFF)
+if ( CMAKE_COMPILER_IS_GNUCC )
+    set(CMAKE_CXX_FLAGS  "${CMAKE_CXX_FLAGS} -Wall -Wextra")
+endif()
+if ( MSVC )
+    set(CMAKE_CXX_FLAGS  "${CMAKE_CXX_FLAGS} /W4")
+endif()
+
 set(CMAKE_AUTOMOC ON)
 set(CMAKE_AUTORCC ON)
 set(CMAKE_AUTOUIC ON)
@@ -39,6 +46,7 @@ set(CMAKE_AUTOUIC ON)
 option(ENABLE_QTMULTIMEDIA "Enable Qt Multimedia backend" ON)
 option(ENABLE_LIBVLC "Enable VLC backend" ON)
 option(ENABLE_QTWEBENGINE "Enable Qt WebEngine backend" ON)
+option(ENABLE_SDL2 "Enable SDL2 backend" ON)
 option(ENABLE_CATCH "Enable Catch testing" ON)
 option(USE_VCPKG "Enable vcpkg for qt (not system libraries)" OFF)
 option(USE_PREDOWNLOADED_LIBVLCPP "Use predownloaded libvlcpp (disable FetchContent)" OFF) # needed because Fedora disables build time fetching of dependencies, all sources must be downloaded beforehand
@@ -47,6 +55,7 @@ option(USE_FETCHED_LIBVLCPP "Fetch libvlcpp (enable FetchContent, used by defaul
 set(HAVE_QTMULTIMEDIA FALSE)
 set(HAVE_LIBVLC FALSE)
 set(HAVE_QTWEBENGINE FALSE)
+set(HAVE_SDL2 FALSE)
 
 # cmake -B build -S . -DCMAKE_TOOLCHAIN_FILE=<path_to_vcpkg>/scripts/buildsystems/vcpkg.cmake
 if (WIN32 AND USE_VCPKG AND NOT DEFINED VCPKG_ROOT AND NOT DEFINED CMAKE_TOOLCHAIN_FILE)
@@ -75,6 +84,7 @@ find_package(Qt6 REQUIRED COMPONENTS
              WebEngineWidgets
              Test
 )
+find_package(SDL2 REQUIRED)
 #set(CMAKE_FIND_DEBUG_MODE 0)
 # VLC
 if (ENABLE_LIBVLC AND NOT WIN32) #TODO: solve libvlc for windows without pkgconfig
@@ -122,6 +132,17 @@ if (ENABLE_QTWEBENGINE)
     endif ()
 endif ()
 
+# SDL2
+if (ENABLE_SDL2)
+    if (SDL2_FOUND)
+        message(STATUS "SDL2 backend enabled")
+        set(HAVE_SDL2 TRUE)
+    else ()
+        message(WARNING "SDL2 not found; disabling backend")
+        set(HAVE_SDL2 FALSE)
+    endif ()
+endif ()
+
 if (POLICY CMP0167)
     cmake_policy(SET CMP0167 NEW)
 endif ()
@@ -160,6 +181,10 @@ endif ()
 if (HAVE_QTWEBENGINE)
     list(APPEND MFAOMP_SOURCES MediaPlayerImpls/QWebEngineStruct.h)
     list(APPEND MFAOMP_SOURCES MediaPlayerImpls/QWebEngineStruct.cpp)
+endif ()
+if (HAVE_SDL2)
+    list(APPEND MFAOMP_SOURCES MediaPlayerImpls/SDL2Struct.h)
+    list(APPEND MFAOMP_SOURCES MediaPlayerImpls/SDL2Struct.cpp)
 endif ()
 
 add_executable(mfaomp ${MFAOMP_SOURCES} main.cpp)
@@ -233,6 +258,9 @@ if (HAVE_QTWEBENGINE)
 endif ()
 if (HAVE_LIBVLC)
     list(APPEND MFAOMP_LIBRARIES ${LIBVLC_LIBRARIES})
+endif ()
+if (HAVE_SDL2)
+    list(APPEND MFAOMP_LIBRARIES SDL2::SDL2)
 endif ()
 
 target_link_libraries(mfaomp ${MFAOMP_LIBRARIES})

@@ -95,8 +95,8 @@ SettingsDialog::SettingsDialog(float speedIncrement, float minSpeed, float maxSp
 
 void SettingsDialog::acceptSettings() {
     std::cout << styleComboBox->currentText().toStdString() << " is the chosen style";
-    float minSpeed = minPlaybackSpeedSpinBox->value();
-    float maxSpeed = maxPlaybackSpeedSpinBox->value();
+    double minSpeed = minPlaybackSpeedSpinBox->value();
+    double maxSpeed = maxPlaybackSpeedSpinBox->value();
     if (minSpeed > maxSpeed) {
         QMessageBox::warning(this, "Input Error",
                              "Minimum playback speed cannot be greater than maximum playback speed.");
