@@ -149,15 +149,15 @@ audio.
 - [x] 0.6: theming, ui-ux design
 - [x] 0.6: add Windows support
 - [x] 0.6: add compile flags for enabling backends
-- 0.7: sdl-ffmpeg backend
-- 0.8: CEF backend
-- 0.x: add plugin system for runtime backend detection
-- 0.x: multithreaded approach
-- 0.x: other graphics backends (opengl vulcan directx)
-- 0.x: add c++ modules support
-- 1.x: work on performance
-- 1.x: self-contained build artifacts
-- 1.x: reproducible build artifacts (SBOM)
+- [ ] 0.7: sdl-ffmpeg backend
+- [ ] 0.8: CEF backend
+- [ ] 0.x: add plugin system for runtime backend detection
+- [ ] 0.x: multithreaded approach
+- [ ] 0.x: other graphics backends (opengl vulcan directx)
+- [ ] 0.x: add c++ modules support
+- [ ] 1.x: work on performance
+- [ ] 1.x: self-contained build artifacts
+- [ ] 1.x: reproducible build artifacts (SBOM)
 
 ### Testing
 
@@ -204,9 +204,6 @@ qt6-qtwebengine-devel
 sudo dnf install boost-devel 
 sudo dnf install vlc vlc-devel      
 sudo dnf install SDL2-devel
-
-#software rendering
-export QT_QUICK_BACKEND=software
 
 #for rpm fusion 
 # sudo dnf install https://download1.rpmfusion.org/free/fedora/rpmfusion-free-release-$(rpm -E %fedora).noarch.rpm
@@ -262,14 +259,28 @@ nix develop
 
 ### openSUSE:
 
+For some reason the vlc backend crashes the desktop environment on openSUSE. 
+
 ```shell
+sudo zypper install opi
+opi codecs
+sudo zypper in -t pattern devel_C_C++
+
 sudo zypper in \
 qt6-base-devel \
 qt6-webengine \
 qt6-multimediawidgets-devel \
 qt6-multimedia-devel \
-qt6-webenginewidgets-devel \ 
-vlc-devel
+qt6-webenginewidgets-devel  
+
+sudo zypper in \
+sdl2-compat-devel \
+ffmpeg \
+ffmpeg-devel \
+boost-devel \
+libboost_system-devel \
+libboost_filesystem-devel \
+vlc-devel \
 vlc
 ```
 
@@ -290,8 +301,3 @@ make install
 TODO:
 - [x] spin off Qt-SDL to [separate example repo](https://github.com/Neurofibromin/Qt-SDL)
 - [ ] spin off SDL2-ffmpeg to separate repo (C/C++)
-- [x] vlc does not work in fedora container (is found at build but not at runtime?)
-- [x] vlc does not work in arch container (codec not supported message, so probably vlc issue and not mfaomp)
-- [x] qwebengine crashes on fedora (but works fine on arch)
-- [x] qwebengine crashes on ubuntu (but works fine on arch)
-- [x] qmediaplayer cannot find codecs on ubuntu (but works fine on arch and fedora)

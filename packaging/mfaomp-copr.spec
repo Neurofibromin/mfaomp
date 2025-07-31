@@ -15,8 +15,15 @@ BuildRequires:  qt6-qtbase-devel
 BuildRequires:  qt6-qtmultimedia-devel
 BuildRequires:  qt6-qtwebengine-devel
 BuildRequires:  vlc-devel
+BuildRequires:  boost-devel
+BuildRequires:  SDL2-devel
+BuildRequires:  ffmpeg-free-devel
 Requires:       vlc
-# check if QT is runtime dependency as well?
+Requires:       ffmpeg-free
+Requires:       boost
+Requires:       qt6-qtbase
+Requires:       qt6-qtmultimedia
+Requires:       qt6-qtwebengine
 
 %description
 mfaomp is a media player designed to play multiple video or audio files

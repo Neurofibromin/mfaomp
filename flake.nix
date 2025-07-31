@@ -12,16 +12,29 @@
       perSystem = { config, self', inputs', pkgs, system, ... }: {
         devShells.default = pkgs.mkShell {
           packages = with pkgs; [
-            boost
-            catch2
-            cmake
-            pkg-config
-            gcc
-            clang-tools
-            libvlc
-            libvlcpp
             qt6.qtbase
             qt6.qtmultimedia
+            qt6.qtwebengine
+
+            SDL2
+            boost
+            libvlc
+            ffmpeg
+            vlc
+            libvlcpp
+
+            catch2
+            clang-tools
+            cmake
+            gcc
+            pkg-config
+            pipewire
+            gst_all_1.gstreamer
+            gst_all_1.gst-plugins-good
+            gst_all_1.gst-plugins-bad
+            gst_all_1.gst-plugins-ugly
+            gst_all_1.gst-plugins-base
+            gst_all_1.gst-libav
           ];
         };
       };
