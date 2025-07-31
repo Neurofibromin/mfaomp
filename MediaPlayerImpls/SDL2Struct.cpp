@@ -154,6 +154,8 @@ void SDL2Struct::unmute() {
 }
 
 void SDL2Struct::clear() {
+    delete videoWidget;
+    videoWidget = nullptr;
 }
 
 float SDL2Struct::speed(float sp) {
@@ -172,7 +174,7 @@ float SDL2Struct::duration() {
 }
 
 SDL2Struct::~SDL2Struct() {
-    delete videoWidget;
+    SDL2Struct::clear();
 }
 
 QWidget* SDL2Struct::getVideoWidget() {

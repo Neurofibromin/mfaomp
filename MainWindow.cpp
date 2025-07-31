@@ -59,7 +59,7 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent) {
     resize(800, 600);
 
     auto availableBackends = BackEndManager::getAvailableRuntimeBackEnds();
-    if (availableBackends.size() == 0) {
+    if (availableBackends.empty()) {
         qCritical() << "No available backends found";
         qApp->quit();
     }

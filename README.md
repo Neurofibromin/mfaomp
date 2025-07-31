@@ -286,6 +286,9 @@ vlc
 
 ### Windows:
 
+[//]: # (TODO: test this)
+Install vlc and use vcpkg for the other dependencies.
+
 ### Generic:
 
 ```shell

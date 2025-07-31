@@ -40,7 +40,7 @@ void openAndAddVideo(QWidget& parentWidget,
                      QGridLayout& layout,
                      QVector<MediaPlayerBase*>& mediaPlayers,
                      CreatePlayerFuncPtrType createPlayerFunc,
-                     GetOpenFileUrlsFuncType getUrlsFunc = QFileDialog::getOpenFileUrls);
+                     const GetOpenFileUrlsFuncType& getUrlsFunc = QFileDialog::getOpenFileUrls);
 
 void rearrangeVideoPlayers(QGridLayout& layout, QVector<MediaPlayerBase *>& mediaPlayers);
 
