@@ -41,43 +41,38 @@ int main(int argc, char* argv[]) {
         }
     }
     // Create a temporary context to check the OpenGL renderer string.
+#ifdef linux
+    qputenv("QT_QPA_PLATFORM", "xcb");
+    qputenv("SDL_VIDEODRIVER", "x11"); //SDL2 with Qt only works on x11, otherwise segfault?
+    QCoreApplication::setAttribute(Qt::AA_ShareOpenGLContexts);
+#endif
     bool useSoftwareRendering = false;
-    QOffscreenSurface surface;
-    return 0;
-    surface.create();
-    QOpenGLContext context;
-    if (context.create()) {
+    { //in scope so the QGuiApplication gets cleaned up before QApplication starts
+        QGuiApplication tempApp(argc, argv); // Minimal QGuiApplication to allow OpenGL initialization
+        QOffscreenSurface surface;
+        surface.create();
+        QOpenGLContext context;
+        context.create();
         if (context.makeCurrent(&surface)) {
-            const GLubyte* renderer = glGetString(GL_RENDERER);
-            if (renderer) {
+            if (const GLubyte* renderer = glGetString(GL_RENDERER)) {
                 QString rendererString = QString::fromLatin1(reinterpret_cast<const char*>(renderer));
-                qDebug() << "Detected OpenGL renderer:" << rendererString;
-                // Check if the renderer string contains "Nouveau", which is the name
-                // of the open-source NVIDIA driver that is causing the crash.
-                if (rendererString.contains("Nouveau", Qt::CaseInsensitive)) {
-                    qDebug() << "Nouveau driver detected. Forcing software rendering to prevent potential crash.";
+                std::cout << "Detected OpenGL renderer:" << rendererString.toStdString() << '\n';
+                if (rendererString.startsWith("NV", Qt::CaseInsensitive)) { //https://nouveau.freedesktop.org/CodeNames.html
+                    std::cout << "Nouveau driver detected. Forcing software rendering." << '\n';
                     useSoftwareRendering = true;
                 }
             }
             context.doneCurrent();
         }
+        surface.destroy();
     }
-
-    // If the check determined we need the workaround, set the environment variable.
-    // qputenv is the Qt way to setenv, and it's best practice here.
-    if (useSoftwareRendering) {
+    if (useSoftwareRendering)
+        qputenv("QT_QUICK_BACKEND", "software");
+    // Simpler check
+    if (!useSoftwareRendering && QFileInfo::exists("/sys/module/nouveau")) {
+        std::cout << "Nouveau kernel module detected. Forcing software rendering to prevent potential crash." << '\n';
         qputenv("QT_QUICK_BACKEND", "software");
     }
-
-    return 0;
-
-    // Simpler check: see if the nouveau kernel module directory exists.
-    if (QFileInfo::exists("/sys/module/nouveau")) {
-        qDebug() << "Nouveau kernel module detected. Forcing software rendering to prevent potential crash.";
-        qputenv("QT_QUICK_BACKEND", "software");
-    }
-
-    return 0;
 
     // Force Qt to use the XCB (X11) platform plugin
     // This will make the application run via XWayland if on a Wayland session.
@@ -86,6 +81,7 @@ int main(int argc, char* argv[]) {
 #ifdef linux
     qputenv("QT_QPA_PLATFORM", "xcb");
     qputenv("SDL_VIDEODRIVER", "x11"); //SDL2 with Qt only works on x11, otherwise segfault?
+    QCoreApplication::setAttribute(Qt::AA_ShareOpenGLContexts);
 #endif
     QApplication a(argc, argv);
     // a.setStyle("windows"); //https://forum.qt.io/topic/127907/where-can-i-find-win95-win2000-stylesheet/4
@@ -96,9 +92,7 @@ int main(int argc, char* argv[]) {
     }
 
     MainWindow w;
-#ifdef linux
-    // QCoreApplication::setAttribute(Qt::AA_ShareOpenGLContexts);
-#endif
+
 #ifdef HAVE_QTWEBENGINE
     QWebEngineProfile::defaultProfile()->settings()->setAttribute(
         QWebEngineSettings::PlaybackRequiresUserGesture, false);

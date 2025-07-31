@@ -229,8 +229,6 @@ sudo pacman -S boost
 sudo pacman -S vlc-plugins-all # https://wiki.archlinux.org/title/VLC_media_player#VLC_could_not_decode_the_format_%22[format]%22
 sudo pacman -S ffmpeg
 sudo pacman -S sdl2-compat
-
-sudo pacman -S boost vlc ffmpeg sdl2-compat
 ```
 
 ### Ubuntu:
@@ -254,14 +252,11 @@ sudo apt install gstreamer1.0-plugins-good gstreamer1.0-plugins-bad gstreamer1.0
 
 ### NixOS:
 
-[//]: # (maybe??)
-[//]: # (Use the provided flake.nix in project root:)
+Use the provided flake.nix in project root:
 
-[//]: # (```shell)
-
-[//]: # (nix develop)
-
-[//]: # (```)
+```shell
+nix develop
+```
 
 
 
@@ -270,14 +265,12 @@ sudo apt install gstreamer1.0-plugins-good gstreamer1.0-plugins-bad gstreamer1.0
 ```shell
 sudo zypper in \
 qt6-base-devel \
-qt6-tools \
-qt6-webview \
 qt6-webengine \
 qt6-multimediawidgets-devel \
 qt6-multimedia-devel \
-qt6-webenginewidgets-devel \
-qt6-webchannel-devel \ 
+qt6-webenginewidgets-devel \ 
 vlc-devel
+vlc
 ```
 
 ### Windows:
@@ -299,6 +292,6 @@ TODO:
 - [ ] spin off SDL2-ffmpeg to separate repo (C/C++)
 - [x] vlc does not work in fedora container (is found at build but not at runtime?)
 - [x] vlc does not work in arch container (codec not supported message, so probably vlc issue and not mfaomp)
-- [ ] qwebengine crashes on fedora (but works fine on arch)
-- [ ] qwebengine crashes on ubuntu (but works fine on arch)
+- [x] qwebengine crashes on fedora (but works fine on arch)
+- [x] qwebengine crashes on ubuntu (but works fine on arch)
 - [x] qmediaplayer cannot find codecs on ubuntu (but works fine on arch and fedora)
