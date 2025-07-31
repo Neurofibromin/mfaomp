@@ -1,4 +1,5 @@
 #include <catch2/catch_test_macros.hpp>
+#include <catch2/catch_template_test_macros.hpp> // For templated tests
 #include "MediaPlayerImpls/PlayerFactory.h"
 #include "MediaPlayerImpls/BackEndEnum.h"
 #include "config.h"
@@ -18,223 +19,140 @@ class MediaPlayerBase;
 #include "MediaPlayerImpls/SDL2Struct.h"
 #endif
 
-TEST_CASE("PlayerFactory - ProduceChosenFactory", "[PlayerFactory]") {
-    const QUrl testUrl("file:///dev/null");
-
-    SECTION("Factory for available backends") {
+// function overloading for "dispatch" for the independence of internal members
 #ifdef HAVE_LIBVLC
-        SECTION("VLCPlayer Backend") {
-            auto factoryFunc = PlayerFactory::ProduceChosenFactory(BackEndManager::BackEnd::VLCPlayer);
-            REQUIRE(factoryFunc != nullptr);
-            MediaPlayerBase* player = factoryFunc(testUrl);
-            REQUIRE(player != nullptr);
-            VLCPlayerStruct* vlcPlayer = dynamic_cast<VLCPlayerStruct*>(player);
-            REQUIRE(vlcPlayer != nullptr);
-            delete player;
-        }
+void checkInternalIndependence(const VLCPlayerStruct* p1, const VLCPlayerStruct* p2) {
+    INFO("Verifying that the internal VLC media player objects are independent.");
+    REQUIRE(p1->mediaPlayer != p2->mediaPlayer);
+}
 #endif
 
 #ifdef HAVE_QTMULTIMEDIA
-        SECTION("QMediaPlayer Backend") {
-            auto factoryFunc = PlayerFactory::ProduceChosenFactory(BackEndManager::BackEnd::QMediaPlayer);
-            REQUIRE(factoryFunc != nullptr);
-            MediaPlayerBase* player = factoryFunc(testUrl);
-            REQUIRE(player != nullptr);
-            QMediaPlayerStruct* qmpPlayer = dynamic_cast<QMediaPlayerStruct*>(player);
-            REQUIRE(qmpPlayer != nullptr);
-            delete player;
-        }
+void checkInternalIndependence(const QMediaPlayerStruct* p1, const QMediaPlayerStruct* p2) {
+    INFO("Verifying that the internal QMediaPlayer objects are independent.");
+    REQUIRE(p1->mediaPlayer != p2->mediaPlayer);
+}
 #endif
 
 #ifdef HAVE_QTWEBENGINE
-        SECTION("QWebEngine Backend") {
-            auto factoryFunc = PlayerFactory::ProduceChosenFactory(BackEndManager::BackEnd::QWebEngine);
-            REQUIRE(factoryFunc != nullptr);
-            MediaPlayerBase* player = factoryFunc(testUrl);
-            REQUIRE(player != nullptr);
-            QWebEngineStruct* qwePlayer = dynamic_cast<QWebEngineStruct*>(player);
-            REQUIRE(qwePlayer != nullptr);
-            delete player;
-        }
+void checkInternalIndependence(const QWebEngineStruct* p1, const QWebEngineStruct* p2) {
+    INFO("Verifying that the internal QWebEngineView objects are independent.");
+    REQUIRE(p1->webView != p2->webView);
+}
 #endif
 
 #ifdef HAVE_SDL2
-        SECTION("SDL2 Backend") {
-            auto factoryFunc = PlayerFactory::ProduceChosenFactory(BackEndManager::BackEnd::SDL2);
-            REQUIRE(factoryFunc != nullptr);
-            MediaPlayerBase* player = factoryFunc(testUrl);
-            REQUIRE(player != nullptr);
-            SDL2Struct* sdlPlayer = dynamic_cast<SDL2Struct*>(player);
-            REQUIRE(sdlPlayer != nullptr);
-            delete player;
-        }
+void checkInternalIndependence(const SDL2Struct* p1, const SDL2Struct* p2) {
+    INFO("Verifying that the internal video widgets are independent.");
+    REQUIRE(p1->videoWidget != p2->videoWidget);
+}
 #endif
+
+// --- Templated Test Case ---
+// This struct is used to map a BackEnd enum value to its corresponding concrete struct type.
+template<BackEndManager::BackEnd E, typename T>
+struct BackendMapping {
+    static constexpr BackEndManager::BackEnd backend_enum = E;
+    using PlayerStructType = T;
+};
+
+// This single TEMPLATE_TEST_CASE replaces both of the previous test cases for available backends.
+// It will generate a separate test run for each type in this list.
+// The #ifdef guards ensure that we only try to test backends that are actually compiled.
+TEMPLATE_TEST_CASE(
+    "PlayerFactory - Verify factory function for all available backends",
+    "[PlayerFactory][template]",
+#ifdef HAVE_LIBVLC
+    (BackendMapping<BackEndManager::BackEnd::VLCPlayer, VLCPlayerStruct>),
+#endif
+#ifdef HAVE_QTMULTIMEDIA
+    (BackendMapping<BackEndManager::BackEnd::QMediaPlayer, QMediaPlayerStruct>),
+#endif
+#ifdef HAVE_QTWEBENGINE
+    (BackendMapping<BackEndManager::BackEnd::QWebEngine, QWebEngineStruct>),
+#endif
+#ifdef HAVE_SDL2
+    (BackendMapping<BackEndManager::BackEnd::SDL2, SDL2Struct>)
+#endif
+) {
+    const QUrl testUrl("file:///some/dummy/video.mp4");
+
+    // TestType will be one of the BackendMapping structs from the list above.
+    const BackEndManager::BackEnd backendToTest = TestType::backend_enum;
+    using PlayerStruct = typename TestType::PlayerStructType;
+
+    INFO("Testing backend: " << BackEndManager::toString(backendToTest));
+
+    // 1. Get the factory function once.
+    auto factoryFunc = PlayerFactory::ProduceChosenFactory(backendToTest);
+    REQUIRE(factoryFunc != nullptr);
+
+    // 2. Test basic creation.
+    SECTION("Basic player creation") {
+        MediaPlayerBase* player = factoryFunc(testUrl);
+        REQUIRE(player != nullptr);
+
+        // Verify it's the correct concrete type.
+        auto castedPlayer = dynamic_cast<PlayerStruct*>(player);
+        REQUIRE(castedPlayer != nullptr);
+
+        delete player;
     }
 
-    SECTION("Factory for unavailable backends") {
-#ifndef HAVE_LIBVLC
-        SECTION("VLCPlayer Backend (Unavailable)") {
-            auto factoryFunc = PlayerFactory::ProduceChosenFactory(BackEndManager::BackEnd::VLCPlayer);
-            REQUIRE(factoryFunc == nullptr);
-        }
-#endif
+    // 3. Test reusability and instance independence.
+    SECTION("Factory reusability and instance independence") {
+        // Create two instances from the same factory function.
+        MediaPlayerBase* player1 = factoryFunc(testUrl);
+        MediaPlayerBase* player2 = factoryFunc(testUrl);
+        REQUIRE(player1 != nullptr);
+        REQUIRE(player2 != nullptr);
 
-#ifndef HAVE_QTMULTIMEDIA
-        SECTION("QMediaPlayer Backend (Unavailable)") {
-            auto factoryFunc = PlayerFactory::ProduceChosenFactory(BackEndManager::BackEnd::QMediaPlayer);
-            REQUIRE(factoryFunc == nullptr);
-        }
-#endif
+        // Verify that the two instances are different objects.
+        REQUIRE(player1 != player2);
 
-#ifndef HAVE_QTWEBENGINE
-        SECTION("QWebEngine Backend (Unavailable)") {
-            auto factoryFunc = PlayerFactory::ProduceChosenFactory(BackEndManager::BackEnd::QWebEngine);
-            REQUIRE(factoryFunc == nullptr);
-        }
-#endif
+        // Cast to concrete types to check internal members.
+        auto castedPlayer1 = dynamic_cast<PlayerStruct*>(player1);
+        auto castedPlayer2 = dynamic_cast<PlayerStruct*>(player2);
+        REQUIRE(castedPlayer1 != nullptr);
+        REQUIRE(castedPlayer2 != nullptr);
 
-#ifndef HAVE_SDL2
-        SECTION("SDL2 Backend (Unavailable)") {
-            auto factoryFunc = PlayerFactory::ProduceChosenFactory(BackEndManager::BackEnd::SDL2);
-            REQUIRE(factoryFunc == nullptr);
-        }
-#endif
-    }
+        // Use our overloaded helper to check for deep independence.
+        checkInternalIndependence(castedPlayer1, castedPlayer2);
 
-    SECTION("Default case for invalid backend") {
-        // With invalid backend enum value cast from an integer that is not valid.
-        std::cerr << "invalid test section" << std::endl;
-        auto invalidBackend = static_cast<BackEndManager::BackEnd>(999);
-        auto factoryFunc = PlayerFactory::ProduceChosenFactory(invalidBackend);
-        REQUIRE(factoryFunc == nullptr);
+        // 4. Test the create-destroy-create lifecycle.
+        INFO("Destroying the first player to test lifecycle robustness.");
+        delete player1;
+
+        INFO("Creating a third player to ensure the factory is still valid.");
+        MediaPlayerBase* player3 = factoryFunc(testUrl);
+        REQUIRE(player3 != nullptr);
+
+        // Final cleanup
+        delete player2;
+        delete player3;
     }
 }
 
-TEST_CASE("PlayerFactory - Factory Function Behavior and Instance Independence", "[PlayerFactory]") {
-    const QUrl testUrl("file:///some/dummy/video.mp4");
-
-#ifdef HAVE_LIBVLC
-    SECTION("VLCPlayer: Factory function is reusable and creates independent instances") {
-        auto factoryFunc = PlayerFactory::ProduceChosenFactory(BackEndManager::BackEnd::VLCPlayer);
-        REQUIRE(factoryFunc != nullptr);
-
-        INFO("Creating first player instance.");
-        MediaPlayerBase* player1 = factoryFunc(testUrl);
-        REQUIRE(player1 != nullptr);
-
-        INFO("Creating second player instance from the same factory function.");
-        MediaPlayerBase* player2 = factoryFunc(testUrl);
-        REQUIRE(player2 != nullptr);
-
-        INFO("Verifying that the two player instances are not the same object.");
-        REQUIRE(player1 != player2);
-
-        auto vlcPlayer1 = dynamic_cast<VLCPlayerStruct*>(player1);
-        auto vlcPlayer2 = dynamic_cast<VLCPlayerStruct*>(player2);
-        REQUIRE(vlcPlayer1 != nullptr);
-        REQUIRE(vlcPlayer2 != nullptr);
-        INFO("Verifying that the internal VLC media player objects are independent.");
-        REQUIRE(vlcPlayer1->mediaPlayer != vlcPlayer2->mediaPlayer);
-
-        INFO("Destroying the first player.");
-        delete player1;
-
-        INFO("Creating a third player to ensure the factory is still valid after deletion.");
-        MediaPlayerBase* player3 = factoryFunc(testUrl);
-        REQUIRE(player3 != nullptr);
-
-        delete player2;
-        delete player3;
+// Keep the tests for unavailable and invalid backends, as they are not parameterized.
+TEST_CASE("PlayerFactory - Factory for unavailable or invalid backends", "[PlayerFactory]") {
+    SECTION("Factory for unavailable backends") {
+        if constexpr (! BackEndManager::isBackendAvailableCompiletime(BackEndManager::BackEnd::VLCPlayer)) {
+            REQUIRE(PlayerFactory::ProduceChosenFactory(BackEndManager::BackEnd::VLCPlayer) == nullptr);
+        }
+        if constexpr (! BackEndManager::isBackendAvailableCompiletime(BackEndManager::BackEnd::QMediaPlayer)) {
+            REQUIRE(PlayerFactory::ProduceChosenFactory(BackEndManager::BackEnd::QMediaPlayer) == nullptr);
+        }
+        if constexpr (! BackEndManager::isBackendAvailableCompiletime(BackEndManager::BackEnd::QWebEngine)) {
+            REQUIRE(PlayerFactory::ProduceChosenFactory(BackEndManager::BackEnd::QWebEngine) == nullptr);
+        }
+        if constexpr (! BackEndManager::isBackendAvailableCompiletime(BackEndManager::BackEnd::SDL2)) {
+            REQUIRE(PlayerFactory::ProduceChosenFactory(BackEndManager::BackEnd::SDL2) == nullptr);
+        }
+        REQUIRE(true);
     }
-#endif
 
-#ifdef HAVE_QTMULTIMEDIA
-    SECTION("QMediaPlayer: Factory function is reusable and creates independent instances") {
-        auto factoryFunc = PlayerFactory::ProduceChosenFactory(BackEndManager::BackEnd::QMediaPlayer);
-        REQUIRE(factoryFunc != nullptr);
-
-        INFO("Creating two player instances from the same factory function.");
-        MediaPlayerBase* player1 = factoryFunc(testUrl);
-        MediaPlayerBase* player2 = factoryFunc(testUrl);
-        REQUIRE(player1 != nullptr);
-        REQUIRE(player2 != nullptr);
-        REQUIRE(player1 != player2);
-
-        auto qmpPlayer1 = dynamic_cast<QMediaPlayerStruct*>(player1);
-        auto qmpPlayer2 = dynamic_cast<QMediaPlayerStruct*>(player2);
-        REQUIRE(qmpPlayer1 != nullptr);
-        REQUIRE(qmpPlayer2 != nullptr);
-        INFO("Verifying that the internal QMediaPlayer objects are independent.");
-        REQUIRE(qmpPlayer1->mediaPlayer != qmpPlayer2->mediaPlayer);
-
-        INFO("Destroying the first player.");
-        delete player1;
-        INFO("Creating a third player to ensure the factory is still valid after deletion.");
-        MediaPlayerBase* player3 = factoryFunc(testUrl);
-        REQUIRE(player3 != nullptr);
-
-        delete player2;
-        delete player3;
+    SECTION("Default case for invalid backend enum") {
+        auto invalidBackend = static_cast<BackEndManager::BackEnd>(999);
+        REQUIRE(PlayerFactory::ProduceChosenFactory(invalidBackend) == nullptr);
     }
-#endif
-
-#ifdef HAVE_QTWEBENGINE
-    SECTION("QWebEngine: Factory function is reusable and creates independent instances") {
-        auto factoryFunc = PlayerFactory::ProduceChosenFactory(BackEndManager::BackEnd::QWebEngine);
-        REQUIRE(factoryFunc != nullptr);
-
-        INFO("Creating two player instances from the same factory function.");
-        MediaPlayerBase* player1 = factoryFunc(testUrl);
-        MediaPlayerBase* player2 = factoryFunc(testUrl);
-        REQUIRE(player1 != nullptr);
-        REQUIRE(player2 != nullptr);
-        REQUIRE(player1 != player2);
-
-        auto qwePlayer1 = dynamic_cast<QWebEngineStruct*>(player1);
-        auto qwePlayer2 = dynamic_cast<QWebEngineStruct*>(player2);
-        REQUIRE(qwePlayer1 != nullptr);
-        REQUIRE(qwePlayer2 != nullptr);
-        INFO("Verifying that the internal QWebEngineView objects are independent.");
-        REQUIRE(qwePlayer1->webView != qwePlayer2->webView);
-
-        INFO("Destroying the first player.");
-        delete player1;
-        INFO("Creating a third player to ensure the factory is still valid after deletion.");
-        MediaPlayerBase* player3 = factoryFunc(testUrl);
-        REQUIRE(player3 != nullptr);
-
-        delete player2;
-        delete player3;
-    }
-#endif
-
-#ifdef HAVE_SDL2
-    SECTION("SDL2: Factory function is reusable and creates independent instances") {
-        auto factoryFunc = PlayerFactory::ProduceChosenFactory(BackEndManager::BackEnd::SDL2);
-        REQUIRE(factoryFunc != nullptr);
-
-        INFO("Creating two player instances from the same factory function.");
-        MediaPlayerBase* player1 = factoryFunc(testUrl);
-        MediaPlayerBase* player2 = factoryFunc(testUrl);
-        REQUIRE(player1 != nullptr);
-        REQUIRE(player2 != nullptr);
-        REQUIRE(player1 != player2);
-
-        auto sdlPlayer1 = dynamic_cast<SDL2Struct*>(player1);
-        auto sdlPlayer2 = dynamic_cast<SDL2Struct*>(player2);
-        REQUIRE(sdlPlayer1 != nullptr);
-        REQUIRE(sdlPlayer2 != nullptr);
-        INFO("Verifying that the internal video widgets are independent.");
-        REQUIRE(sdlPlayer1->videoWidget != sdlPlayer2->videoWidget);
-
-        INFO("Destroying the first player.");
-        delete player1;
-        INFO("Creating a third player to ensure the factory is still valid after deletion.");
-        MediaPlayerBase* player3 = factoryFunc(testUrl);
-        REQUIRE(player3 != nullptr);
-
-        delete player2;
-        delete player3;
-    }
-#endif
 }
