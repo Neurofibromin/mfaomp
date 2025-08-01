@@ -1,3 +1,5 @@
+#TODO: add ffmpeg, boost, sdl2, disable tests with ENABLE_CATCH=OFF
+
 {
   lib,
   stdenv,

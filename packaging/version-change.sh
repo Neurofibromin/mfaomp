@@ -3,10 +3,10 @@
 # PKGBUILD
 # ../README.md links
 # mfaomp-copr.spec
-# mfaomp-obs.spec
 # package.nix
 # ../CMakeLists.txt
 # ../vcpkg.json
+# io.github.Neurofibromin.mfaomp.yaml
 
 # Check if the correct number of arguments is provided
 if [ "$#" -ne 1 ]; then
@@ -22,6 +22,7 @@ SPEC_FILE1=./mfaomp-copr.spec
 NIX_FILE=./package.nix
 CMAKELISTS_FILE=../CMakeLists.txt
 VCPKG_FILE=../vcpkg.json
+FLATPAK_YAML_FILE=./io.github.Neurofibromin.mfaomp.yaml
 
 # Validate the PKGBUILD file exists
 if [ ! -f "$PKGBUILD_FILE" ]; then
@@ -88,3 +89,12 @@ fi
 # Replace the version in vcpkg.json
 sed -i -E "s/\"version\": \"[0-9]+\.[0-9]+\.[0-9]+\"/\"version\": \"${NEW_VERSION}\"/" "$VCPKG_FILE"
 echo "Version updated to $NEW_VERSION in $VCPKG_FILE."
+
+# Validate the Flatpak YAML file exists
+if [ ! -f "$FLATPAK_YAML_FILE" ]; then
+    echo "Error: File '$FLATPAK_YAML_FILE' not found."
+    exit 1
+fi
+# Replace the version in the URL line
+sed -i -E "s|url: https://github.com/Neurofibromin/mfaomp/archive/refs/tags/v[0-9]+\.[0-9]+\.[0-9]+\.tar\.gz|url: https://github.com/Neurofibromin/mfaomp/archive/refs/tags/v${NEW_VERSION}.tar.gz|" "$FLATPAK_YAML_FILE"
+echo "Version updated to $NEW_VERSION in $FLATPAK_YAML_FILE."

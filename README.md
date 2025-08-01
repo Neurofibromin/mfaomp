@@ -98,11 +98,12 @@ audio.
 - [ ] [OpenSuse Build Service](https://build.opensuse.org/package/show/home:Neurofibromin/mfaomp)
 - [x] [Nix](https://github.com/NixOS/nixpkgs/pull/414760)
 - [ ] Flathub
-- [ ] Debian
+- [ ] Debian/Ubuntu
 - [x] [Arch/AUR](https://aur.archlinux.org/packages/mfaomp)
 - [x] [Fedora Copr](https://copr.fedorainfracloud.org/coprs/neurofibromin/mfaomp/)
 - [ ] winget
 - [ ] chocolatey
+- [ ] appimage
 - [x] separate nightly and release workflow
 - [ ] Create Icon for the project
 - [x] make backends optional dependencies, reflect this in the build files

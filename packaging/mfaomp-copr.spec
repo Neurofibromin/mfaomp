@@ -39,7 +39,8 @@ tar -xf %{SOURCE1} -C third_party/libvlcpp --strip-components=1
 %build
 %cmake -DCMAKE_BUILD_TYPE=Release \
        -DUSE_PREDOWNLOADED_LIBVLCPP=ON \
-       -DUSE_FETCHED_LIBVLCPP=OFF
+       -DUSE_FETCHED_LIBVLCPP=OFF \
+       -DENABLE_CATCH=OFF
 %cmake_build
 
 %install

@@ -1,0 +1,21 @@
+id: io.github.Neurofibromin.mfaomp
+runtime: org.kde.Platform
+runtime-version: "6.8"
+sdk: org.kde.Sdk
+command: mfaomp
+finish-args:
+  - --share=ipc
+  - --socket=fallback-x11
+  - --socket=wayland
+  - --device=dri
+  - --share=network
+  - --filesystem=xdg-documents
+modules:
+  - name: mfaomp
+    buildsystem: cmake-ninja
+    config-opts:
+      - -DCMAKE_BUILD_TYPE=RelWithDebInfo
+    sources:
+      - type: archive
+        url: https://github.com/Neurofibromin/mfaomp/archive/refs/tags/v0.7.1.tar.gz
+        sha256: 123456789123456789123456789123456789123456789123456789123456789

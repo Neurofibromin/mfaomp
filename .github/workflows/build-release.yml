@@ -27,7 +27,7 @@ jobs:
         run: |
           sudo apt update
           sudo apt install -y build-essential cmake pkg-config \
-            qt6-base-dev qt6-multimedia-dev qt6-webengine-dev libvlc-dev vlc-plugin-qt gh libboost-all-dev
+            qt6-base-dev qt6-multimedia-dev qt6-webengine-dev libvlc-dev gh libboost-all-dev ffmpeg libsdl2-dev
 
       - name: Configure CMake
         run: |
@@ -36,8 +36,7 @@ jobs:
           cmake .. \
             -DCMAKE_INSTALL_PREFIX=$(pwd)/install_root \
             -DCMAKE_BUILD_TYPE=Release \
-            -DCMAKE_CXX_STANDARD=23 \
-            -DCMAKE_CXX_STANDARD_REQUIRED=ON
+            -DENABLE_CATCH=OFF
 
       - name: Build project
         run: |
