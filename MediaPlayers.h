@@ -23,11 +23,14 @@
 #include <QUrl>
 #include <QWidget>
 #include <QMenu>
+#include <QObject>
 
-struct MediaPlayerBase {
+struct MediaPlayerBase : public QObject {
+    Q_OBJECT
+
     QUrl videoUrl;
 
-    explicit MediaPlayerBase(const QUrl& videoUrl) : videoUrl(videoUrl) {
+    explicit MediaPlayerBase(const QUrl& videoUrl, QObject* parent = nullptr) : QObject(parent), videoUrl(videoUrl) {
     }
 
     virtual ~MediaPlayerBase() {} // for polymorphism
@@ -54,7 +57,7 @@ struct MediaPlayerBase {
 
     virtual QMenu* createContextMenu(QWidget* parent) = 0;
 
-protected slots:
+public slots:
     void ShowContextMenu(const QPoint &pos);
 
 };

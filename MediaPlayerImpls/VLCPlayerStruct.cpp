@@ -36,8 +36,7 @@ VLCPlayerStruct::VLCPlayerStruct(const QUrl& videoUrl): MediaPlayerBase(videoUrl
     videoWidget->setAttribute(Qt::WA_NativeWindow);
     videoWidget->setStyleSheet("background-color: black;");
     videoWidget->setContextMenuPolicy(Qt::CustomContextMenu);
-    QObject::connect(videoWidget, &QWidget::customContextMenuRequested,
-        MediaPlayerBase::createContextMenu);
+    QObject::connect(videoWidget, &QWidget::customContextMenuRequested, this, &MediaPlayerBase::ShowContextMenu);
     videoWidget->setMinimumSize(64, 64);
     videoWidget->winId();
 #ifdef Q_OS_WIN

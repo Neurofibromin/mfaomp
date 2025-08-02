@@ -32,8 +32,7 @@ QMediaPlayerStruct::QMediaPlayerStruct(const QUrl& videoUrl): MediaPlayerBase(vi
     mediaPlayer->setVideoOutput(videoWidget);
     mediaPlayer->setSource(videoUrl);
 
-    QObject::connect(videoWidget, &QWidget::customContextMenuRequested,
-        MediaPlayerBase::createContextMenu);
+    QObject::connect(videoWidget, &QWidget::customContextMenuRequested, this, &MediaPlayerBase::ShowContextMenu);
 }
 
 void QMediaPlayerStruct::play() {

@@ -43,8 +43,7 @@ QWebEngineStruct::QWebEngineStruct(const QUrl& videoUrl): MediaPlayerBase(videoU
         }
     });
 
-    QObject::connect(videoWidget, &QWidget::customContextMenuRequested,
-        MediaPlayerBase::createContextMenu);
+    QObject::connect(videoWidget, &QWidget::customContextMenuRequested, this, &MediaPlayerBase::ShowContextMenu);
 }
 
 void QWebEngineStruct::play() {

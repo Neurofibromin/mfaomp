@@ -10,7 +10,13 @@
 #include <QUrl>
 
 void MediaPlayerBase::ShowContextMenu(const QPoint& pos) {
-    QWidget* ww = MediaPlayerBase::getVideoWidget();
-    QMenu* menu = MediaPlayerBase::createContextMenu(ww);
-    menu->popup(ww->mapToGlobal(pos));
+    QWidget* videoWidget = getVideoWidget();
+    if (!videoWidget) {
+        return;
+    }
+    QMenu* contextMenu = createContextMenu(videoWidget);
+    if (contextMenu) {
+        contextMenu->setAttribute(Qt::WA_DeleteOnClose);
+        contextMenu->popup(videoWidget->mapToGlobal(pos));
+    }
 }
