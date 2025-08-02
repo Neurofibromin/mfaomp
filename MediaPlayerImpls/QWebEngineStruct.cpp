@@ -30,6 +30,7 @@ QWebEngineStruct::QWebEngineStruct(const QUrl& videoUrl): MediaPlayerBase(videoU
     webView->settings()->setAttribute(QWebEngineSettings::PluginsEnabled, true);
     webView->settings()->setAttribute(QWebEngineSettings::JavascriptEnabled, true);
     videoWidget = webView;
+    videoWidget->setContextMenuPolicy(Qt::CustomContextMenu);
     QString html = generateHtmlContent(videoUrl);
     webView->setHtml(html, QUrl::fromLocalFile(videoUrl.toLocalFile()));
     QObject::connect(webView, &QWebEngineView::loadFinished, [this](bool ok) {
@@ -41,6 +42,9 @@ QWebEngineStruct::QWebEngineStruct(const QUrl& videoUrl): MediaPlayerBase(videoU
             qWarning() << "QWebEngineView failed to load page.";
         }
     });
+
+    QObject::connect(videoWidget, &QWidget::customContextMenuRequested,
+        MediaPlayerBase::createContextMenu);
 }
 
 void QWebEngineStruct::play() {
@@ -267,4 +271,11 @@ QString QWebEngineStruct::generateHtmlContent(const QUrl& videoUrl) {
             </body>
             </html>
         )").arg(videoUrl.toString());
+}
+
+QMenu* QWebEngineStruct::createContextMenu(QWidget* parent) {
+    auto* menu = new QMenu(parent);
+    menu->addAction("QWebEngine: Play", this, &QWebEngineStruct::play);
+    menu->addAction("QWebEngine: Pause", this, &QWebEngineStruct::pause);
+    return menu;
 }

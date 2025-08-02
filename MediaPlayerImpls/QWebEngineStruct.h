@@ -58,6 +58,8 @@ struct QWebEngineStruct : public MediaPlayerBase {
     ~QWebEngineStruct() override;
 
     QWidget* getVideoWidget() override;
+
+    QMenu* createContextMenu(QWidget* parent) override;
 };
 
 #endif //QWEBENGINESTRUCT_H

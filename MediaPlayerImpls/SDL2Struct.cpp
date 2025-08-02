@@ -139,6 +139,10 @@ void SDLWidget::onRender() {
 
 SDL2Struct::SDL2Struct(const QUrl& videoUrl) : MediaPlayerBase(videoUrl) {
     videoWidget = new SDLWidget();
+    videoWidget->setContextMenuPolicy(Qt::CustomContextMenu);
+
+    QObject::connect(videoWidget, &QWidget::customContextMenuRequested,
+        MediaPlayerBase::createContextMenu);
 }
 
 void SDL2Struct::play() {
@@ -179,4 +183,12 @@ SDL2Struct::~SDL2Struct() {
 
 QWidget* SDL2Struct::getVideoWidget() {
     return videoWidget;
+}
+
+QMenu* SDL2Struct::createContextMenu(QWidget* parent) {
+    auto* menu = new QMenu(parent);
+    menu->addAction("SDL2: Custom Action", []() {
+        // A placeholder action
+    });
+    return menu;
 }

@@ -35,6 +35,9 @@ VLCPlayerStruct::VLCPlayerStruct(const QUrl& videoUrl): MediaPlayerBase(videoUrl
     videoWidget = new QWidget();
     videoWidget->setAttribute(Qt::WA_NativeWindow);
     videoWidget->setStyleSheet("background-color: black;");
+    videoWidget->setContextMenuPolicy(Qt::CustomContextMenu);
+    QObject::connect(videoWidget, &QWidget::customContextMenuRequested,
+        MediaPlayerBase::createContextMenu);
     videoWidget->setMinimumSize(64, 64);
     videoWidget->winId();
 #ifdef Q_OS_WIN
@@ -94,4 +97,11 @@ VLCPlayerStruct::~VLCPlayerStruct() {
 
 QWidget* VLCPlayerStruct::getVideoWidget() {
     return videoWidget;
+}
+
+QMenu* VLCPlayerStruct::createContextMenu(QWidget* parent) {
+    auto* menu = new QMenu(parent);
+    menu->addAction("VLC: Mute", this, &VLCPlayerStruct::mute);
+    menu->addAction("VLC: Unmute", this, &VLCPlayerStruct::unmute);
+    return menu;
 }

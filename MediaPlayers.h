@@ -22,6 +22,7 @@
 
 #include <QUrl>
 #include <QWidget>
+#include <QMenu>
 
 struct MediaPlayerBase {
     QUrl videoUrl;
@@ -30,6 +31,7 @@ struct MediaPlayerBase {
     }
 
     virtual ~MediaPlayerBase() {} // for polymorphism
+
     virtual void play() = 0;
 
     virtual void pause() = 0;
@@ -49,6 +51,12 @@ struct MediaPlayerBase {
     virtual float duration() = 0;
 
     virtual QWidget* getVideoWidget() = 0;
+
+    virtual QMenu* createContextMenu(QWidget* parent) = 0;
+
+protected slots:
+    void ShowContextMenu(const QPoint &pos);
+
 };
 
 #endif //MEDIAPLAYERS_H

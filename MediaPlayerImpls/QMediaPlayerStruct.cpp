@@ -25,11 +25,15 @@ QMediaPlayerStruct::QMediaPlayerStruct(const QUrl& videoUrl): MediaPlayerBase(vi
     videoWidget = new QVideoWidget();
     videoWidget->setStyleSheet("background-color: black;");
     videoWidget->setMinimumSize(64, 64);
+    videoWidget->setContextMenuPolicy(Qt::CustomContextMenu);
     mediaPlayer = new QMediaPlayer();
     audioOutput = new QAudioOutput();
     mediaPlayer->setAudioOutput(audioOutput);
     mediaPlayer->setVideoOutput(videoWidget);
     mediaPlayer->setSource(videoUrl);
+
+    QObject::connect(videoWidget, &QWidget::customContextMenuRequested,
+        MediaPlayerBase::createContextMenu);
 }
 
 void QMediaPlayerStruct::play() {
@@ -90,4 +94,11 @@ QMediaPlayerStruct::~QMediaPlayerStruct() {
 
 QWidget* QMediaPlayerStruct::getVideoWidget() {
     return videoWidget;
+}
+
+QMenu* QMediaPlayerStruct::createContextMenu(QWidget* parent) {
+    auto* menu = new QMenu(parent);
+    menu->addAction("QMediaPlayer: Action 1", this, &QMediaPlayerStruct::play);
+    menu->addAction("QMediaPlayer: Action 2", this, &QMediaPlayerStruct::pause);
+    return menu;
 }
