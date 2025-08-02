@@ -44,14 +44,9 @@ if [ ! -f "$README_FILE" ]; then
 fi
 # Replace all occurrences of the version in the file
 sed -i -E "s/mfaomp-[0-9]+\.[0-9]+\.[0-9]+/mfaomp-${NEW_VERSION}/g" "$README_FILE"
-# Also replace occurrences like "mfaomp_0.4.0" (underscores in certain links)
 sed -i -E "s/mfaomp_[0-9]+\.[0-9]+\.[0-9]+/mfaomp_${NEW_VERSION}/g" "$README_FILE"
-sed -i -E "s/mfaomp-win-x86-[0-9]+\.[0-9]+\.[0-9]+/mfaomp-win-x86-${NEW_VERSION}/g" "$README_FILE"
-sed -i -E "s/mfaomp-win-arm64-[0-9]+\.[0-9]+\.[0-9]+/mfaomp-win-arm64-${NEW_VERSION}/g" "$README_FILE"
-sed -i -E "s/mfaomp-linux-x64-[0-9]+\.[0-9]+\.[0-9]+/mfaomp-linux-x64-${NEW_VERSION}/g" "$README_FILE"
-sed -i -E "s/mfaomp-linux-arm64-[0-9]+\.[0-9]+\.[0-9]+/mfaomp-linux-arm64-${NEW_VERSION}/g" "$README_FILE"
-sed -i -E "s/mfaomp-osx-x64-[0-9]+\.[0-9]+\.[0-9]+/mfaomp-osx-x64-${NEW_VERSION}/g" "$README_FILE"
-sed -i -E "s/mfaomp-osx-arm64-[0-9]+\.[0-9]+\.[0-9]+/mfaomp-osx-arm64-${NEW_VERSION}/g" "$README_FILE"
+sed -i -E "s/mfaomp-linux-x86_64-v[0-9]+\.[0-9]+\.[0-9]+/mfaomp-linux-x86_64-v${NEW_VERSION}/g" "$README_FILE"
+sed -i -E "s/mfaomp-flatpak-x86_64-v[0-9]+\.[0-9]+\.[0-9]+/mfaomp-flatpak-x86_64-v${NEW_VERSION}/g" "$README_FILE"
 echo "Version updated to $NEW_VERSION in $README_FILE."
 
 # Validate the copr spec file exists

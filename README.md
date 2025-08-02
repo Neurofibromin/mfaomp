@@ -9,6 +9,7 @@ Multiple Files At Once Media Player
 - [Installation & How to get](#installation--how-to-get)
     * [Fedora](#fedora)
     * [Arch](#arch)
+    * [openSUSE](#opensuse)
     * [Standalone releases](#standalone-releases)
     * [Additional releases](#additional-releases)
 - [Limitations](#limitations)
@@ -61,24 +62,31 @@ dnf install mfaomp
 yay mfaomp
 ```
 
+### openSUSE (OBS) <a name="opensuse">
+
+```shell
+zypper addrepo https://download.opensuse.org/repositories/home:/Neurofibromin/openSUSE_Tumbleweed/home:Neurofibromin.repo
+zypper install mfaomp
+```
+
 ### Standalone releases <a name="standalone-releases"/>
 
-| Architecture  | Windows dynamic | Windows static | Linux dynamic | Linux static |
-|---------------|-----------------|----------------|---------------|--------------|
-| x86-32        |                 |                |               |              |
-| x86-64/amd64  |                 |                |               |              |
-| aarch64/arm64 |                 |                |               |              |
+| Architecture  | Windows dynamic | Windows static | Linux dynamic                                                                                                             | Linux static |
+|---------------|-----------------|----------------|---------------------------------------------------------------------------------------------------------------------------|--------------|
+| x86-32        |                 |                |                                                                                                                           |              |
+| x86-64/amd64  |                 |                | [mfaomp-linux-x86_64-v0.7.3](https://github.com/Neurofibromin/mfaomp/releases/download/v0.7.3/mfaomp-linux-x86_64-v0.7.3) |              |
+| aarch64/arm64 |                 |                |                                                                                                                           |              |
 
 ### Additional releases <a name="additional-releases"/>
 
 Linux Installers: <br/>
 
-| package   | x64 | arm64 |
-|-----------|-----|-------|
-| Flatpak	  |     |       |
-| RPM	      |     |       |
-| DEB	      |     |       |
-| AppImage	 |     |       |
+| package     | x64                                                                                                                                           | arm64 |
+|-------------|-----------------------------------------------------------------------------------------------------------------------------------------------|-------|
+| Flatpak	   | [mfaomp-flatpak-x86_64-v0.7.3.flatpak](https://github.com/Neurofibromin/mfaomp/releases/download/v0.7.3/mfaomp-flatpak-x86_64-v0.7.3.flatpak) |       |
+| RPM	       |                                                                                                                                               |       |
+| DEB	       |                                                                                                                                               |       |
+| AppImage	   |                                                                                                                                               |       |
 
 ## Limitations <a name="limitations"/>
 
@@ -97,27 +105,25 @@ available at runtime, but loaded only if they are.
 
 ## Aims <a name="aims"/>
 
-### CI/CD
-
-- [ ] [OpenSuse Build Service](https://build.opensuse.org/package/show/home:Neurofibromin/mfaomp)
-- [x] [Nix](https://github.com/NixOS/nixpkgs/pull/414760)
 - [ ] Flathub
 - [ ] Debian/Ubuntu
-- [x] [Arch/AUR](https://aur.archlinux.org/packages/mfaomp)
-- [x] [Fedora Copr](https://copr.fedorainfracloud.org/coprs/neurofibromin/mfaomp/)
 - [ ] winget
 - [ ] chocolatey
 - [ ] appimage
-- [x] separate nightly and release workflow
 - [ ] Create Icon for the project
-- [x] make backends optional dependencies, reflect this in the build files
-- [x] version coherency with a script
 - [ ] add gpg signatures and checksums to CICD pipelines
 - [ ] install wizards
-    - [ ] installshield
-    - [ ] innosetup
-    - [ ] nsis (only this works with CPack)
-    - [ ] wix
+  - [ ] installshield
+  - [ ] innosetup
+  - [ ] nsis (only this works with CPack)
+  - [ ] wix
+- [ ] FFmpeg backend
+- [ ] SDL2? backend maybe something like this: https://github.com/fosterseth/sdl2_video_player
+- [ ] Per video controls, overload right click menu
+  - [ ] loop
+  - [ ] playback rate
+  - [ ] change backend on this video only
+- [ ] fix bug in version change - the github link does not change its version in the tables
 
 ### Features:
 
@@ -126,30 +132,17 @@ available at runtime, but loaded only if they are.
 - [x] QtWebEngine backend
 - [x] drag-and-drop
 - [x] settings + menu + theming
-- [x] testing setup
-- [x] compile flags for backends
-- [ ] FFmpeg backend
-- [ ] SDL2? backend maybe something like this: https://github.com/fosterseth/sdl2_video_player
-- [x] Use Strategy Pattern for handling backends (maybe)
-- [x] Use Visitor Pattern for handling backends (maybe)
-- [x] Use Factory Pattern for handling backends (maybe)
 - [x] Adding videos via drag-and-drop
-- [x] No exceptions in the codebase
-- [ ] Per video controls, overload right click menu
-    - [ ] loop
-    - [ ] playback rate
-    - [ ] change backend on this video only
+
+### CI/CD
+
+- [x] [OpenSuse Build Service](https://build.opensuse.org/package/show/home:Neurofibromin/mfaomp)
+- [x] [Nix](https://github.com/NixOS/nixpkgs/pull/414760)
+- [x] [Arch/AUR](https://aur.archlinux.org/packages/mfaomp)
+- [x] [Fedora Copr](https://copr.fedorainfracloud.org/coprs/neurofibromin/mfaomp/)
 
 ### Roadmap
 
-- [x] 0.4: qwebengine backend
-- [x] 0.5: add Nix support
-- [x] 0.5: drag-and-drop
-- [x] 0.5: menu system with settings
-- [x] 0.6: QTests
-- [x] 0.6: theming, ui-ux design
-- [x] 0.6: add Windows support
-- [x] 0.6: add compile flags for enabling backends
 - [ ] 0.7: sdl backend
 - [ ] 0.7: ffmpeg backend
 - [ ] 0.8: swap backends to plugins with [dylib](https://github.com/martin-olivier/dylib) 
@@ -163,11 +156,7 @@ available at runtime, but loaded only if they are.
 
 Tests are meant to be run in debug mode (if NDEBUG is defined tests are meant to segfault).
 
-- [ ] runtime dependencies
 - [ ] integration tests
-- [x] catch2
-
-### Bugs:
 
 ### Signatures, hashes and integrity checks <a name="signatures-hashes-and-integrity-checks"/>
 
