@@ -43,11 +43,10 @@ Intended platforms:
 - Windows (10 22H2)
 - Ubuntu (24.04)
 
-May work, but untested (and not packaged):
+Might work, but untested (and not packaged):
 
 - MacOS
 - BSD
-- Windows (other than version 10)
 
 ### Fedora (COPR) <a name="fedora"/>
 
@@ -64,11 +63,11 @@ yay mfaomp
 
 ### Standalone releases <a name="standalone-releases"/>
 
-| Windows | Linux | OSX (semi-supported) |
-|---------|-------|----------------------|
-|         |       |                      |
-|         |       |                      |
-|         |       |                      |
+| Architecture  | Windows dynamic | Windows static | Linux dynamic | Linux static |
+|---------------|-----------------|----------------|---------------|--------------|
+| x86-32        |                 |                |               |              |
+| x86-64/amd64  |                 |                |               |              |
+| aarch64/arm64 |                 |                |               |              |
 
 ### Additional releases <a name="additional-releases"/>
 
@@ -83,13 +82,18 @@ Linux Installers: <br/>
 
 ## Limitations <a name="limitations"/>
 
-VLC does not support embedding in wayland windows, so the app always launches as an Xwindow. This will be fixed when VLC
+VLC does not support embedding in wayland windows, so the app always launches as an Xwindow. This can only be fixed when VLC
 adds support: https://code.videolan.org/videolan/vlc/-/issues/16106
 
 Backends have differing feature-sets. QMediaPlayer supports rate change, but will not compensate the frequency shift in
 audio.
 
 ## How it works <a name="how-it-works"/>
+
+Qt6 for the GUI which calls different media player backends.
+At compile time not all backends have to be available, but only the found backends will be compiled. 
+When the plugin system is implemented, the backends that were compiled need not be 
+available at runtime, but loaded only if they are. 
 
 ## Aims <a name="aims"/>
 
@@ -123,22 +127,18 @@ audio.
 - [x] drag-and-drop
 - [x] settings + menu + theming
 - [x] testing setup
-- [ ] plugin system for backends
 - [x] compile flags for backends
-- [ ] Chromium Embedded Framework (CEF) or
 - [ ] FFmpeg backend
 - [ ] SDL2? backend maybe something like this: https://github.com/fosterseth/sdl2_video_player
 - [x] Use Strategy Pattern for handling backends (maybe)
 - [x] Use Visitor Pattern for handling backends (maybe)
 - [x] Use Factory Pattern for handling backends (maybe)
-- [ ] Add support for multiple backends at once
-- [ ] Add support for subtitles
 - [x] Adding videos via drag-and-drop
 - [x] No exceptions in the codebase
 - [ ] Per video controls, overload right click menu
     - [ ] loop
-    - [ ] skip
     - [ ] playback rate
+    - [ ] change backend on this video only
 
 ### Roadmap
 
@@ -150,14 +150,13 @@ audio.
 - [x] 0.6: theming, ui-ux design
 - [x] 0.6: add Windows support
 - [x] 0.6: add compile flags for enabling backends
-- [ ] 0.7: sdl-ffmpeg backend
-- [ ] 0.8: CEF backend
-- [ ] 0.x: add plugin system for runtime backend detection
+- [ ] 0.7: sdl backend
+- [ ] 0.7: ffmpeg backend
+- [ ] 0.8: swap backends to plugins with [dylib](https://github.com/martin-olivier/dylib) 
 - [ ] 0.x: multithreaded approach
-- [ ] 0.x: other graphics backends (opengl vulcan directx)
 - [ ] 0.x: add c++ modules support
-- [ ] 1.x: work on performance
-- [ ] 1.x: self-contained build artifacts
+- [ ] 1.x: other graphics backends (opengl vulcan directx)
+- [ ] 1.x: static builds
 - [ ] 1.x: reproducible build artifacts (SBOM)
 
 ### Testing
@@ -260,7 +259,7 @@ nix develop
 
 ### openSUSE:
 
-For some reason the vlc backend crashes the desktop environment on openSUSE. 
+For some reason the vlc backend crashes the desktop environment on openSUSE. (only tested on KDE) 
 
 ```shell
 sudo zypper install opi
@@ -302,6 +301,6 @@ make
 make install
 ```
 
-TODO:
-- [x] spin off Qt-SDL to [separate example repo](https://github.com/Neurofibromin/Qt-SDL)
-- [ ] spin off SDL2-ffmpeg to separate repo (C/C++)
+Adjacent:
+
+Example project of getting Qt and SDL to work together: [Qt-SDL](https://github.com/Neurofibromin/Qt-SDL)

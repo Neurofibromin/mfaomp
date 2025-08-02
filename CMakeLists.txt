@@ -19,7 +19,7 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 cmake_minimum_required(VERSION 3.28)
 project(mfaomp
-        VERSION 0.7.1
+        VERSION 0.7.2
         DESCRIPTION "Multiple Files At Once Media Player"
         HOMEPAGE_URL "https://github.com/Neurofibromin/mfaomp"
 )
@@ -84,7 +84,7 @@ find_package(Qt6 REQUIRED COMPONENTS
              WebEngineWidgets
              Test
 )
-find_package(SDL2 REQUIRED)
+
 #set(CMAKE_FIND_DEBUG_MODE 0)
 # VLC
 if (ENABLE_LIBVLC AND NOT WIN32) #TODO: solve libvlc for windows without pkgconfig
@@ -134,6 +134,7 @@ endif ()
 
 # SDL2
 if (ENABLE_SDL2)
+    find_package(SDL2)
     if (SDL2_FOUND)
         message(STATUS "SDL2 backend enabled")
         set(HAVE_SDL2 TRUE)
@@ -146,14 +147,14 @@ endif ()
 if (POLICY CMP0167)
     cmake_policy(SET CMP0167 NEW)
 endif ()
-find_package(Boost 1.80 COMPONENTS system filesystem REQUIRED)
-if (Boost_FOUND)
-    message(STATUS "Boost found: ${Boost_VERSION}")
-    message(STATUS "Boost include directories: ${Boost_INCLUDE_DIRS}")
-    message(STATUS "Boost libraries: ${Boost_LIBRARIES}")
-else ()
-    message(FATAL_ERROR "Boost not found. Please install Boost development libraries.")
-endif ()
+#find_package(Boost 1.80 COMPONENTS system filesystem REQUIRED)
+#if (Boost_FOUND)
+#    message(STATUS "Boost found: ${Boost_VERSION}")
+#    message(STATUS "Boost include directories: ${Boost_INCLUDE_DIRS}")
+#    message(STATUS "Boost libraries: ${Boost_LIBRARIES}")
+#else ()
+#    message(FATAL_ERROR "Boost not found. Please install Boost development libraries.")
+#endif ()
 
 set(MFAOMP_SOURCES
     AddVideo.cpp
@@ -193,7 +194,7 @@ target_include_directories(mfaomp PRIVATE
                            "${CMAKE_CURRENT_BINARY_DIR}" #needed for version.h inclusion
                            "${CMAKE_CURRENT_SOURCE_DIR}"
                            "MediaPlayerImpls"
-                           ${Boost_INCLUDE_DIRS}
+#                           ${Boost_INCLUDE_DIRS}
 )
 if (HAVE_LIBVLC)
     set(LIBVLCPP_SOURCE_COUNT 0)
@@ -246,7 +247,7 @@ set(MFAOMP_LIBRARIES
     Qt::Core
     Qt::Gui
     Qt::Widgets
-    ${Boost_LIBRARIES}
+#    ${Boost_LIBRARIES}
 )
 
 # Conditionally add backend-specific Qt libraries and VLC library

@@ -26,7 +26,9 @@
 #include <QWebEngineProfile>
 #endif
 #include "MainWindow.h"
+#ifdef HAVE_SDL2
 #include <SDL2/SDL.h>
+#endif
 #include <QApplication>
 #include <QOpenGLContext>
 #include <QOffscreenSurface>
@@ -86,11 +88,12 @@ int main(int argc, char* argv[]) {
     QApplication a(argc, argv);
     // a.setStyle("windows"); //https://forum.qt.io/topic/127907/where-can-i-find-win95-win2000-stylesheet/4
 
+#ifdef HAVE_SDL2
     if (SDL_Init(SDL_INIT_VIDEO) < 0) {
         qCritical("Failed to initialize SDL_INIT_VIDEO: %s", SDL_GetError());
         return -1;
     }
-
+#endif
     MainWindow w;
 
 #ifdef HAVE_QTWEBENGINE
@@ -99,6 +102,8 @@ int main(int argc, char* argv[]) {
 #endif
     w.show();
     int ret = a.exec();
+#ifdef HAVE_SDL2
     SDL_Quit();
+#endif
     return ret;
 }

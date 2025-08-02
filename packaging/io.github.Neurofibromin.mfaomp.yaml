@@ -1,21 +1,86 @@
-id: io.github.Neurofibromin.mfaomp
+app-id: io.github.Neurofibromin.mfaomp
 runtime: org.kde.Platform
-runtime-version: "6.8"
+runtime-version: '6.8'
 sdk: org.kde.Sdk
 command: mfaomp
+
 finish-args:
-  - --share=ipc
-  - --socket=fallback-x11
   - --socket=wayland
-  - --device=dri
-  - --share=network
-  - --filesystem=xdg-documents
+  - --socket=x11
+  - --socket=pulseaudio
+  - --filesystem=xdg-videos:ro
+
 modules:
+  # Dependency: FFmpeg
+#  - name: ffmpeg
+#    buildsystem: autotools
+#    config-opts:
+#      - --enable-gpl
+#      - --enable-libmp3lame
+#      - --enable-libopus
+#      - --enable-libvpx
+#      - --enable-libx264
+#      - --disable-static
+#      - --enable-shared
+#      - --disable-doc
+#      - --disable-programs
+#    sources:
+#      - type: archive
+#        url: https://ffmpeg.org/releases/ffmpeg-6.0.tar.xz
+#        sha256: 57be87c22d9b49c112b6d24bc67d42508660e6b718b3db89c44e47e289137082
+
+  # Dependency: SDL2
+#  - name: sdl2
+#    buildsystem: cmake
+#    sources:
+#      - type: archive
+#        url: https://www.libsdl.org/release/SDL2-2.28.2.tar.gz
+#        sha256: 4741450a58a744274c4a453715e1b203c6470a1ebc26d79e82c1699931650865
+
+  # Dependency: Boost
+#  - name: boost
+#    buildsystem: simple
+#    build-commands:
+#      - ./bootstrap.sh --prefix=/app
+#      - ./b2 install
+#    sources:
+#      - type: archive
+#        url: https://boostorg.jfrog.io/artifactory/main/release/1.83.0/source/boost_1_83_0.tar.bz2
+#        sha256: 82a597a9f734458e17bce7319e79f6e632e8524d71597a7a6c9c64075199859f
+
+  # Dependency: libvlc
+#  - name: libvlc
+#    buildsystem: autotools
+#    config-opts:
+#      - --disable-sout
+#      - --disable-qt
+#      - --disable-skins2
+#      - --disable-ncurses
+#    sources:
+#      - type: archive
+#        url: https://download.videolan.org/pub/videolan/vlc/3.0.20/vlc-3.0.20.tar.xz
+#        sha256: 025d45e055627755a901034c143521e8474246c6afd2a3b02b0c034e341b5a2b
+#
+#  # Dependency: libvlcpp
+#  - name: libvlcpp
+#    buildsystem: cmake
+#    sources:
+#      - type: git
+#        url: https://github.com/videolan/libvlcpp.git
+#        branch: master
+
+  # Main Application: mfaomp
   - name: mfaomp
-    buildsystem: cmake-ninja
+    buildsystem: cmake
     config-opts:
-      - -DCMAKE_BUILD_TYPE=RelWithDebInfo
+      - -DCMAKE_BUILD_TYPE=Release
+      - -DUSE_PREDOWNLOADED_LIBVLCPP=OFF
+      - -DUSE_FETCHED_LIBVLCPP=OFF
+      - -DENABLE_CATCH=OFF
     sources:
       - type: archive
-        url: https://github.com/Neurofibromin/mfaomp/archive/refs/tags/v0.7.1.tar.gz
-        sha256: 123456789123456789123456789123456789123456789123456789123456789
+        url: https://github.com/Neurofibromin/mfaomp/archive/refs/tags/v0.7.2.tar.gz
+        sha256: 44047a835a828659d4c781d454a8e6378c52089c17e3355e1c4840d42634e06c
+#    post-install:
+#      - install -Dm644 %{_datadir}/applications/mfaomp.desktop %{install_root}%{_datadir}/applications/io.github.neurofibromin.mfaomp.desktop
+#      - install -Dm644 %{_docdir}/%{name}/LICENSE.txt %{install_root}%{_datadir}/licenses/io.github.neurofibromin.mfaomp/LICENSE.txt

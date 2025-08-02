@@ -29,18 +29,14 @@ jobs:
           echo $PWD
           ls -R
 
-      - name: Install dependencies with vcpkg
-        run: |
-          vcpkg install qt6-base qt6-multimedia qt6-webengine libvlc:x64-windows
-          vcpkg integrate install
-
       - name: "List all files"
         run: |
           echo $PWD
           ls -R
 
       - name: Configure project with CMake
-        run: cmake -S . -B build -DCMAKE_TOOLCHAIN_FILE=${{ github.workspace }}/vcpkg/scripts/buildsystems/vcpkg.cmake -DCMAKE_BUILD_TYPE=Release
+        run: cmake -S . -B build -DCMAKE_TOOLCHAIN_FILE=${{ github.workspace }}/vcpkg/scripts/buildsystems/vcpkg.cmake \ 
+          -DCMAKE_BUILD_TYPE=Release -DUSE_VCPKG=ON
 
       - name: "List all files"
         run: |
