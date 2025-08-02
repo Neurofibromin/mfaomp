@@ -47,6 +47,9 @@ public:
 
     ~MainWindow() override;
 
+public slots:
+    void replacePlayerWithDifferentBackendPlayer(MediaPlayerBase* player_to_replace, BackEndManager::BackEnd desired_backend);
+
 private slots:
     // UI Update Slots
     void updateSpeedDisplay(float speed);

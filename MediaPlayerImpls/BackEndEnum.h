@@ -49,7 +49,12 @@
 namespace { //anon namespace to hide structs
     namespace BackEndTypes {
         //TODO Make these template classes that can retun the type they were formed from,
-        // eg. the type VLCPlayerStruct (from the VLC implementation) should be available from here (like type traits?)
+        // eg. the type VLCPlayerStruct (from the VLC implementation) should be available from here (like type traits? ::T)
+
+        //TODO: the structs could be inheriting from a base BackEndTypeStruct
+
+        //TODO: the structs could be a template class where the enum is the template arg, the functions could
+        // work with template specializations
         struct QMediaPlayer {
             static bool isAvailableRuntime() {
 #ifdef HAVE_QTMULTIMEDIA
@@ -191,6 +196,7 @@ private:
         return metaDataMap;
     }
 
+    //TODO: maybe do this with std::visit and std::variant<> and visitor lambdas?
     template<typename Func>
     static constexpr decltype(auto) dispatchToType(BackEnd backend, Func&& func) {
         switch (backend) {
@@ -239,15 +245,7 @@ public:
         return std::nullopt;
     }
 
-    static std::optional<BackEnd> fromString(const std::string& str) {
-        const auto& map = getBackEndMetaDataMap();
-        for (const auto& pair : map) {
-            if (pair.second.getName() == str) {
-                return pair.first;
-            }
-        }
-        return std::nullopt;
-    }
+    static std::optional<BackEnd> fromString(const std::string& str);
 
 
     static consteval auto getAvailableCompiletimeBackEnds() {
@@ -266,15 +264,8 @@ public:
         return available;
     }
 
-    static std::vector<BackEnd> getAvailableRuntimeBackEnds() {
-        std::vector<BackEnd> available;
-        std::ranges::for_each(AllBackEnds, [&available](BackEnd backend) -> void {
-            if (isBackendAvailableRuntime(backend)) {
-                available.push_back(backend);
-            }
-        } );
-        return available;
-    }
+    static std::vector<BackEnd> getAvailableRuntimeBackEnds();
 };
+
 
 #endif //BACKENDENUM_H

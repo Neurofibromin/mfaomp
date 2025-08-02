@@ -25,9 +25,11 @@
 #include <QMenu>
 #include <QObject>
 
+#include "BackEndEnum.h"
+
 struct MediaPlayerBase : public QObject {
     Q_OBJECT
-
+public:
     QUrl videoUrl;
 
     explicit MediaPlayerBase(const QUrl& videoUrl, QObject* parent = nullptr) : QObject(parent), videoUrl(videoUrl) {
@@ -61,5 +63,9 @@ public slots:
     void ShowContextMenu(const QPoint &pos);
 
 };
+
+namespace Conversion {
+    MediaPlayerBase* convertCurrentPlayerTo(MediaPlayerBase* currentPlayer, BackEndManager::BackEnd desiredBackEnd);
+}
 
 #endif //MEDIAPLAYERS_H

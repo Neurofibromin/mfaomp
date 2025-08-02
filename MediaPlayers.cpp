@@ -1,13 +1,8 @@
 #include "MediaPlayers.h"
-#include <cmath>
-#include <iostream>
+#include "PlayerFactory.h"
 #include <QDebug>
-#include <QFile>
-#include <QFileDialog>
-#include <QGridLayout>
-#include <QStandardPaths>
-#include <QtGlobal>
 #include <QUrl>
+
 
 void MediaPlayerBase::ShowContextMenu(const QPoint& pos) {
     QWidget* videoWidget = getVideoWidget();
@@ -20,3 +15,23 @@ void MediaPlayerBase::ShowContextMenu(const QPoint& pos) {
         contextMenu->popup(videoWidget->mapToGlobal(pos));
     }
 }
+
+MediaPlayerBase* Conversion::convertCurrentPlayerTo(MediaPlayerBase* currentPlayer,
+                                                    BackEndManager::BackEnd desiredBackEnd) {
+    if (currentPlayer == nullptr) {
+        qDebug("Conversion::convertCurrentPlayerTo was called with null player as source");
+        return nullptr;
+    }
+    std::pair<QUrl, int64_t> currentState {currentPlayer->videoUrl, currentPlayer->time()};
+    auto swapperCreator = PlayerFactory::ProduceChosenFactory(desiredBackEnd);
+    if (!swapperCreator) {
+        qCritical() << "Failed to create player factory for backend:" <<
+            QString::fromStdString(BackEndManager::toString(desiredBackEnd)) << ". Aborting backend change.";
+        QMessageBox::critical(nullptr, "Could not convert backend", "Could not initialize selected backend at conversion: " + QString::fromStdString(BackEndManager::toString(desiredBackEnd)));
+        return currentPlayer;
+    }
+    MediaPlayerBase* converted_player = swapperCreator(currentState.first);
+    converted_player->set_time(currentState.second);
+    return converted_player;
+}
+

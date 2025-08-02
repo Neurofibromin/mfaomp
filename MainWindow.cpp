@@ -99,6 +99,17 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent) {
 
 MainWindow::~MainWindow() = default;
 
+void MainWindow::replacePlayerWithDifferentBackendPlayer(MediaPlayerBase* player_to_replace,
+    BackEndManager::BackEnd desired_backend) {
+    auto index = m_mediaPlayers.indexOf(player_to_replace);
+    if (index == -1) {
+        qWarning() << "Cannot find player to replace";
+        return;
+    }
+    auto newplayer = Conversion::convertCurrentPlayerTo(player_to_replace, desired_backend);
+    m_mediaPlayers.replace(index, newplayer);
+}
+
 void MainWindow::initializeUI() {
     m_videoContainer = new QWidget(this);
     m_videoLayout = new QGridLayout(m_videoContainer);
@@ -381,12 +392,12 @@ void MainWindow::handleSeekSliderReleased() {
 }
 
 void MainWindow::handleBackendChanged(const QString& text) {
+    //TODO: maybe rewrite this to use Conversion::convertCurrentPlayerTo()
     qCritical() << "Selected backend: " << text;
     QVector<QPair<QUrl, int64_t>> currentlyPlayingInfo;
     for (MediaPlayerBase* player : m_mediaPlayers) {
         if (player) {
             currentlyPlayingInfo.append({player->videoUrl, player->time()});
-
         }
     }
     std::optional<BackEndManager::BackEnd> backendOpt = BackEndManager::fromString(text.toStdString());

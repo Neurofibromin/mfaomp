@@ -169,7 +169,7 @@ set(MFAOMP_SOURCES
     MediaPlayerImpls/PlayerFactory.h
     MediaPlayerImpls/BackEndEnum.h
     MediaPlayers.cpp
-    #    MediaPlayerImpls/BackEndEnum.cpp
+    MediaPlayerImpls/BackEndEnum.cpp
 )
 
 if (HAVE_LIBVLC)
