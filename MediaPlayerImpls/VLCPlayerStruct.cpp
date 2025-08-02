@@ -20,7 +20,7 @@
 #include "VLCPlayerStruct.h"
 #include "vlc.hpp"
 
-VLCPlayerStruct::VLCPlayerStruct(const QUrl& videoUrl): MediaPlayerBase(videoUrl) {
+VLCPlayerStruct::VLCPlayerStruct(const QUrl& videoUrl, QWidget* parent): MediaPlayerBase(videoUrl, parent) {
     vlcInstance = new VLC::Instance(0, nullptr);
     // 2. Create Media
     QString path = videoUrl.toLocalFile();

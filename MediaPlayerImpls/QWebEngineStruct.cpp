@@ -25,7 +25,7 @@
 #include <QEventLoop>
 
 
-QWebEngineStruct::QWebEngineStruct(const QUrl& videoUrl): MediaPlayerBase(videoUrl) {
+QWebEngineStruct::QWebEngineStruct(const QUrl& videoUrl, QWidget* parent): MediaPlayerBase(videoUrl, parent) {
     webView = new QWebEngineView();
     webView->settings()->setAttribute(QWebEngineSettings::PluginsEnabled, true);
     webView->settings()->setAttribute(QWebEngineSettings::JavascriptEnabled, true);

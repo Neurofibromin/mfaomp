@@ -30,7 +30,7 @@ struct QWebEngineStruct : public MediaPlayerBase {
     int64_t lastKnownTime = 0;
     float lastKnownSpeed = 1.0;
 
-    explicit QWebEngineStruct(const QUrl& videoUrl);
+    explicit QWebEngineStruct(const QUrl& videoUrl, QWidget* parent);
 
     QString generateHtmlContent(const QUrl& videoUrl);
 

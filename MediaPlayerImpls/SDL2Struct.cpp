@@ -137,7 +137,7 @@ void SDLWidget::onRender() {
 }
 
 
-SDL2Struct::SDL2Struct(const QUrl& videoUrl) : MediaPlayerBase(videoUrl) {
+SDL2Struct::SDL2Struct(const QUrl& videoUrl, QWidget* parent) : MediaPlayerBase(videoUrl, parent) {
     videoWidget = new SDLWidget();
     videoWidget->setContextMenuPolicy(Qt::CustomContextMenu);
 

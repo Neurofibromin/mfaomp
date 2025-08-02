@@ -23,7 +23,7 @@
 #include <functional>
 #include <QFileDialog>
 
-using CreatePlayerFuncPtrType = MediaPlayerBase* (*)(const QUrl&);
+using CreatePlayerFuncPtrType = MediaPlayerBase* (*)(const QUrl&, QWidget*);
 
 // Signature for the file dialog function
 using GetOpenFileUrlsFuncType = std::function<QList<QUrl>(
@@ -44,6 +44,6 @@ void openAndAddVideo(QWidget& parentWidget,
 
 void rearrangeVideoPlayers(QGridLayout& layout, QVector<MediaPlayerBase *>& mediaPlayers);
 
-void addVideoPlayer(QGridLayout& layout, const QUrl& videoUrl, QVector<MediaPlayerBase *>& mediaPlayers, CreatePlayerFuncPtrType createPlayerFunc);
+void addVideoPlayer(QGridLayout& layout, const QUrl& videoUrl, QVector<MediaPlayerBase *>& mediaPlayers, CreatePlayerFuncPtrType createPlayerFunc, QWidget* parent = nullptr);
 
 #endif //ADDVIDEO_H

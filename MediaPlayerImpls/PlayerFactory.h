@@ -22,7 +22,7 @@
 #include "BackEndEnum.h"
 #include "MediaPlayers.h"
 
-using CreatePlayerFuncPtrType = MediaPlayerBase* (*)(const QUrl&);
+using CreatePlayerFuncPtrType = MediaPlayerBase* (*)(const QUrl&, QWidget*);
 
 class PlayerFactory {
 public:

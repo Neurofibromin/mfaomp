@@ -48,7 +48,7 @@ private:
 struct SDL2Struct : public MediaPlayerBase {
     SDLWidget* videoWidget = nullptr; //TODO: maybe can be QWidget* and moved to base class?
 
-    explicit SDL2Struct(const QUrl& videoUrl);
+    explicit SDL2Struct(const QUrl& videoUrl, QWidget* parent);
 
     void play() override;
 

@@ -30,22 +30,22 @@ CreatePlayerFuncPtrType PlayerFactory::ProduceChosenFactory(BackEndManager::Back
     switch (backend) {
 #ifdef HAVE_LIBVLC
         case BackEndManager::BackEnd::VLCPlayer:
-            createdFactoryFunction = [](const QUrl& url) -> MediaPlayerBase* { return new VLCPlayerStruct(url); };
+            createdFactoryFunction = [](const QUrl& url, QWidget* parent) -> MediaPlayerBase* { return new VLCPlayerStruct(url, parent); };
             break;
 #endif
 #ifdef HAVE_QTMULTIMEDIA
         case BackEndManager::BackEnd::QMediaPlayer:
-            createdFactoryFunction = [](const QUrl& url) -> MediaPlayerBase* { return new QMediaPlayerStruct(url); };
+            createdFactoryFunction = [](const QUrl& url, QWidget* parent) -> MediaPlayerBase* { return new QMediaPlayerStruct(url, parent); };
             break;
 #endif
 #ifdef HAVE_QTWEBENGINE
         case BackEndManager::BackEnd::QWebEngine:
-            createdFactoryFunction = [](const QUrl& url) -> MediaPlayerBase* { return new QWebEngineStruct(url); };
+            createdFactoryFunction = [](const QUrl& url, QWidget* parent) -> MediaPlayerBase* { return new QWebEngineStruct(url, parent); };
             break;
 #endif
 #ifdef HAVE_SDL2
         case BackEndManager::BackEnd::SDL2:
-            createdFactoryFunction = [](const QUrl& url) -> MediaPlayerBase* { return new SDL2Struct(url); };
+            createdFactoryFunction = [](const QUrl& url, QWidget* parent) -> MediaPlayerBase* { return new SDL2Struct(url, parent); };
             break;
 #endif
         default:

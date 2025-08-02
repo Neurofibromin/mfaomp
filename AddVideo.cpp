@@ -50,7 +50,7 @@ void openAndAddVideo(QWidget& parent,
 
     for (const QUrl& url: videoUrls) {
         if (url.isValid())
-            addVideoPlayer(layout, url, mediaPlayers, createPlayerFunc);
+            addVideoPlayer(layout, url, mediaPlayers, createPlayerFunc, &parent);
     }
 }
 
@@ -76,9 +76,9 @@ void rearrangeVideoPlayers(QGridLayout& layout, QVector<MediaPlayerBase *>& medi
     }
 }
 
-void addVideoPlayer(QGridLayout& layout, const QUrl& videoUrl, QVector<MediaPlayerBase *>& mediaPlayers, CreatePlayerFuncPtrType createPlayerFunc) {
+void addVideoPlayer(QGridLayout& layout, const QUrl& videoUrl, QVector<MediaPlayerBase *>& mediaPlayers, CreatePlayerFuncPtrType createPlayerFunc, QWidget* parent) {
     qDebug() << "adding video: " << videoUrl;
-    MediaPlayerBase* video_added = createPlayerFunc(videoUrl);
+    MediaPlayerBase* video_added = createPlayerFunc(videoUrl, parent);
     video_added->play();
     mediaPlayers.append(video_added);
     rearrangeVideoPlayers(layout, mediaPlayers);

@@ -30,7 +30,7 @@ struct QMediaPlayerStruct : public MediaPlayerBase {
     QVideoWidget* videoWidget = nullptr; //TODO: maybe can be QWidget* and moved to base class?
     QAudioOutput* audioOutput;
 
-    explicit QMediaPlayerStruct(const QUrl& videoUrl);
+    explicit QMediaPlayerStruct(const QUrl& videoUrl, QWidget* parent);
 
     void play() override;
 

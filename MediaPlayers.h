@@ -62,10 +62,13 @@ public:
 public slots:
     void ShowContextMenu(const QPoint &pos);
 
+private:
+    virtual constexpr std::list<QAction> availableConversions() const = 0;
+
 };
 
 namespace Conversion {
-    MediaPlayerBase* convertCurrentPlayerTo(MediaPlayerBase* currentPlayer, BackEndManager::BackEnd desiredBackEnd);
+    MediaPlayerBase* convertCurrentPlayerTo(MediaPlayerBase* currentPlayer, BackEndManager::BackEnd desiredBackEnd, QWidget* parent);
 }
 
 #endif //MEDIAPLAYERS_H

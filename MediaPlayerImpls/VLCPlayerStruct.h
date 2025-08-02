@@ -33,7 +33,7 @@ struct VLCPlayerStruct : public MediaPlayerBase {
     VLC::MediaPlayer* mediaPlayer = nullptr;
     QWidget* videoWidget = nullptr;
 
-    explicit VLCPlayerStruct(const QUrl& videoUrl);
+    explicit VLCPlayerStruct(const QUrl& videoUrl, QWidget* parent);
 
     void play() override;
 

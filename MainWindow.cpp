@@ -106,7 +106,7 @@ void MainWindow::replacePlayerWithDifferentBackendPlayer(MediaPlayerBase* player
         qWarning() << "Cannot find player to replace";
         return;
     }
-    auto newplayer = Conversion::convertCurrentPlayerTo(player_to_replace, desired_backend);
+    auto newplayer = Conversion::convertCurrentPlayerTo(player_to_replace, desired_backend, this);
     m_mediaPlayers.replace(index, newplayer);
 }
 
@@ -419,7 +419,7 @@ void MainWindow::handleBackendChanged(const QString& text) {
     // Re-add players
     for (const auto& videoInfo : currentlyPlayingInfo) {
         // addVideoPlayer is expected to add the new player to m_mediaPlayers
-        addVideoPlayer(*m_videoLayout, videoInfo.first, m_mediaPlayers, m_activePlayerCreator);
+        addVideoPlayer(*m_videoLayout, videoInfo.first, m_mediaPlayers, m_activePlayerCreator, this);
     }
 
     // Pause all, then play all and set time, preserving original logic flow
@@ -495,7 +495,7 @@ void MainWindow::handleFilesDropped(const QList<QUrl>& urls) {
     for (const QUrl& url : urls) {
         if (url.isLocalFile()) {
             // Assumes addVideoPlayer from AddVideo.h
-            addVideoPlayer(*m_videoLayout, url, m_mediaPlayers, m_activePlayerCreator);
+            addVideoPlayer(*m_videoLayout, url, m_mediaPlayers, m_activePlayerCreator, this);
         }
     }
 }

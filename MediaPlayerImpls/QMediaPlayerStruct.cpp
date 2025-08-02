@@ -20,8 +20,10 @@
 
 #include <QtMultimedia>
 #include <QtMultimediaWidgets>
+#include "BackEndEnum.h"
+#include "MainWindow.h"
 
-QMediaPlayerStruct::QMediaPlayerStruct(const QUrl& videoUrl): MediaPlayerBase(videoUrl) {
+QMediaPlayerStruct::QMediaPlayerStruct(const QUrl& videoUrl, QWidget* parent): MediaPlayerBase(videoUrl, parent) {
     videoWidget = new QVideoWidget();
     videoWidget->setStyleSheet("background-color: black;");
     videoWidget->setMinimumSize(64, 64);
