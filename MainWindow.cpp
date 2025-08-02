@@ -42,12 +42,6 @@
 #include <QVBoxLayout>
 #include <QWidget>
 
-
-// const QString MainWindow::DEFAULT_SPEED_TEXT = QStringLiteral("Speed: 1.00x");
-// const QString MainWindow::VLC_BACKEND_ID_TEXT = QStringLiteral("VLC Backend");
-// const QString MainWindow::QMEDIAPLAYER_BACKEND_ID_TEXT = QStringLiteral("QMediaPlayer Backend");
-// const QString MainWindow::QWEBENGINE_BACKEND_ID_TEXT = QStringLiteral("QWebEngine Backend");
-
 MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent) {
     initializeUI();
     initializeConnections();
@@ -69,32 +63,6 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent) {
     QString label_text = QString::fromStdString(name);
     qDebug() << label_text << " is the default backend";
     m_backendComboBox->setCurrentText(label_text);
-
-    /*
-    // Set initial backend (must be after m_backendComboBox is created)
-    if (BackEndManager::isBackendAvailableCompiletime(BackEndManager::BackEnd::VLCPlayer)) {
-        setActivePlayerCreator(BackEndManager::BackEnd::VLCPlayer);
-        std::string name = BackEndManager::toString(BackEndManager::BackEnd::VLCPlayer);
-        // name = name + " Backend";
-        QString label_text = QString::fromStdString(name);
-        m_backendComboBox->setCurrentText(label_text);
-    } else if (BackEndManager::isBackendAvailableCompiletime(BackEndManager::BackEnd::QMediaPlayer)) {
-        setActivePlayerCreator(BackEndManager::BackEnd::QMediaPlayer);
-        std::string name = BackEndManager::toString(BackEndManager::BackEnd::QMediaPlayer);
-        // name = name + " Backend";
-        QString label_text = QString::fromStdString(name);
-        m_backendComboBox->setCurrentText(label_text);
-    } else if (BackEndManager::isBackendAvailableCompiletime(BackEndManager::BackEnd::QWebEngine)) {
-        setActivePlayerCreator(BackEndManager::BackEnd::QWebEngine);
-        std::string name = BackEndManager::toString(BackEndManager::BackEnd::QWebEngine);
-        // name = name + " Backend";
-        QString label_text = QString::fromStdString(name);
-        m_backendComboBox->setCurrentText(label_text);
-    } else {
-        qCritical() << "No media backends available!";
-        qApp->quit();
-    }
-    */
 }
 
 MainWindow::~MainWindow() = default;
@@ -103,11 +71,24 @@ void MainWindow::replacePlayerWithDifferentBackendPlayer(MediaPlayerBase* player
     BackEndManager::BackEnd desired_backend) {
     auto index = m_mediaPlayers.indexOf(player_to_replace);
     if (index == -1) {
-        qWarning() << "Cannot find player to replace";
+        qWarning() << "Cannot find player to replace in media players vector.";
         return;
     }
-    auto newplayer = Conversion::convertCurrentPlayerTo(player_to_replace, desired_backend, this);
-    m_mediaPlayers.replace(index, newplayer);
+
+    qDebug() << "Attempting to convert player at index" << index << "to backend" << QString::fromStdString(BackEndManager::toString(desired_backend));
+
+    MediaPlayerBase* new_player = Conversion::convertCurrentPlayerTo(player_to_replace, desired_backend, this);
+
+    if (new_player == player_to_replace) {
+        qWarning() << "Backend conversion failed. Aborting replacement.";
+        return;
+    }
+    connect(new_player, &MediaPlayerBase::conversionRequested, this, &MainWindow::replacePlayerWithDifferentBackendPlayer);
+    m_mediaPlayers.replace(index, new_player);
+    player_to_replace->deleteLater();
+    rearrangeVideoPlayers(*m_videoLayout, m_mediaPlayers);
+    new_player->play();
+    qDebug() << "Player conversion successful.";
 }
 
 void MainWindow::initializeUI() {
@@ -199,19 +180,13 @@ void MainWindow::populateBackendComboBox() {
 
 
 void MainWindow::initializeConnections() {
-    connectMenuItems();
     connectPlayerControlButtons();
     connectOtherControls();
-
     // Timer for updating seek slider
     QTimer *sliderUpdateTimer = new QTimer(this);
     sliderUpdateTimer->setInterval(SLIDER_UPDATE_INTERVAL_MS);
     connect(sliderUpdateTimer, &QTimer::timeout, this, &MainWindow::updateSeekSliderFromFirstPlayer);
     sliderUpdateTimer->start();
-}
-
-void MainWindow::connectMenuItems() {
-    // Connections for menu actions are done in setupMenuBar where actions are created
 }
 
 void MainWindow::connectPlayerControlButtons() {
@@ -284,10 +259,8 @@ void MainWindow::applyStyles() {
 void MainWindow::setActivePlayerCreator(BackEndManager::BackEnd backendType) {
     m_activePlayerCreator = PlayerFactory::ProduceChosenFactory(backendType);
     m_activeBackendType = backendType;
-    // qDebug() << "Active player creator set for backend type: " << BackEndManager::toString(backendType);
     qDebug() << "Active player creator set for backend type: " << QString::fromStdString(BackEndManager::toString(backendType));
 }
-
 
 void MainWindow::pauseAllPlayers() {
     std::ranges::for_each(m_mediaPlayers, [](MediaPlayerBase *player) {player->pause();});
@@ -465,9 +438,6 @@ void MainWindow::openSettingsDialog() {
             this, &MainWindow::updateApplicationStyle);
 
     settingsDialog.exec();
-    // Disconnect to avoid multiple connections if dialog is opened again (QDialog does this on close often)
-    // Or ensure SettingsDialog uses unique connections or QScopedConnection.
-    // For exec(), typically connections are fine as the dialog instance is temporary.
 }
 
 void MainWindow::updatePlaybackSettings(float newSpeedIncrement, float newMinSpeed, float newMaxSpeed) {
@@ -494,7 +464,6 @@ void MainWindow::handleFilesDropped(const QList<QUrl>& urls) {
     }
     for (const QUrl& url : urls) {
         if (url.isLocalFile()) {
-            // Assumes addVideoPlayer from AddVideo.h
             addVideoPlayer(*m_videoLayout, url, m_mediaPlayers, m_activePlayerCreator, this);
         }
     }

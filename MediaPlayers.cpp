@@ -23,7 +23,7 @@ MediaPlayerBase* Conversion::convertCurrentPlayerTo(MediaPlayerBase* currentPlay
         return nullptr;
     }
     std::pair<QUrl, int64_t> currentState {currentPlayer->videoUrl, currentPlayer->time()};
-    auto swapperCreator = PlayerFactory::ProduceChosenFactory(desiredBackEnd, parent);
+    auto swapperCreator = PlayerFactory::ProduceChosenFactory(desiredBackEnd);
     if (!swapperCreator) {
         qCritical() << "Failed to create player factory for backend:" <<
             QString::fromStdString(BackEndManager::toString(desiredBackEnd)) << ". Aborting backend change.";

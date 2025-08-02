@@ -28,6 +28,8 @@
 #include <QtGlobal>
 #include <QUrl>
 
+#include "MainWindow.h"
+
 //allow for dependency injection of getUrlsFunc
 void openAndAddVideo(QWidget& parent,
                      QGridLayout& layout,
@@ -79,6 +81,12 @@ void rearrangeVideoPlayers(QGridLayout& layout, QVector<MediaPlayerBase *>& medi
 void addVideoPlayer(QGridLayout& layout, const QUrl& videoUrl, QVector<MediaPlayerBase *>& mediaPlayers, CreatePlayerFuncPtrType createPlayerFunc, QWidget* parent) {
     qDebug() << "adding video: " << videoUrl;
     MediaPlayerBase* video_added = createPlayerFunc(videoUrl, parent);
+    auto* mainWindow = qobject_cast<MainWindow*>(parent);
+    if (mainWindow) {
+        QObject::connect(video_added, &MediaPlayerBase::conversionRequested, mainWindow, &MainWindow::replacePlayerWithDifferentBackendPlayer);
+    } else {
+        qWarning() << "Could not cast parent to MainWindow to connect conversion signal.";
+    }
     video_added->play();
     mediaPlayers.append(video_added);
     rearrangeVideoPlayers(layout, mediaPlayers);

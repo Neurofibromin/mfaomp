@@ -73,6 +73,10 @@ struct SDL2Struct : public MediaPlayerBase {
     QWidget* getVideoWidget() override;
 
     QMenu* createContextMenu(QWidget* parent) override;
+
+private:
+    QMenu* availableConversions() override;
+
 };
 
 #endif //SDL2STRUCT_H

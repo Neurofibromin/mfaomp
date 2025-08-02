@@ -101,14 +101,10 @@ private:
 
     QWidget* setupControlsPanel();
 
-    void setupBottomBar(QVBoxLayout* mainLayout, QWidget* controlsPanel);
-
     void applyStyles();
 
     // Connections
     void initializeConnections();
-
-    void connectMenuItems();
 
     void connectPlayerControlButtons();
 

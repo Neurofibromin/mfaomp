@@ -59,11 +59,14 @@ public:
 
     virtual QMenu* createContextMenu(QWidget* parent) = 0;
 
+signals:
+    void conversionRequested(MediaPlayerBase* playerToReplace, BackEndManager::BackEnd newBackend);
+
 public slots:
     void ShowContextMenu(const QPoint &pos);
 
 private:
-    virtual constexpr std::list<QAction> availableConversions() const = 0;
+    virtual QMenu* availableConversions() = 0;
 
 };
 
