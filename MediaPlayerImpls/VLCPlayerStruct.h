@@ -59,8 +59,6 @@ struct VLCPlayerStruct : public MediaPlayerBase {
 
     QMenu* createContextMenu(QWidget* parent) override;
 
-private:
-    QMenu* availableConversions() override;
 };
 
 #endif //VLCPLAYERSTRUCT_H

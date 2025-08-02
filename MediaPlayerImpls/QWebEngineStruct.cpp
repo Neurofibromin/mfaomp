@@ -276,27 +276,7 @@ QMenu* QWebEngineStruct::createContextMenu(QWidget* parent) {
     auto* menu = new QMenu(parent);
     menu->addAction("Play", [this] { this->play(); });
     menu->addAction("Pause", [this] { this->pause(); });
-    QMenu* conversionMenu = availableConversions();
+    QMenu* conversionMenu = availableConversions(std::string("QWebEngine"));
     menu->addMenu(conversionMenu);
     return menu;
-}
-
-QMenu* QWebEngineStruct::availableConversions() {
-    QMenu* conversionMenu = new QMenu("Convert To");
-
-    auto backends = BackEndManager::getAvailableRuntimeBackEnds();
-    for (const auto backend : backends) {
-        std::string backendString = BackEndManager::toString(backend);
-        if (backendString == "QWebEngine") { // Don't show option to convert to self
-            continue;
-        }
-        QAction* action = conversionMenu->addAction(QString::fromStdString("Convert to " + backendString));
-        connect(action, &QAction::triggered, this, [this, backend]() {
-            emit conversionRequested(this, backend);
-        });
-    }
-    if (conversionMenu->isEmpty()) {
-        conversionMenu->setEnabled(false);
-    }
-    return conversionMenu;
 }

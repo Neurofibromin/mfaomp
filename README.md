@@ -119,11 +119,12 @@ available at runtime, but loaded only if they are.
   - [ ] wix
 - [ ] FFmpeg backend
 - [ ] SDL2? backend maybe something like this: https://github.com/fosterseth/sdl2_video_player
-- [ ] Per video controls, overload right click menu
+- [x] Per video controls, overload right click menu
   - [ ] loop
   - [ ] playback rate
-  - [ ] change backend on this video only
+  - [x] change backend on this video only
 - [ ] fix bug in version change - the github link does not change its version in the tables
+- [ ] fix bug: when right click changing backend vlc set_time does not work
 
 ### Features:
 

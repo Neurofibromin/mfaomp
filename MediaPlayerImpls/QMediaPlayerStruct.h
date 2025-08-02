@@ -56,8 +56,6 @@ struct QMediaPlayerStruct : public MediaPlayerBase {
 
     QMenu* createContextMenu(QWidget* parent) override;
 
-private:
-    QMenu* availableConversions() override;
 };
 
 #endif //QMEDIAPLAYERSTRUCT_H

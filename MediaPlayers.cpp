@@ -16,6 +16,26 @@ void MediaPlayerBase::ShowContextMenu(const QPoint& pos) {
     }
 }
 
+QMenu* MediaPlayerBase::availableConversions(std::string excluded_string) {
+    QMenu* conversionMenu = new QMenu("Convert To");
+
+    auto backends = BackEndManager::getAvailableRuntimeBackEnds();
+    for (const auto backend : backends) {
+        std::string backendString = BackEndManager::toString(backend);
+        if (backendString == excluded_string) { // Don't show option to convert to self
+            continue;
+        }
+        QAction* action = conversionMenu->addAction(QString::fromStdString("Convert to " + backendString));
+        connect(action, &QAction::triggered, this, [this, backend]() {
+            emit conversionRequested(this, backend);
+        });
+    }
+    if (conversionMenu->isEmpty()) {
+        conversionMenu->setEnabled(false);
+    }
+    return conversionMenu;
+}
+
 MediaPlayerBase* Conversion::convertCurrentPlayerTo(MediaPlayerBase* currentPlayer,
                                                     BackEndManager::BackEnd desiredBackEnd, QWidget* parent) {
     if (currentPlayer == nullptr) {

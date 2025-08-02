@@ -65,8 +65,8 @@ signals:
 public slots:
     void ShowContextMenu(const QPoint &pos);
 
-private:
-    virtual QMenu* availableConversions() = 0;
+protected:
+    virtual QMenu* availableConversions(std::string excluded_string);
 
 };
 
