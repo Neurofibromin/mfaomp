@@ -79,7 +79,7 @@ modules:
       - -DENABLE_CATCH=OFF
     sources:
       - type: archive
-        url: https://github.com/Neurofibromin/mfaomp/archive/refs/tags/v0.7.2.tar.gz
+        url: https://github.com/Neurofibromin/mfaomp/archive/refs/tags/v0.7.4.tar.gz
         sha256: dd1e9b304212b484ad898d1f7bc853017a3708c69f4970f6ad3b8b8a3e89f3a9
 #    post-install:
 #      - install -Dm644 %{_datadir}/applications/mfaomp.desktop %{install_root}%{_datadir}/applications/io.github.neurofibromin.mfaomp.desktop

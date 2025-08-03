@@ -74,7 +74,7 @@ zypper install mfaomp
 | Architecture  | Windows dynamic | Windows static | Linux dynamic                                                                                                             | Linux static |
 |---------------|-----------------|----------------|---------------------------------------------------------------------------------------------------------------------------|--------------|
 | x86-32        |                 |                |                                                                                                                           |              |
-| x86-64/amd64  |                 |                | [mfaomp-linux-x86_64-v0.7.3](https://github.com/Neurofibromin/mfaomp/releases/download/v0.7.3/mfaomp-linux-x86_64-v0.7.3) |              |
+| x86-64/amd64  |                 |                | [mfaomp-linux-x86_64-v0.7.4](https://github.com/Neurofibromin/mfaomp/releases/download/v0.7.4/mfaomp-linux-x86_64-v0.7.4) |              |
 | aarch64/arm64 |                 |                |                                                                                                                           |              |
 
 ### Additional releases <a name="additional-releases"/>
@@ -83,7 +83,7 @@ Linux Installers: <br/>
 
 | package     | x64                                                                                                                                           | arm64 |
 |-------------|-----------------------------------------------------------------------------------------------------------------------------------------------|-------|
-| Flatpak	   | [mfaomp-flatpak-x86_64-v0.7.3.flatpak](https://github.com/Neurofibromin/mfaomp/releases/download/v0.7.3/mfaomp-flatpak-x86_64-v0.7.3.flatpak) |       |
+| Flatpak	   | [mfaomp-flatpak-x86_64-v0.7.4.flatpak](https://github.com/Neurofibromin/mfaomp/releases/download/v0.7.4/mfaomp-flatpak-x86_64-v0.7.4.flatpak) |       |
 | RPM	       |                                                                                                                                               |       |
 | DEB	       |                                                                                                                                               |       |
 | AppImage	   |                                                                                                                                               |       |
@@ -123,7 +123,7 @@ available at runtime, but loaded only if they are.
   - [x] loop
   - [x] playback rate
   - [x] change backend on this video only
-- [ ] fix bug in version change - the github link does not change its version in the tables
+- [x] fix bug in version change - the github link does not change its version in the tables
 - [x] fix bug: when right click changing backend vlc set_time does not work
 - [ ] fix bug: when right click on webengine it crashes (since adding loop)
 - [ ] fix bug: loop does not work with vlc
