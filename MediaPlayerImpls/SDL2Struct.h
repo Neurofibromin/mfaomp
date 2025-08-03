@@ -68,6 +68,8 @@ struct SDL2Struct : public MediaPlayerBase {
 
     float duration() override;
 
+    bool loop(std::optional<bool> set_val) override;
+
     ~SDL2Struct() override;
 
     QWidget* getVideoWidget() override;

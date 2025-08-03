@@ -120,11 +120,13 @@ available at runtime, but loaded only if they are.
 - [ ] FFmpeg backend
 - [ ] SDL2? backend maybe something like this: https://github.com/fosterseth/sdl2_video_player
 - [x] Per video controls, overload right click menu
-  - [ ] loop
+  - [x] loop
   - [ ] playback rate
   - [x] change backend on this video only
 - [ ] fix bug in version change - the github link does not change its version in the tables
 - [ ] fix bug: when right click changing backend vlc set_time does not work
+- [ ] fix bug: when right click on webengine it crashes (since adding loop)
+- [ ] fix bug: loop does not work with vlc
 
 ### Features:
 

@@ -50,6 +50,8 @@ struct QMediaPlayerStruct : public MediaPlayerBase {
 
     float duration() override;
 
+    bool loop(std::optional<bool> set_val) override;
+
     ~QMediaPlayerStruct() override;
 
     QWidget* getVideoWidget() override;

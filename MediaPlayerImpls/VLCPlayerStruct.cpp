@@ -90,6 +90,21 @@ float VLCPlayerStruct::duration() {
     return mediaPlayer->media()->duration();
 }
 
+bool VLCPlayerStruct::loop(std::optional<bool> set_val) {
+    if (set_val.has_value()) {
+        //set
+        if (set_val.value()) {
+            qDebug() << "[VLCPlayerStruct] setting loop";
+        } else {
+            qDebug() << "[VLCPlayerStruct] unsetting loop";
+        }
+        return set_val.value();
+    }
+    //get
+    qDebug() << "[VLCPlayerStruct] getting loop";
+    return true;
+}
+
 VLCPlayerStruct::~VLCPlayerStruct() {
     VLCPlayerStruct::clear();
 }
@@ -102,6 +117,14 @@ QMenu* VLCPlayerStruct::createContextMenu(QWidget* parent) {
     auto* menu = new QMenu(parent);
     menu->addAction("Play", [this] { this->play(); });
     menu->addAction("Pause", [this] { this->pause(); });
+    QAction* loopAction = new QAction("Loop", menu);
+    loopAction->setCheckable(true);
+    loopAction->setChecked(this->loop(std::nullopt));
+    connect(loopAction, &QAction::toggled, this, [this](bool checked) {
+        this->loop(checked);
+    });
+    menu->addAction(loopAction);
+    menu->addSeparator();
     QMenu* conversionMenu = availableConversions(std::string("VLCPlayer"));
     menu->addMenu(conversionMenu);
     return menu;

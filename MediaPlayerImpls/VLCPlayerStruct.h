@@ -53,6 +53,8 @@ struct VLCPlayerStruct : public MediaPlayerBase {
 
     float duration() override;
 
+    bool loop(std::optional<bool> set_val) override;
+
     ~VLCPlayerStruct() override;
 
     QWidget* getVideoWidget() override;

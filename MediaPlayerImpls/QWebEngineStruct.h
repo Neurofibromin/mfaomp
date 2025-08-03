@@ -55,6 +55,8 @@ struct QWebEngineStruct : public MediaPlayerBase {
 
     float duration() override;
 
+    bool loop(std::optional<bool> set_val) override;
+
     ~QWebEngineStruct() override;
 
     QWidget* getVideoWidget() override;

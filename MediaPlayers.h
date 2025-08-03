@@ -55,6 +55,8 @@ public:
 
     virtual float duration() = 0;
 
+    virtual bool loop(std::optional<bool> set_val) = 0;
+
     virtual QWidget* getVideoWidget() = 0;
 
     virtual QMenu* createContextMenu(QWidget* parent) = 0;

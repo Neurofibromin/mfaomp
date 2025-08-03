@@ -220,6 +220,31 @@ float QWebEngineStruct::duration() {
     return currentDuration;
 }
 
+bool QWebEngineStruct::loop(std::optional<bool> set_val) {
+    if (set_val.has_value()) {
+        //set
+        QString script = QString("document.getElementById('mediaPlayerVideo').loop = %1;")
+                             .arg(set_val.value() ? "true" : "false");
+        webView->page()->runJavaScript(script);
+        return set_val.value();
+    } else {
+        //get
+        QEventLoop eventLoop;
+        bool isLooping = false;
+
+        webView->page()->runJavaScript("document.getElementById('mediaPlayerVideo').loop;",
+                                       [&](const QVariant& result) {
+                                           if (result.isValid() && result.canConvert<bool>()) {
+                                               isLooping = result.toBool();
+                                           }
+                                           eventLoop.quit();
+                                       });
+        QTimer::singleShot(200, &eventLoop, &QEventLoop::quit);
+        eventLoop.exec();
+        return isLooping;
+    }
+}
+
 QWebEngineStruct::~QWebEngineStruct() {
     QWebEngineStruct::clear();
 }
@@ -276,6 +301,17 @@ QMenu* QWebEngineStruct::createContextMenu(QWidget* parent) {
     auto* menu = new QMenu(parent);
     menu->addAction("Play", [this] { this->play(); });
     menu->addAction("Pause", [this] { this->pause(); });
+
+    menu->addSeparator();
+    QAction* loopAction = new QAction("Loop", menu);
+    loopAction->setCheckable(true);
+    loopAction->setChecked(this->loop(std::nullopt));
+    connect(loopAction, &QAction::toggled, this, [this](bool checked) {
+        this->loop(checked);
+    });
+    menu->addAction(loopAction);
+    menu->addSeparator();
+
     QMenu* conversionMenu = availableConversions(std::string("QWebEngine"));
     menu->addMenu(conversionMenu);
     return menu;
