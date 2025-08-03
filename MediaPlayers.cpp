@@ -3,9 +3,10 @@
 #include <QDebug>
 #include <QUrl>
 
+#include "MainWindow.h"
 
 void MediaPlayerBase::ShowContextMenu(const QPoint& pos) {
-    QMenu* contextMenu = createCustomContextMenu();
+    QMenu* contextMenu = createContextMenu();
     if (contextMenu) {
         contextMenu->setAttribute(Qt::WA_DeleteOnClose);
         contextMenu->popup(getVideoWidget()->mapToGlobal(pos));
@@ -36,9 +37,30 @@ QMenu* MediaPlayerBase::menuBuilderGeneric(const std::string& excluded_string) {
     auto* menu = new QMenu(getVideoWidget());
     menu->addAction("Play", [this] { this->play(); });
     menu->addAction("Pause", [this] { this->pause(); });
-    menu->addAction("Speed up", [this] { this->speed(); }); //get SPEED_INCREMENT from mainwindow
-    menu->addAction("Slow down", [this] { this->speed(); }); //get SPEED_INCREMENT from mainwindow
     menu->addAction("Properties", [this] { this->pause(); }); //TODO: Later
+    menu->addSeparator();
+
+    if (auto* mainWindow = qobject_cast<MainWindow*>(this->parent())) {
+        const double speedIncrement = mainWindow->getSpeedIncrement();
+        const double minSpeed = mainWindow->getMinPlaybackSpeed();
+        const double maxSpeed = mainWindow->getMaxPlaybackSpeed();
+
+        QAction* speedUpAction = menu->addAction("Speed Up");
+        connect(speedUpAction, &QAction::triggered, this, [this, speedIncrement, maxSpeed]() {
+            const float newSpeed = std::min(this->speed() + speedIncrement, maxSpeed);
+            this->speed(newSpeed);
+        });
+
+        QAction* slowDownAction = menu->addAction("Slow Down");
+        connect(slowDownAction, &QAction::triggered, this, [this, speedIncrement, minSpeed]() {
+            const float newSpeed = std::max(this->speed() - speedIncrement, minSpeed);
+            this->speed(newSpeed);
+        });
+    } else {
+        qWarning("MediaPlayerBase::menuBuilderGeneric: parent is not a MainWindow!");
+    }
+    menu->addSeparator();
+
     QAction* loopAction = new QAction("Loop", menu);
     loopAction->setCheckable(true);
     loopAction->setChecked(this->loop(std::nullopt));
@@ -58,7 +80,7 @@ MediaPlayerBase* Conversion::convertCurrentPlayerTo(MediaPlayerBase* currentPlay
         qDebug("Conversion::convertCurrentPlayerTo was called with null player as source");
         return nullptr;
     }
-    std::pair<QUrl, int64_t> currentState {currentPlayer->videoUrl, currentPlayer->time()};
+    std::pair<QUrl, int64_t> videoInfo {currentPlayer->videoUrl, currentPlayer->time()};
     auto swapperCreator = PlayerFactory::ProduceChosenFactory(desiredBackEnd);
     if (!swapperCreator) {
         qCritical() << "Failed to create player factory for backend:" <<
@@ -66,8 +88,11 @@ MediaPlayerBase* Conversion::convertCurrentPlayerTo(MediaPlayerBase* currentPlay
         QMessageBox::critical(nullptr, "Could not convert backend", "Could not initialize selected backend at conversion: " + QString::fromStdString(BackEndManager::toString(desiredBackEnd)));
         return currentPlayer;
     }
-    MediaPlayerBase* converted_player = swapperCreator(currentState.first, parent);
-    converted_player->set_time(currentState.second);
+    MediaPlayerBase* converted_player = swapperCreator(videoInfo.first, parent);
+    converted_player->play();
+    converted_player->pause();
+    converted_player->set_time(videoInfo.second);
+    converted_player->play();
     return converted_player;
 }
 

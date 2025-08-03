@@ -59,7 +59,7 @@ public:
 
     virtual QWidget* getVideoWidget() = 0;
 
-    virtual QMenu* createCustomContextMenu() = 0;
+    virtual QMenu* createContextMenu() = 0;
 
 signals:
     void conversionRequested(MediaPlayerBase* playerToReplace, BackEndManager::BackEnd newBackend);

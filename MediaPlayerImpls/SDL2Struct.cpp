@@ -199,6 +199,6 @@ QWidget* SDL2Struct::getVideoWidget() {
     return videoWidget;
 }
 
-QMenu* SDL2Struct::createCustomContextMenu() {
+QMenu* SDL2Struct::createContextMenu() {
     return menuBuilderGeneric("SDL2");
 }

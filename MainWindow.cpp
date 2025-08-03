@@ -278,16 +278,17 @@ void MainWindow::unmuteAllPlayers() {
     std::ranges::for_each(m_mediaPlayers, [](MediaPlayerBase *player) {player->unmute();});
 }
 
-void MainWindow::changeAllPlayersSpeed(float delta) {
+void MainWindow::changeAllPlayersSpeed(double delta) {
+    //TODO: refactor this to each player? as they now know their max speed
     if (m_mediaPlayers.isEmpty()) return;
 
-    float newRateForDisplay = 0.0f; // Default if somehow no player gives a rate
+    double newRateForDisplay = 0.0f; // Default if somehow no player gives a rate
     bool firstPlayerProcessed = false;
 
     for (MediaPlayerBase* player : m_mediaPlayers) {
         if (!player) continue;
-        float currentRate = player->speed();
-        float newRate;
+        double currentRate = player->speed();
+        double newRate;
         if (delta > 0) { // Increasing speed
             newRate = std::min(currentRate + delta, MAX_PLAYBACK_SPEED);
         } else { // Decreasing speed
@@ -315,7 +316,7 @@ void MainWindow::resetAllPlayersSpeed() {
 
 
 // --- UI Update Slots ---
-void MainWindow::updateSpeedDisplay(float rate) {
+void MainWindow::updateSpeedDisplay(double rate) {
     if(m_speedDisplayLabel)
         m_speedDisplayLabel->setText(QString("Speed: %1x").arg(rate, 0, 'f', 2));
 }
@@ -440,7 +441,7 @@ void MainWindow::openSettingsDialog() {
     settingsDialog.exec();
 }
 
-void MainWindow::updatePlaybackSettings(float newSpeedIncrement, float newMinSpeed, float newMaxSpeed) {
+void MainWindow::updatePlaybackSettings(double newSpeedIncrement, double newMinSpeed, double newMaxSpeed) {
     SPEED_INCREMENT = newSpeedIncrement;
     MIN_PLAYBACK_SPEED = newMinSpeed;
     MAX_PLAYBACK_SPEED = newMaxSpeed;

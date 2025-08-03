@@ -113,6 +113,6 @@ QWidget* VLCPlayerStruct::getVideoWidget() {
     return videoWidget;
 }
 
-QMenu* VLCPlayerStruct::createCustomContextMenu() {
+QMenu* VLCPlayerStruct::createContextMenu() {
     return menuBuilderGeneric("VLCPlayer");
 }

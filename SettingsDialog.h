@@ -27,11 +27,11 @@ class SettingsDialog : public QDialog {
     Q_OBJECT
 
 public:
-    explicit SettingsDialog(float speedIncrement, float minSpeed, float maxSpeed, const QString& currentStyle,
+    explicit SettingsDialog(double speedIncrement, double minSpeed, double maxSpeed, const QString& currentStyle,
                             QWidget* parent = nullptr);
 
 signals:
-    void settingsAccepted(float newSpeedIncrement, float newMinSpeed, float newMaxSpeed);
+    void settingsAccepted(double newSpeedIncrement, double newMinSpeed, double newMaxSpeed);
 
     void styleAccepted(const QString& newStyle);
 

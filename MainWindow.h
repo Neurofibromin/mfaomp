@@ -19,10 +19,6 @@
 #ifndef MAINWINDOW_H
 #define MAINWINDOW_H
 
-#include <QMainWindow>
-#include <QVector>
-#include <QTimer>
-#include <functional>
 #include "BackEndEnum.h"
 #include "PlayerFactory.h"
 
@@ -47,12 +43,16 @@ public:
 
     ~MainWindow() override;
 
+    double getSpeedIncrement() const { return SPEED_INCREMENT; }
+    double getMinPlaybackSpeed() const { return MIN_PLAYBACK_SPEED; }
+    double getMaxPlaybackSpeed() const { return MAX_PLAYBACK_SPEED; }
+
 public slots:
     void replacePlayerWithDifferentBackendPlayer(MediaPlayerBase* player_to_replace, BackEndManager::BackEnd desired_backend);
 
 private slots:
     // UI Update Slots
-    void updateSpeedDisplay(float speed);
+    void updateSpeedDisplay(double rate);
 
     void updateSeekSliderDisplay(int64_t position, int64_t duration);
 
@@ -74,7 +74,7 @@ private slots:
     void handleBackendChanged(const QString& text);
 
     // Settings Update Slots
-    void updatePlaybackSettings(float newSpeedIncrement, float newMinSpeed, float newMaxSpeed);
+    void updatePlaybackSettings(double newSpeedIncrement, double newMinSpeed, double newMaxSpeed);
 
     void updateApplicationStyle(const QString& newStyle);
 
@@ -87,7 +87,7 @@ private slots:
 
     void unmuteAllPlayers();
 
-    void changeAllPlayersSpeed(float delta);
+    void changeAllPlayersSpeed(double delta);
 
     void resetAllPlayersSpeed();
 
@@ -147,9 +147,9 @@ private:
     QString m_currentStyle;
 
     // Playback settings
-    float SPEED_INCREMENT = 0.25f;
-    float MIN_PLAYBACK_SPEED = 0.25f;
-    float MAX_PLAYBACK_SPEED = 2.0f;
+    double SPEED_INCREMENT = 0.25f;
+    double MIN_PLAYBACK_SPEED = 0.25f;
+    double MAX_PLAYBACK_SPEED = 2.0f;
 
     CreatePlayerFuncPtrType m_activePlayerCreator = nullptr;
     BackEndManager::BackEnd m_activeBackendType = BackEndManager::BackEnd::QMediaPlayer;
@@ -157,6 +157,7 @@ private:
     // Constants
     const int SEEK_SLIDER_MAX_VALUE = 1000;
     const int SLIDER_UPDATE_INTERVAL_MS = 500;
+
 };
 
 #endif // MAINWINDOW_H

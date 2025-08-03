@@ -26,7 +26,7 @@
 #include <QLabel>
 #include <QStyleFactory>
 
-SettingsDialog::SettingsDialog(float speedIncrement, float minSpeed, float maxSpeed, const QString& currentStyle,
+SettingsDialog::SettingsDialog(double speedIncrement, double minSpeed, double maxSpeed, const QString& currentStyle,
                                QWidget* parent)
     : QDialog(parent) {
     setWindowTitle("Playback Settings");

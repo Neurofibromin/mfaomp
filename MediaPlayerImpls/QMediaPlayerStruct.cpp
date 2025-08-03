@@ -110,6 +110,6 @@ QWidget* QMediaPlayerStruct::getVideoWidget() {
     return videoWidget;
 }
 
-QMenu* QMediaPlayerStruct::createCustomContextMenu() {
+QMenu* QMediaPlayerStruct::createContextMenu() {
     return menuBuilderGeneric("QMediaPlayer");
 }

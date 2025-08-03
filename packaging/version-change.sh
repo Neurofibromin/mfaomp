@@ -43,6 +43,8 @@ if [ ! -f "$README_FILE" ]; then
     exit 1
 fi
 # Replace all occurrences of the version in the file
+sed -i -E "s|https://github.com/Neurofibromin/mfaomp/releases/download/v[0-9]+\.[0-9]+\.[0-9]+/mfaomp|https://github.com/Neurofibromin/mfaomp/releases/download/v${NEW_VERSION}/mfaomp|g" "$README_FILE"
+# this: https://github.com/Neurofibromin/mfaomp/releases/download/v0.7.3/mfaomp -> https://github.com/Neurofibromin/mfaomp/releases/download/v${NEW_VERSION}/mfaomp
 sed -i -E "s/mfaomp-[0-9]+\.[0-9]+\.[0-9]+/mfaomp-${NEW_VERSION}/g" "$README_FILE"
 sed -i -E "s/mfaomp_[0-9]+\.[0-9]+\.[0-9]+/mfaomp_${NEW_VERSION}/g" "$README_FILE"
 sed -i -E "s/mfaomp-linux-x86_64-v[0-9]+\.[0-9]+\.[0-9]+/mfaomp-linux-x86_64-v${NEW_VERSION}/g" "$README_FILE"
