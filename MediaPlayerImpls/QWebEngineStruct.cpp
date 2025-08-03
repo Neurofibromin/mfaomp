@@ -223,27 +223,13 @@ float QWebEngineStruct::duration() {
 bool QWebEngineStruct::loop(std::optional<bool> set_val) {
     if (set_val.has_value()) {
         //set
+        m_isLooping = set_val.value();
         QString script = QString("document.getElementById('mediaPlayerVideo').loop = %1;")
-                             .arg(set_val.value() ? "true" : "false");
+                             .arg(m_isLooping ? "true" : "false");
         webView->page()->runJavaScript(script);
-        return set_val.value();
-    } else {
-        //get
-        QEventLoop eventLoop;
-        bool isLooping = false;
-
-        // this crashes the program:
-        // webView->page()->runJavaScript("document.getElementById('mediaPlayerVideo').loop;",
-        //                                [&](const QVariant& result) {
-        //                                    if (result.isValid() && result.canConvert<bool>()) {
-        //                                        isLooping = result.toBool();
-        //                                    }
-        //                                    eventLoop.quit();
-        //                                });
-        // QTimer::singleShot(200, &eventLoop, &QEventLoop::quit);
-        // eventLoop.exec();
-        return isLooping;
     }
+    //get
+    return m_isLooping;
 }
 
 QWebEngineStruct::~QWebEngineStruct() {

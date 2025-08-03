@@ -63,6 +63,9 @@ struct QWebEngineStruct : public MediaPlayerBase {
 
     QMenu* createContextMenu() override;
 
+private:
+    //for the loop getter as double event loop crashes in qt (show context menu -> get loop state)
+    bool m_isLooping = true;
 };
 
 #endif //QWEBENGINESTRUCT_H
