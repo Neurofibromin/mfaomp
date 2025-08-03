@@ -5,19 +5,15 @@
 
 
 void MediaPlayerBase::ShowContextMenu(const QPoint& pos) {
-    QWidget* videoWidget = getVideoWidget();
-    if (!videoWidget) {
-        return;
-    }
-    QMenu* contextMenu = createContextMenu(videoWidget);
+    QMenu* contextMenu = createCustomContextMenu();
     if (contextMenu) {
         contextMenu->setAttribute(Qt::WA_DeleteOnClose);
-        contextMenu->popup(videoWidget->mapToGlobal(pos));
+        contextMenu->popup(getVideoWidget()->mapToGlobal(pos));
     }
 }
 
-QMenu* MediaPlayerBase::availableConversions(std::string excluded_string) {
-    QMenu* conversionMenu = new QMenu("Convert To");
+QMenu* MediaPlayerBase::availableConversions(const std::string& excluded_string, QWidget* parentMenu) {
+    QMenu* conversionMenu = new QMenu("Convert To", parentMenu);
 
     auto backends = BackEndManager::getAvailableRuntimeBackEnds();
     for (const auto backend : backends) {
@@ -34,6 +30,26 @@ QMenu* MediaPlayerBase::availableConversions(std::string excluded_string) {
         conversionMenu->setEnabled(false);
     }
     return conversionMenu;
+}
+
+QMenu* MediaPlayerBase::menuBuilderGeneric(const std::string& excluded_string) {
+    auto* menu = new QMenu(getVideoWidget());
+    menu->addAction("Play", [this] { this->play(); });
+    menu->addAction("Pause", [this] { this->pause(); });
+    menu->addAction("Speed up", [this] { this->speed(); }); //get SPEED_INCREMENT from mainwindow
+    menu->addAction("Slow down", [this] { this->speed(); }); //get SPEED_INCREMENT from mainwindow
+    menu->addAction("Properties", [this] { this->pause(); }); //TODO: Later
+    QAction* loopAction = new QAction("Loop", menu);
+    loopAction->setCheckable(true);
+    loopAction->setChecked(this->loop(std::nullopt));
+    connect(loopAction, &QAction::toggled, this, [this](bool checked) {
+        this->loop(checked);
+    });
+    menu->addAction(loopAction);
+    menu->addSeparator();
+    QMenu* conversionMenu = availableConversions(excluded_string, menu);
+    menu->addMenu(conversionMenu);
+    return menu;
 }
 
 MediaPlayerBase* Conversion::convertCurrentPlayerTo(MediaPlayerBase* currentPlayer,

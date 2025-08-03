@@ -59,7 +59,7 @@ public:
 
     virtual QWidget* getVideoWidget() = 0;
 
-    virtual QMenu* createContextMenu(QWidget* parent) = 0;
+    virtual QMenu* createCustomContextMenu() = 0;
 
 signals:
     void conversionRequested(MediaPlayerBase* playerToReplace, BackEndManager::BackEnd newBackend);
@@ -68,7 +68,9 @@ public slots:
     void ShowContextMenu(const QPoint &pos);
 
 protected:
-    virtual QMenu* availableConversions(std::string excluded_string);
+    QMenu* availableConversions(const std::string& excluded_string, QWidget* parentMenu);
+
+    QMenu* menuBuilderGeneric(const std::string& excluded_string);
 
 };
 

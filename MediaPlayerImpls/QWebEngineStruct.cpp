@@ -253,6 +253,10 @@ QWidget* QWebEngineStruct::getVideoWidget() {
     return webView;
 }
 
+QMenu* QWebEngineStruct::createCustomContextMenu() {
+    return menuBuilderGeneric("QWebEngine");
+}
+
 QString QWebEngineStruct::generateHtmlContent(const QUrl& videoUrl) {
     return QString(R"(
             <!DOCTYPE html>
@@ -295,24 +299,4 @@ QString QWebEngineStruct::generateHtmlContent(const QUrl& videoUrl) {
             </body>
             </html>
         )").arg(videoUrl.toString());
-}
-
-QMenu* QWebEngineStruct::createContextMenu(QWidget* parent) {
-    auto* menu = new QMenu(parent);
-    menu->addAction("Play", [this] { this->play(); });
-    menu->addAction("Pause", [this] { this->pause(); });
-
-    menu->addSeparator();
-    QAction* loopAction = new QAction("Loop", menu);
-    loopAction->setCheckable(true);
-    loopAction->setChecked(this->loop(std::nullopt));
-    connect(loopAction, &QAction::toggled, this, [this](bool checked) {
-        this->loop(checked);
-    });
-    menu->addAction(loopAction);
-    menu->addSeparator();
-
-    QMenu* conversionMenu = availableConversions(std::string("QWebEngine"));
-    menu->addMenu(conversionMenu);
-    return menu;
 }

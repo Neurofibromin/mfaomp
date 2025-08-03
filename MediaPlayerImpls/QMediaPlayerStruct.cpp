@@ -110,21 +110,6 @@ QWidget* QMediaPlayerStruct::getVideoWidget() {
     return videoWidget;
 }
 
-QMenu* QMediaPlayerStruct::createContextMenu(QWidget* parent) {
-    auto* menu = new QMenu(parent);
-    menu->addAction("Play", [this] { this->play(); });
-    menu->addAction("Pause", [this] { this->pause(); });
-    menu->addSeparator();
-
-    QAction* loopAction = new QAction("Loop", menu);
-    loopAction->setCheckable(true);
-    loopAction->setChecked(this->loop(std::nullopt));
-    connect(loopAction, &QAction::toggled, this, [this](bool checked) {
-        this->loop(checked);
-    });
-    menu->addAction(loopAction);
-    menu->addSeparator();
-    QMenu* conversionMenu = availableConversions(std::string("QMediaPlayer"));
-    menu->addMenu(conversionMenu);
-    return menu;
+QMenu* QMediaPlayerStruct::createCustomContextMenu() {
+    return menuBuilderGeneric("QMediaPlayer");
 }

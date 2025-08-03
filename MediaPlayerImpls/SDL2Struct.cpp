@@ -199,19 +199,6 @@ QWidget* SDL2Struct::getVideoWidget() {
     return videoWidget;
 }
 
-QMenu* SDL2Struct::createContextMenu(QWidget* parent) {
-    auto* menu = new QMenu(parent);
-    menu->addAction("Play", [this] { this->play(); });
-    menu->addAction("Pause", [this] { this->pause(); });
-    QAction* loopAction = new QAction("Loop", menu);
-    loopAction->setCheckable(true);
-    loopAction->setChecked(this->loop(std::nullopt));
-    connect(loopAction, &QAction::toggled, this, [this](bool checked) {
-        this->loop(checked);
-    });
-    menu->addAction(loopAction);
-    menu->addSeparator();
-    QMenu* conversionMenu = availableConversions(std::string("SDL2"));
-    menu->addMenu(conversionMenu);
-    return menu;
+QMenu* SDL2Struct::createCustomContextMenu() {
+    return menuBuilderGeneric("SDL2");
 }
