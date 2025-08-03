@@ -19,6 +19,7 @@
 
 #include "VLCPlayerStruct.h"
 #include "vlc.hpp"
+#include <QMetaObject>
 
 VLCPlayerStruct::VLCPlayerStruct(const QUrl& videoUrl, QWidget* parent): MediaPlayerBase(videoUrl, parent) {
     vlcInstance = new VLC::Instance(0, nullptr);
@@ -46,6 +47,17 @@ VLCPlayerStruct::VLCPlayerStruct(const QUrl& videoUrl, QWidget* parent): MediaPl
 #else
     mediaPlayer->setXwindow(videoWidget->winId());
 #endif
+
+    VLC::MediaPlayerEventManager& eventManager = mediaPlayer->eventManager();
+    m_endReachedEvent = eventManager.onEndReached([this]() {
+        if (m_isLooping) {
+            QMetaObject::invokeMethod(this, "play", Qt::QueuedConnection);
+            // set_time(0);
+            // play();
+        } else {
+            QMetaObject::invokeMethod(this, "stop", Qt::QueuedConnection);
+        }
+    });
 }
 
 void VLCPlayerStruct::play() {
@@ -65,6 +77,10 @@ void VLCPlayerStruct::unmute() {
 }
 
 void VLCPlayerStruct::clear() {
+    if (m_endReachedEvent) {
+        m_endReachedEvent->unregister();
+        m_endReachedEvent = nullptr;
+    }
     mediaPlayer->stop();
     delete mediaPlayer;
     delete vlcInstance;
@@ -92,17 +108,12 @@ float VLCPlayerStruct::duration() {
 
 bool VLCPlayerStruct::loop(std::optional<bool> set_val) {
     if (set_val.has_value()) {
-        //set
-        if (set_val.value()) {
-            qDebug() << "[VLCPlayerStruct] setting loop";
-        } else {
-            qDebug() << "[VLCPlayerStruct] unsetting loop";
-        }
-        return set_val.value();
+        // set
+        m_isLooping = set_val.value();
+        qDebug() << "[VLCPlayerStruct] Loop flag set to:" << m_isLooping;
     }
-    //get
-    qDebug() << "[VLCPlayerStruct] getting loop";
-    return true;
+    // get
+    return m_isLooping;
 }
 
 VLCPlayerStruct::~VLCPlayerStruct() {

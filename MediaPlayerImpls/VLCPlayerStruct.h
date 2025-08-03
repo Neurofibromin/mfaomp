@@ -21,6 +21,7 @@
 #define VLCPLAYERSTRUCT_H
 
 #include "../MediaPlayers.h"
+#include "vlc.hpp"
 
 namespace VLC {
     //forward decl
@@ -32,6 +33,9 @@ struct VLCPlayerStruct : public MediaPlayerBase {
     VLC::Instance* vlcInstance = nullptr;
     VLC::MediaPlayer* mediaPlayer = nullptr;
     QWidget* videoWidget = nullptr;
+
+    VLC::EventManager::RegisteredEvent m_endReachedEvent = nullptr;
+    bool m_isLooping = false;
 
     explicit VLCPlayerStruct(const QUrl& videoUrl, QWidget* parent);
 
