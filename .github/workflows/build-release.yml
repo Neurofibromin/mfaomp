@@ -76,6 +76,9 @@ jobs:
   build-flatpak:
     runs-on: ubuntu-latest
     needs: build-and-release
+    env:
+      FLATPAK_MANIFEST: "io.github.Neurofibromin.mfaomp.yaml"
+      OLD_SHA256: "dd1e9b304212b484ad898d1f7bc853017a3708c69f4970f6ad3b8b8a3e89f3a9"
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -96,10 +99,47 @@ jobs:
           sudo apt install -y flatpak flatpak-builder
           flatpak remote-add --user --if-not-exists flathub https://flathub.org/repo/flathub.flatpakrepo
 
-      - name: build
+      - name: get_new_checksum
         run: |
           cd packaging
-          flatpak-builder build-dir --force-clean --user --install-deps-from=flathub --repo=repo --ccache --install io.github.Neurofibromin.mfaomp.yaml
+          set +e
+          BUILD_OUTPUT=$(flatpak-builder --force-clean --repo=repo build-dir "$FLATPAK_MANIFEST" 2>&1)
+          BUILD_EXIT_CODE=$?
+          set -e
+          if [ $BUILD_EXIT_CODE -ne 0 ] && echo "$BUILD_OUTPUT" | grep -q "Wrong sha256 checksum"; then
+            echo "Build failed with a checksum error. Parsing output to find new checksum..."
+            NEW_SHA256=$(echo "$BUILD_OUTPUT" | grep 'was ' | awk '{print $5}' | sed 's/"//g')
+            if [ -z "$NEW_SHA256" ]; then
+              echo "Error: Could not extract new checksum from build output."
+              exit 1
+            fi
+            
+            echo "Found new checksum: $NEW_SHA256"
+            echo "NEW_CHECKSUM=$NEW_SHA256" >> "$GITHUB_OUTPUT"
+           else
+              if [ $BUILD_EXIT_CODE -eq 0 ]; then
+                echo "Initial build was successful. No checksum update needed."
+                else
+                echo "Build failed for an unexpected reason. See log below:"
+                echo "$BUILD_OUTPUT"
+              fi
+              exit $BUILD_EXIT_CODE
+            fi
+          fi
+
+      - name: update manifest with new checksum
+        run: |
+            echo "Updating manifest file: $FLATPAK_MANIFEST"
+            sed -i "s/$OLD_SHA256/${steps.get_new_checksum.outputs.NEW_CHECKSUM}/g" "$FLATPAK_MANIFEST"
+            echo "Checksum updated successfully. Retrying the build..."
+            # Attempt the build again with the corrected manifest.
+            flatpak-builder --force-clean --repo=repo build-dir "$FLATPAK_MANIFEST"
+
+
+      - name: build with new checksum
+        run: |
+          cd packaging
+          flatpak-builder build-dir --force-clean --user --install-deps-from=flathub --repo=repo --ccache --install "$FLATPAK_MANIFEST"
 
       - name: bundle
         run: |
