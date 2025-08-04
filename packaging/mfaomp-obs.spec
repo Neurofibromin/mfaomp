@@ -1,6 +1,6 @@
 %global debug_package %{nil}
 Name:           mfaomp
-Version:        0.7.4
+Version:        0.7.5
 Release:        0
 Summary:        Multiple Files At Once Media Player
 

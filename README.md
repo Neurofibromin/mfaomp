@@ -76,7 +76,7 @@ zypper install mfaomp
 | Architecture  | Windows dynamic | Windows static | Linux dynamic                                                                                                             | Linux static |
 |---------------|-----------------|----------------|---------------------------------------------------------------------------------------------------------------------------|--------------|
 | x86-32        |                 |                |                                                                                                                           |              |
-| x86-64/amd64  |                 |                | [mfaomp-linux-x86_64-v0.7.4](https://github.com/Neurofibromin/mfaomp/releases/download/v0.7.4/mfaomp-linux-x86_64-v0.7.4) |              |
+| x86-64/amd64  |                 |                | [mfaomp-linux-x86_64-v0.7.5](https://github.com/Neurofibromin/mfaomp/releases/download/v0.7.5/mfaomp-linux-x86_64-v0.7.5) |              |
 | aarch64/arm64 |                 |                |                                                                                                                           |              |
 
 ### Additional releases <a name="additional-releases"/>
@@ -85,10 +85,10 @@ Linux Installers: <br/>
 
 | package     | x64                                                                                                                                           | arm64 |
 |-------------|-----------------------------------------------------------------------------------------------------------------------------------------------|-------|
-| Flatpak	   | [mfaomp-flatpak-x86_64-v0.7.4.flatpak](https://github.com/Neurofibromin/mfaomp/releases/download/v0.7.4/mfaomp-flatpak-x86_64-v0.7.4.flatpak) |       |
+| Flatpak	   | [mfaomp-flatpak-x86_64-v0.7.5.flatpak](https://github.com/Neurofibromin/mfaomp/releases/download/v0.7.5/mfaomp-flatpak-x86_64-v0.7.5.flatpak) |       |
 | RPM	       |                                                                                                                                               |       |
 | DEB	       |                                                                                                                                               |       |
-| AppImage	   | [mfaomp-x86_64-v0.7.4.AppImage](https://github.com/Neurofibromin/mfaomp/releases/download/v0.7.4/mfaomp-x86_64-v0.7.4.AppImage)                                                                                                             |       |
+| AppImage	   | [mfaomp-x86_64-v0.7.5.AppImage](https://github.com/Neurofibromin/mfaomp/releases/download/v0.7.5/mfaomp-x86_64-v0.7.5.AppImage)                                                                                                             |       |
 
 ## Limitations <a name="limitations"/>
 
@@ -134,7 +134,7 @@ available at runtime, but loaded only if they are.
   - [x] playback rate
   - [x] change backend on this video only
 
-### CI/CD
+### Packages
 
 - [x] [OpenSuse Build Service](https://build.opensuse.org/package/show/home:Neurofibromin/mfaomp)
 - [x] [Nix](https://github.com/NixOS/nixpkgs/pull/414760)
