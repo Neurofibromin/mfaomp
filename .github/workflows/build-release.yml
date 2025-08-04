@@ -99,7 +99,7 @@ jobs:
           # Use 'set +e' to prevent the script from exiting on the expected checksum error.
           set +e
           # Run the builder and capture all output.
-          BUILD_OUTPUT=$(flatpak-builder build-dir --repo=repo "$FLATPAK_MANIFEST" 2>&1)
+          BUILD_OUTPUT=$(flatpak-builder build-dir --force-clean --user --install-deps-from=flathub --repo=repo --ccache --install "$FLATPAK_MANIFEST" 2>&1)
           BUILD_EXIT_CODE=$?
           set -e
           
@@ -149,4 +149,58 @@ jobs:
         run: |
           cd packaging
           mv mfaomp.flatpak $ASSET_NAME
+          gh release upload "$TAG_NAME" "$ASSET_NAME" --clobber
+
+  build-appimage:
+    runs-on: ubuntu-latest
+    needs: build-and-release
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Install dependencies
+        run: |
+          sudo apt update
+          sudo apt install -y libfuse2 patchelf build-essential cmake pkg-config \
+            qt6-base-dev qt6-multimedia-dev qt6-webengine-dev libvlc-dev gh libboost-all-dev ffmpeg libsdl2-dev
+
+      - name: generate makefiles
+        run: |
+          mkdir build-appimage
+          cd build-appimage
+          wget "https://github.com/linuxdeploy/linuxdeploy/releases/download/continuous/linuxdeploy-x86_64.AppImage" -O linuxdeploy
+          wget "https://github.com/AppImage/AppImageKit/releases/download/continuous/appimagetool-x86_64.AppImage" -O appimagetool
+          wget "https://github.com/linuxdeploy/linuxdeploy-plugin-qt/releases/download/continuous/linuxdeploy-plugin-qt-x86_64.AppImage" -O linuxdeploy-plugin-qt-x86_64.AppImage
+          wget "https://raw.githubusercontent.com/linuxdeploy/linuxdeploy-plugin-gstreamer/refs/heads/master/linuxdeploy-plugin-gstreamer.sh" -O linuxdeploy-plugin-gstreamer.sh
+          chmod +x linuxdeploy appimagetool linuxdeploy-plugin-qt-x86_64.AppImage linuxdeploy-plugin-gstreamer.sh
+          cmake .. \
+          -DCMAKE_INSTALL_PREFIX=$(pwd)/AppDir/usr \
+          -DCMAKE_BUILD_TYPE=Release \
+          -DENABLE_CATCH=OFF
+
+      - name: build
+        run: cmake --build build-appimage
+      - name: install
+        run: cmake --install .
+      - name: linux deploy
+        run: |
+          cd build-appimage
+          ./linuxdeploy --list-plugins
+          ./linuxdeploy --appdir "$(pwd)/AppDir" --plugin qt --plugin gstreamer --output appdir
+      - name: appimage bundle
+        run: |
+          cd build-appimage
+          ./appimagetool "$(pwd)/AppDir" "mfaomp.AppImage" 
+
+      - name: upload to release
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          TAG_NAME: "v${{ needs.build-and-release.steps.get_version.outputs.PROJECT_VERSION }}"
+          GH_TOKEN: ${{ github.token }}
+          ASSET_NAME: mfaomp-x86_64-v${{ needs.build-and-release.steps.get_version.outputs.PROJECT_VERSION }}.AppImage
+        run: |
+          cd packaging
+          mv mfaomp.AppImage $ASSET_NAME
           gh release upload "$TAG_NAME" "$ASSET_NAME" --clobber

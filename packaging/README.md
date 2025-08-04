@@ -74,15 +74,28 @@ git pull
 touch nixpkgs/pkgs/by-name/mf/mfaomp/package.nix
 nix-build mfaomp
 
+## Appimage
+sudo apt-get install libfuse2 patchelf
+cd packaging
+mkdir build-appimage
+cd build-appimage
+wget "https://github.com/linuxdeploy/linuxdeploy/releases/download/continuous/linuxdeploy-x86_64.AppImage" -O linuxdeploy
+wget "https://github.com/AppImage/AppImageKit/releases/download/continuous/appimagetool-x86_64.AppImage" -O appimagetool
+wget "https://github.com/linuxdeploy/linuxdeploy-plugin-qt/releases/download/continuous/linuxdeploy-plugin-qt-x86_64.AppImage" -O linuxdeploy-plugin-qt-x86_64.AppImage
+wget "https://raw.githubusercontent.com/linuxdeploy/linuxdeploy-plugin-gstreamer/refs/heads/master/linuxdeploy-plugin-gstreamer.sh" -O linuxdeploy-plugin-gstreamer.sh
+chmod +x linuxdeploy appimagetool linuxdeploy-plugin-qt-x86_64.AppImage linuxdeploy-plugin-gstreamer.sh
+cmake ../.. \
+-DCMAKE_INSTALL_PREFIX=$(pwd)/AppDir/usr \
+-DCMAKE_BUILD_TYPE=Release \
+-DENABLE_CATCH=OFF
 
-
-
+cmake --build .
+cmake --install .
+./linuxdeploy --list-plugins
+./linuxdeploy --appdir "$(pwd)/AppDir" --plugin qt --plugin gstreamer --output appdir
+./appimagetool "$(pwd)/AppDir" "mfaomp-0.7.2-x86_64.AppImage"
 
 ## Ubuntu PPA
 
 sudo apt install build-essential devscripts debhelper ubuntu-dev-tools dput
-TODO
-
-## Appimage
-
 TODO

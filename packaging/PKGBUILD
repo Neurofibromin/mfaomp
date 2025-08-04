@@ -44,7 +44,6 @@ prepare() {
 
 build() {
     cmake -S "$srcdir/$pkgname-$pkgver" -B build \
-        -DCMAKE_INSTALL_PREFIX=/usr \
         -DCMAKE_BUILD_TYPE=Release \
         -DENABLE_CATCH=OFF
     cmake --build build

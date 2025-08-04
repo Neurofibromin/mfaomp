@@ -5,6 +5,7 @@ Name=mfaomp
 GenericName=Media Player
 Comment=Play multiple videos at once
 Exec=mfaomp %F
+Icon=mfaomp
 Categories=AudioVideo;Player;Video;Qt;
 Terminal=false
 MimeType=video/x-matroska;video/mp4;audio/mpeg;audio/x-wav;

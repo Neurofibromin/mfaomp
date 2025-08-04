@@ -87,7 +87,7 @@ int main(int argc, char* argv[]) {
 #endif
     QApplication a(argc, argv);
     // a.setStyle("windows"); //https://forum.qt.io/topic/127907/where-can-i-find-win95-win2000-stylesheet/4
-
+    a.setWindowIcon(QIcon(":/packaging/mfaomp_icon_32.png"));
 #ifdef HAVE_SDL2
     if (SDL_Init(SDL_INIT_VIDEO) < 0) {
         qCritical("Failed to initialize SDL_INIT_VIDEO: %s", SDL_GetError());

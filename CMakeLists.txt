@@ -189,7 +189,13 @@ if (HAVE_SDL2)
     list(APPEND MFAOMP_SOURCES MediaPlayerImpls/SDL2Struct.cpp)
 endif ()
 
-add_executable(mfaomp ${MFAOMP_SOURCES} main.cpp)
+if(WIN32)
+    set(CMAKE_RC_FLAGS "/nologo")
+    set(RESOURCE_FILE "${CMAKE_CURRENT_SOURCE_DIR}/icon.rc")
+    list(APPEND MFAOMP_SOURCES ${RESOURCE_FILE})
+endif()
+
+add_executable(mfaomp ${MFAOMP_SOURCES} main.cpp resources.qrc)
 
 target_include_directories(mfaomp PRIVATE
                            "${CMAKE_CURRENT_BINARY_DIR}" #needed for version.h inclusion
@@ -276,6 +282,20 @@ install(FILES "${PROJECT_LICENSE_FILE}"
         DESTINATION "${CMAKE_INSTALL_DATADIR}/doc/${PROJECT_NAME}"
         RENAME LICENSE.txt
 )
+
+if(UNIX AND NOT APPLE)
+    set(icon_sizes 16 24 32 48 64 96 128 256 512)
+    foreach(size ${icon_sizes})
+        install(FILES "packaging/mfaomp_icon_${size}.png"
+                DESTINATION "${CMAKE_INSTALL_DATADIR}/icons/hicolor/${size}x${size}/apps"
+                RENAME "mfaomp.png"
+        )
+    endforeach()
+    install(FILES "packaging/mfaomp_icon.svg"
+            DESTINATION "${CMAKE_INSTALL_DATADIR}/icons/hicolor/scalable/apps"
+            RENAME "mfaomp.svg"
+    )
+endif()
 
 install(FILES mfaomp.desktop DESTINATION ${CMAKE_INSTALL_DATADIR}/applications)
 

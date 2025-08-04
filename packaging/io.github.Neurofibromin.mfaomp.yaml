@@ -69,9 +69,10 @@ modules:
 #        url: https://github.com/videolan/libvlcpp.git
 #        branch: master
 
-  # Main Application: mfaomp
   - name: mfaomp
     buildsystem: cmake
+    rename-desktop-file: "mfaomp.desktop"
+    rename-icon: "packaging/mfaomp_icon_256.png"
     config-opts:
       - -DCMAKE_BUILD_TYPE=Release
       - -DUSE_PREDOWNLOADED_LIBVLCPP=OFF
@@ -81,6 +82,3 @@ modules:
       - type: archive
         url: https://github.com/Neurofibromin/mfaomp/archive/refs/tags/v0.7.4.tar.gz
         sha256: dd1e9b304212b484ad898d1f7bc853017a3708c69f4970f6ad3b8b8a3e89f3a9
-#    post-install:
-#      - install -Dm644 %{_datadir}/applications/mfaomp.desktop %{install_root}%{_datadir}/applications/io.github.neurofibromin.mfaomp.desktop
-#      - install -Dm644 %{_docdir}/%{name}/LICENSE.txt %{install_root}%{_datadir}/licenses/io.github.neurofibromin.mfaomp/LICENSE.txt

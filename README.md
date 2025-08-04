@@ -2,6 +2,8 @@
 
 Multiple Files At Once Media Player
 
+![mfaomp icon](packaging/mfaomp_icon_256.png)
+
 ## Contents
 
 - [Status](#status)
@@ -86,7 +88,7 @@ Linux Installers: <br/>
 | Flatpak	   | [mfaomp-flatpak-x86_64-v0.7.4.flatpak](https://github.com/Neurofibromin/mfaomp/releases/download/v0.7.4/mfaomp-flatpak-x86_64-v0.7.4.flatpak) |       |
 | RPM	       |                                                                                                                                               |       |
 | DEB	       |                                                                                                                                               |       |
-| AppImage	   |                                                                                                                                               |       |
+| AppImage	   | [mfaomp-x86_64-v0.7.4.AppImage](https://github.com/Neurofibromin/mfaomp/releases/download/v0.7.4/mfaomp-x86_64-v0.7.4.AppImage)                                                                                                             |       |
 
 ## Limitations <a name="limitations"/>
 
@@ -109,20 +111,15 @@ available at runtime, but loaded only if they are.
 - [ ] Debian/Ubuntu
 - [ ] winget
 - [ ] chocolatey
-- [ ] appimage
-- [ ] Create Icon for the project
+- [x] appimage
+- [x] Create Icon for the project
 - [ ] add gpg signatures and checksums to CICD pipelines
 - [ ] install wizards
   - [ ] installshield
   - [ ] innosetup
   - [ ] nsis (only this works with CPack)
   - [ ] wix
-- [ ] FFmpeg backend
 - [ ] SDL2? backend maybe something like this: https://github.com/fosterseth/sdl2_video_player
-- [x] fix bug in version change - the github link does not change its version in the tables
-- [x] fix bug: when right click changing backend vlc set_time does not work
-- [x] fix bug: when right click on webengine it crashes (since adding loop)
-- [x] fix bug: loop does not work with vlc
 
 ### Features:
 
@@ -147,7 +144,6 @@ available at runtime, but loaded only if they are.
 ### Roadmap
 
 - [ ] 0.7: sdl backend
-- [ ] 0.7: ffmpeg backend
 - [ ] 0.8: swap backends to plugins with [dylib](https://github.com/martin-olivier/dylib) 
 - [ ] 0.x: multithreaded approach
 - [ ] 0.x: add c++ modules support

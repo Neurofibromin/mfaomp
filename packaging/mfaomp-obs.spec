@@ -54,5 +54,16 @@ tar -xf %{SOURCE1} -C third_party/libvlcpp --strip-components=1
 %dir %{_docdir}/../%{name}
 %license %{_docdir}/../%{name}/LICENSE.txt
 %{_datadir}/applications/mfaomp.desktop
+%{_datadir}/icons/hicolor/16x16/apps/mfaomp.png
+%{_datadir}/icons/hicolor/24x24/apps/mfaomp.png
+%{_datadir}/icons/hicolor/32x32/apps/mfaomp.png
+%{_datadir}/icons/hicolor/48x48/apps/mfaomp.png
+%{_datadir}/icons/hicolor/64x64/apps/mfaomp.png
+%{_datadir}/icons/hicolor/96x96/apps/mfaomp.png
+%{_datadir}/icons/hicolor/128x128/apps/mfaomp.png
+%{_datadir}/icons/hicolor/256x256/apps/mfaomp.png
+%{_datadir}/icons/hicolor/512x512/apps/mfaomp.png
+%{_datadir}/icons/hicolor/1024x1024/apps/mfaomp.png
+%{_datadir}/icons/hicolor/scalable/apps/mfaomp.svg
 
 %changelog

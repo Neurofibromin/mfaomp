@@ -1,5 +1,3 @@
-#TODO: add ffmpeg, boost, sdl2, disable tests with ENABLE_CATCH=OFF
-
 {
   lib,
   stdenv,
@@ -9,6 +7,9 @@
   qt6,
   libvlc,
   libvlcpp,
+  ffmpeg,
+  SDL2,
+  boost,
 }:
 
 stdenv.mkDerivation (finalAttrs: {
@@ -35,11 +36,15 @@ stdenv.mkDerivation (finalAttrs: {
     qt6.qtsvg
     libvlc
     libvlcpp
+    ffmpeg
+    SDL2
+    boost
   ];
 
   cmakeFlags = [
     (lib.cmakeBool "USE_SYSTEM_PROVIDED_LIBVLCPP" true)
     (lib.cmakeBool "USE_FETCHED_LIBVLCPP" false)
+    (lib.cmakeBool "ENABLE_CATCH" false)
   ];
 
   meta = {
