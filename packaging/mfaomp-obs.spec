@@ -63,7 +63,6 @@ tar -xf %{SOURCE1} -C third_party/libvlcpp --strip-components=1
 %{_datadir}/icons/hicolor/128x128/apps/mfaomp.png
 %{_datadir}/icons/hicolor/256x256/apps/mfaomp.png
 %{_datadir}/icons/hicolor/512x512/apps/mfaomp.png
-%{_datadir}/icons/hicolor/1024x1024/apps/mfaomp.png
 %{_datadir}/icons/hicolor/scalable/apps/mfaomp.svg
 
 %changelog
