@@ -119,14 +119,10 @@ available at runtime, but loaded only if they are.
   - [ ] wix
 - [ ] FFmpeg backend
 - [ ] SDL2? backend maybe something like this: https://github.com/fosterseth/sdl2_video_player
-- [x] Per video controls, overload right click menu
-  - [x] loop
-  - [x] playback rate
-  - [x] change backend on this video only
 - [x] fix bug in version change - the github link does not change its version in the tables
 - [x] fix bug: when right click changing backend vlc set_time does not work
 - [x] fix bug: when right click on webengine it crashes (since adding loop)
-- [ ] fix bug: loop does not work with vlc
+- [x] fix bug: loop does not work with vlc
 
 ### Features:
 
@@ -136,6 +132,10 @@ available at runtime, but loaded only if they are.
 - [x] drag-and-drop
 - [x] settings + menu + theming
 - [x] Adding videos via drag-and-drop
+- [x] Per video controls, overload right click menu
+  - [x] loop
+  - [x] playback rate
+  - [x] change backend on this video only
 
 ### CI/CD
 

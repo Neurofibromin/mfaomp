@@ -23,18 +23,15 @@
 #include "../MediaPlayers.h"
 #include "vlc.hpp"
 
-namespace VLC {
-    //forward decl
-    class Instance;
-    class MediaPlayer;
-}
-
 struct VLCPlayerStruct : public MediaPlayerBase {
     VLC::Instance* vlcInstance = nullptr;
-    VLC::MediaPlayer* mediaPlayer = nullptr;
+    VLC::MediaListPlayer* m_mediaListPlayer = nullptr;
+    VLC::MediaPlayer* m_mediaPlayer = nullptr;
+    VLC::MediaList* m_mediaList = nullptr;
+
     QWidget* videoWidget = nullptr;
 
-    VLC::EventManager::RegisteredEvent m_endReachedEvent = nullptr;
+    // VLC::EventManager::RegisteredEvent m_endReachedEvent = nullptr;
     bool m_isLooping = false;
 
     explicit VLCPlayerStruct(const QUrl& videoUrl, QWidget* parent);

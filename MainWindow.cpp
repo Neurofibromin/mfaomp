@@ -362,7 +362,10 @@ void MainWindow::handleSeekSliderReleased() {
             int64_t seekTo = static_cast<int64_t>(
                 (static_cast<double>(sliderValue) / SEEK_SLIDER_MAX_VALUE) * duration);
             player->set_time(seekTo);
-        }});
+        } else {
+            qWarning("media duration was zero in handleSeekSliderReleased");
+        }
+    });
 }
 
 void MainWindow::handleBackendChanged(const QString& text) {
